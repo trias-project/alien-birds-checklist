@@ -33,24 +33,35 @@ Load libraries:
 library(tidyverse)      # To do data science
 library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
-library(janitor)        # To clean input data
-library(readxl)         # To read Excel files
 library(digest)         # To generate hashes
 library(rgbif)          # To use GBIF services
+library(googlesheets)   # To import and read Google spreadsheets 
 ```
 
 # Read source data
 
-Create a data frame `input_data` from the source data:
+Retrieve the [checklist of alien birds Belgium ](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0) which is a google spreadheet:
 
-```{r}
-input_data <- read_excel(path = here("data", "raw", "checklist.xlsx")) 
+```{r connect_google_spreadsheets}
+retrieve_spreadsheet <- gs_title("Checklist of alien birds Belgium")
 ```
 
-Preview data:
+Select the data in the worksheet `checklist`:
+
+```{r read_source_data}
+input_data <- retrieve_spreadsheet %>% gs_read("checklist") # Also trims values
+```
+
+We want to add a copy of the source data to the repository:
 
 ```{r}
-input_data %>% head(n = 5)
+write_csv(input_data, here("data", "raw", "alien_bird_checklist_dump.csv"), na = "")
+```
+
+Preview data: 
+
+```{r}
+input_data %>% head()
 ```
 
 # Process source data
