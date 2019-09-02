@@ -36,9 +36,16 @@ library(here)           # To find files
 library(digest)         # To generate hashes
 library(rgbif)          # To use GBIF services
 library(googlesheets)   # To import and read Google spreadsheets 
+library(janitor)
 ```
 
 # Read source data
+
+Define column types:
+
+```{r}
+col_types <- cols(.default = col_character())
+```
 
 Retrieve the [checklist of alien birds Belgium ](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0) which is a google spreadheet:
 
@@ -49,7 +56,7 @@ retrieve_spreadsheet <- gs_title("Checklist of alien birds Belgium")
 Select the data in the worksheet `checklist`:
 
 ```{r read_source_data}
-input_data <- retrieve_spreadsheet %>% gs_read("checklist") # Also trims values
+input_data <- retrieve_spreadsheet %>% gs_read("checklist", col_types = col_types) # Also trims values
 ```
 
 We want to add a copy of the source data to the repository:
