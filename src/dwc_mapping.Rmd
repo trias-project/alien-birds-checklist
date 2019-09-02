@@ -292,21 +292,61 @@ distribution %>%
 Map values to `input_locality` if provided, otherwise use the country name:
 
 ```{r}
-distribution %<>% mutate(dwc_locality = case_when(
-  !is.na(locality) ~ locality,
-  country_code == "BE" ~ "Belgium",
-  country_code == "GB" ~ "United Kingdom",
-  country_code == "MK" ~ "Macedonia",
-  country_code == "NL" ~ "The Netherlands",
-  TRUE ~ "" # In other cases leave empty
+distribution %<>% mutate(location_be = case_when(
+  is.na(location) ~ "Belgium",
+  TRUE ~ location
 ))
+```
+
+Separate values in `location_be`
+
+```{r}
+distribution %<>% separate(col = location_be, 
+                          into = c("location_1", "location_2"),
+                          remove = FALSE,
+                          sep = ", ")
+```
+
+Inspect data:
+
+```{r}
+distribution %>% head()
+```
+
+Change from wide to long dataset:
+
+```{r}
+distribution %<>% gather(key = "key",
+                        value = "dwc_locality",
+                        location_1, location_2,
+                        na.rm = TRUE)
 ```
 
 Inspect mapped values: 
 
 ```{r}
 distribution %>%
-  group_by(country_code, locality, dwc_locality) %>%
+  group_by(country_code, location, dwc_locality) %>%
+  count()
+```
+
+### locationID
+
+Map `locationID` to [ISO 3166 code]
+
+```{r}
+distribution %<>% mutate(dwc_locationID = case_when(
+  dwc_locality == "Belgium" ~ "ISO_3166-2:BE",
+  dwc_locality == "Flanders" ~ "ISO_3166-2:BE-VLG",
+  dwc_locality == "Wallonia" ~ "ISO_3166-2:BE-WAL",
+  dwc_locality == "Brussels" ~ "ISO_3166-2:BE-BRU"))
+```
+
+Inspect values:
+
+```{r}
+distribution %>%
+  group_by(dwc_locality, dwc_locationID) %>%
   count()
 ```
 
@@ -342,30 +382,71 @@ Map values:
 distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status) 
 ```
 
-### threatStatus
+### establishmentMeans
 
-Inspect values:
+```{r}
+distribution %<>% mutate(dwc_establishmentMeans = "introduced")
+```
+
+### eventDate
+
+Inspact values for `date_first_observation`:
 
 ```{r}
 distribution %>%
-  group_by(threat_status) %>%
+  group_by(date_first_observation) %>%
   count()
 ```
 
-Map values by recoding to the [IUCN threat status vocabulary](http://rs.gbif.org/vocabulary/iucn/threat_status.xml):
+All date information should comply to the ISO 8601 standard, which requires a four-digit year as a minimum.
+We here transform deviating values:
 
 ```{r}
-distribution %<>% mutate(dwc_threatStatus = recode(threat_status,
-  "endangered" = "EN",
-  "vulnerable" = "VU"
+distribution %<>% mutate(
+  date_first_observation = recode(
+    .x = date_first_observation,
+    "18th century" = "1701",
+    "1890s" = "1890",
+    "1950ies" = "1950"
 ))
 ```
 
-Inspect mapped values: 
+Inspact values for `date_last_observation`:
 
 ```{r}
 distribution %>%
-  group_by(threat_status, dwc_threatStatus) %>%
+  group_by(date_last_observation) %>%
+  count()
+```
+
+Inspect all combinations of `date_first_observation` and `date_last_observation`:
+
+```{r}
+distribution %>%
+  group_by(date_first_observation, date_last_observation) %>%
+  count()
+```
+
+Map `eventDate`:
+
+```{r}
+distribution %<>% mutate(
+  dwc_eventDate = case_when(
+    is.na(date_first_observation) & is.na(date_last_observation) ~ NA_character_,
+    is.na(date_first_observation) & !is.na(date_last_observation) ~ date_last_observation,
+    !is.na(date_first_observation) & is.na(date_last_observation) ~ date_first_observation,
+    !is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
+      date_first_observation, date_last_observation, sep = "/"
+    )
+  )
+)
+```
+
+Show mapping:
+
+```{r}
+distribution %>%
+  group_by(date_first_observation, date_last_observation, dwc_eventDate) %>%
   count()
 ```
 
@@ -376,8 +457,7 @@ Inspect values:
 ```{r}
 distribution %>%
   group_by(source) %>%
-  count() %>%
-  head() # Remove to show all values
+  count()
 ```
 
 Map values:
@@ -393,8 +473,7 @@ Inspect values:
 ```{r}
 distribution %>%
   group_by(remarks) %>%
-  count() %>%
-  head() # Remove to show all values
+  count()
 ```
 
 Map values:
