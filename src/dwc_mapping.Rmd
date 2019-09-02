@@ -335,6 +335,16 @@ distribution %<>% gather(key = "key",
                         na.rm = TRUE)
 ```
 
+Change `Brussels` to `Brussels-Capital region`:
+
+```{r}
+distribution %<>% 
+  mutate(dwc_locality = recode(
+    dwc_locality,
+    "Brussels" = "Brussels-Capital region"
+    ))
+```
+
 Inspect mapped values: 
 
 ```{r}
