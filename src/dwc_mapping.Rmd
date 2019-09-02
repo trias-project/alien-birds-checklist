@@ -580,3 +580,267 @@ Save to CSV:
 write_csv(species_profile, here("data", "processed", "species_profile.csv"), na = "")
 ```
 
+# Description extension
+
+In the description extension we want to include several important characteristics (hereafter refered to as descriptors) about the species:
+
+- Native range
+- Pathway of introduction
+- Degree of establishment
+
+For each descriptor, we create a separate dataframe to process the specific information. We always specify _which descriptor_ we map (`type` column) and its _specific content_ (`description` column). After the mapping of these Darwin Core terms `type` and `value`, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as `language`).
+
+## Native range
+ 
+Create separate dataframe:
+
+```{r start_native_range}
+native_range <- input_data
+```
+
+Inspect `native_range`:
+
+```{r}
+native_range %>% 
+  group_by(native_range) %>% 
+  count()
+```
+
+Separate content using the pipe symbol as a separator:
+
+```{r}
+native_range %<>% 
+  separate(col = native_range,
+           into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
+           sep = "\\s\\|\\s",
+           remove = FALSE)
+```
+
+Change from a wide to a long dataset:
+
+```{r}
+native_range %<>% 
+  gather(key = "key",
+         value = "value",
+         native_range_1, native_range_2, native_range_3, native_range_4, native_range_5,
+         na.rm = TRUE)
+```
+
+Show unique values for native range:
+
+```{r}
+native_range %>% 
+  group_by(value) %>% 
+  count()
+```
+
+Map to the [WGSRPD vocabulary](http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf):
+
+```{r}
+native_range %<>% mutate(
+  description = recode(
+    value,
+    "Africa" = "Africa (WGSRPD:2)",
+    "Australia" = "Australia (WGSRPD:50)",
+    "Caribbean" = "Caribbean (WGSRPD:81)",
+    "Central America" = "Central America (WGSRPD:80)",
+    "China" = "China (WGSRPD:36)",
+    "East Asia" = "Eastern Asia (WGSRPD:38)",
+    "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
+    "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
+    "Europe" = "Europe (WGSRPD:1)",
+    "Galapagos" = "Galapagos (WGSRPD:GAL)",
+    "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
+    "India" = "Indian Subcontinent (WGSRPD:40)",
+    "Indonesia" = "Indonesia (WGSRPD:ID)",
+    "Japan" = "Japan (WGSRPD:JAP)",
+    "Madagascar" = "Madagascar (WGSRPD:MDG)",
+    "New Zealand" = "New Zealand (WGSRPD:51)",
+    "North America" = "Northern America (WGSRPD:7)",
+    "Northern America" = "Northern America (WGSRPD:7)",
+    "Panama" = "Panama (WGSRPD:PAN)",
+    "Philippines" = "Philippines (WGSRPD:PHI)",
+    "Portugal" = "Portugal (WGSRPD:POR)",
+    "South America" = "Southern America (WGSRPD:8)",
+    "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
+    "Southern Africa" = "Southern Africa (WGSRPD:27)",
+    "Spain" = "Spain (WGSRPD:SPA)",
+    "Tanzania" = "Tanzania (WGSRPD:TAN)",
+    "Western Asia" = "Western Asia (WGSRPD:34)"
+  )
+)
+```
+
+Show mapping:
+
+```{r}
+native_range %>% 
+  group_by(value, description) %>% 
+  count()
+```
+
+Map `type`:
+
+```{r}
+native_range %<>% mutate(type = "native range")
+```
+
+Select `taxon_id`, `description` and `type`:
+
+```{r}
+native_range %<>% select(taxon_id, description, type)
+```
+
+## Pathway of introduction
+ 
+Create separate dataframe:
+
+```{r start_native_range}
+pathways <- input_data
+```
+
+Inspect `native_range`:
+
+```{r}
+pathways %>% 
+  group_by(introduction_pathway) %>% 
+  count()
+```
+
+Separate content using the pipe symbol as a separator:
+
+```{r}
+pathways %<>% 
+  separate(col = introduction_pathway,
+           into = c("introduction_pathway_1", "introduction_pathway_2"),
+           sep = "\\s\\|\\s",
+           remove = FALSE)
+```
+
+Change from a wide to a long dataset:
+
+```{r}
+pathways %<>% 
+  gather(key = "key",
+         value = "value",
+         introduction_pathway_1, introduction_pathway_2,
+         na.rm = TRUE)
+```
+
+Show unique values for native range:
+
+```{r}
+pathways %>% 
+  group_by(value) %>% 
+  count()
+```
+
+Add prefix  `cbd_2014_pathway:` to refer to the [CBD standard for pathway information](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf)
+
+```{r}
+pathways %<>% mutate(description = paste("cbd_2014_pathway", value, sep = ":"))
+```
+
+Add `type`:
+
+```{r}
+pathways %<>% mutate(type = "pathway")
+```
+
+Select `taxon_id`, `description` and `type`:
+
+```{r}
+pathways %<>% select(taxon_id, description, type)
+```
+
+## Degree of establishment
+ 
+Create separate dataframe:
+
+```{r}
+degree_of_establishment <- input_data
+```
+
+Inspect `degree_of_establishment`:
+
+```{r}
+degree_of_establishment %>% 
+  group_by(degree_of_establishment) %>% 
+  count()
+```
+
+Remove empty records:
+
+```{r}
+degree_of_establishment %<>% filter(!is.na(degree_of_establishment))
+```
+
+These categories of `degree_of_establishment` are conform the vocabulary of [Blackburn et al. 2011]() for mapping the degree of establishment. For each level, we here add the prefix `Blackburn et al. 2011:` and the categories (A-E):
+
+```{r}
+degree_of_establishment %<>% 
+  mutate(description = 
+           recode(degree_of_establishment,
+              "captive" = "captive (B1)",
+              "casual" = "casual (C1)",
+              "colonizing" = "colonizing (D1)",
+              "established" = "established (C3)",
+              "invasive" = "invasive (D2)",
+              "released" = "released (B3)",
+              "reproducing" = "reproducing (C2)"
+))
+```
+
+Add prefix `Blackburn et al. 2011`:
+
+```{r}
+degree_of_establishment %<>% mutate(description = paste("Blackburn et al. 2011", description, sep = ":"))
+```
+
+Inspect mapping:
+
+```{r}
+degree_of_establishment %>% 
+  group_by(degree_of_establishment, description) %>% 
+  count()
+```
+
+Map `type`:
+
+```{r}
+degree_of_establishment %<>% mutate(type = "degree of establishment")
+```
+
+Select `taxon_id`, `description` and `type`:
+
+```{r}
+degree_of_establishment %<>% select(taxon_id, description, type)
+```
+
+## Union to description extension
+
+Join `native_range` and `pathways` and `degree_of_establishment` into a single description extension:
+
+```{r}
+description <- bind_rows(native_range, pathways, degree_of_establishment)
+```
+
+Rename `taxon_id` to `taxonID`:
+
+```{r}
+description %<>% rename(taxonID = taxon_id)
+```
+
+Sort on taxonID:
+
+```{r}
+description %<>% arrange(taxonID) 
+```
+
+Save to CSV:
+
+```{r}
+description %>% write.csv(path = "../data/processed/description.csv", na = "")
+```
+
+
