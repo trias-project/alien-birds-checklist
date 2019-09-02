@@ -68,10 +68,10 @@ input_data %>% head()
 
 ## Tidy data
 
-Clean data somewhat:
+Clean names:
 
 ```{r}
-input_data %<>% remove_empty("rows")
+input_data %<>% clean_names()
 ```
 
 ## Scientific names
@@ -93,34 +93,7 @@ parsed_names %>%
   filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
 ```
 
-Correct names and reparse:
-
-```{r correct and reparse}
-input_data %<>% mutate(scientific_name = recode(scientific_name,
-  "AseroÙ rubra" = "Asero rubra"
-))
-
-# Redo parsing
-parsed_names <- input_data %>%
-  distinct(scientific_name) %>%
-  pull() %>%
-  parsenames()
-
-# Show names with nomenclatural issues again
-parsed_names %>%
-  select(scientificname, type, parsed, parsedpartially, rankmarker) %>%
-  filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
-```
-
-## Taxon ranks
-
-The nameparser function also provides information about the rank of the taxon (in `rankmarker`). Here we join this information with our checklist. Cleaning these ranks will done in the Taxon Core mapping:
-
-```{r}
-input_data %<>% left_join(
-  select(parsed_names, scientificname, rankmarker),
-  by = c("scientific_name" = "scientificname"))
-```
+There are no nomenclatural issues here, so there's no need for cleaning of the scientific names.
 
 ## Taxon IDs
 
@@ -129,7 +102,7 @@ To link taxa with information in the extension(s), each taxon needs a unique and
 ```{r}
 vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
 input_data %<>% mutate(taxon_id = paste(
-  "my_dataset_shortname", # e.g. "alien-fishes-checklist"
+  "alien-birds-checklist", # e.g. "alien-fishes-checklist"
   "taxon",
   vdigest(paste(scientific_name, kingdom), algo = "md5"),
   sep = ":"
@@ -142,7 +115,7 @@ Show the number of taxa and distributions per kingdom and rank:
 
 ```{r}
 input_data %>%
-  group_by(kingdom, rankmarker) %>%
+  group_by(kingdom, taxon_rank) %>%
   summarize(
     `# taxa` = n_distinct(taxon_id),
     `# distributions` = n()
@@ -160,7 +133,7 @@ input_data %>% head()
 
 ## Pre-processing
 
-Create a dataframe with unique taxa only (ignoring multiple distribution rows):
+Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):
 
 ```{r}
 taxon <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
@@ -175,37 +148,37 @@ Start with record-level terms which contain metadata about the dataset (which is
 ### language
 
 ```{r}
-taxon %<>% mutate(dwc_language = "my_language") # e.g. "en"
+taxon %<>% mutate(dwc_language = "en")
 ```
 
 ### license
 
 ```{r}
-taxon %<>% mutate(dwc_license = "my_license") # e.g. "http://creativecommons.org/publicdomain/zero/1.0/"
+taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.0/")
 ```
 
 ### rightsHolder
 
 ```{r}
-taxon %<>% mutate(dwc_rightsHolder = "my_rights_holder") # e.g. "INBO"
+taxon %<>% mutate(dwc_rightsHolder = "INBO")
 ```
 
 ### datasetID
 
 ```{r}
-taxon %<>% mutate(dwc_datasetID = "my_dataset_doi") # e.g. "https://doi.org/10.15468/xvuzfh"
+taxon %<>% mutate(dwc_datasetID = "")
 ```
 
 ### institutionCode
 
 ```{r}
-taxon %<>% mutate(dwc_institutionCode = "my_institution_code") # e.g. "INBO"
+taxon %<>% mutate(dwc_institutionCode = "INBO")
 ```
 
 ### datasetName
 
 ```{r}
-taxon %<>% mutate(dwc_datasetName = "my_dataset_title") # e.g. "Checklist of non-native freshwater fishes in Flanders, Belgium"
+taxon %<>% mutate(dwc_datasetName = "Checklist of alien birds of Belgium") 
 ```
 
 The following terms contain information about the taxon:
@@ -244,35 +217,20 @@ Inspect values:
 
 ```{r}
 taxon %>%
-  group_by(rankmarker) %>%
+  group_by(taxon_rank) %>%
   count()
 ```
 
 Map values by recoding to the [GBIF rank vocabulary](http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml):
 
 ```{r}
-taxon %<>% mutate(dwc_taxonRank = recode(rankmarker,
-  "agg."      = "speciesAggregate",
-  "infrasp."  = "infraspecificname",
-  "sp."       = "species",
-  "var."      = "variety",
-  .default    = "",
-  .missing    = ""
-))
-```
-
-Inspect mapped values: 
-
-```{r}
-taxon %>%
-  group_by(rankmarker, dwc_taxonRank) %>%
-  count()
+taxon %<>% mutate(dwc_taxonRank = taxon_rank)
 ```
 
 ### nomenclaturalCode
 
 ```{r}
-taxon %<>% mutate(dwc_nomenclaturalCode = "my_nomenclaturalCode") # e.g. "ICZN"
+taxon %<>% mutate(dwc_nomenclaturalCode = "ICZN")
 ```
 
 ## Post-processing
