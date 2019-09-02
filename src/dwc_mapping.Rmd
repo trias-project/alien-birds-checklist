@@ -170,6 +170,12 @@ taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.
 taxon %<>% mutate(dwc_rightsHolder = "INBO")
 ```
 
+### accessRights
+
+```{r}
+taxon %<>% mutate(dwc_accessRights = "https://www.inbo.be/en/norms-data-use") 
+```
+
 ### datasetID
 
 ```{r}
@@ -847,7 +853,5 @@ description %<>% arrange(taxonID)
 Save to CSV:
 
 ```{r}
-description %>% write.csv(path = "../data/processed/description.csv", na = "")
+write_csv(description, here("data", "processed", "description.csv"), na = "")
 ```
-
-
