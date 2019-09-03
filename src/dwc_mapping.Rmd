@@ -311,36 +311,12 @@ distribution %<>% mutate(location_be = case_when(
 ))
 ```
 
-Separate values in `location_be`
-
-```{r}
-distribution %<>% separate(col = location_be, 
-                          into = c("location_1", "location_2"),
-                          remove = FALSE,
-                          sep = ", ")
-```
-
-Inspect data:
-
-```{r}
-distribution %>% head()
-```
-
-Change from wide to long dataset:
-
-```{r}
-distribution %<>% gather(key = "key",
-                        value = "dwc_locality",
-                        location_1, location_2,
-                        na.rm = TRUE)
-```
-
 Change `Brussels` to `Brussels-Capital region`:
 
 ```{r}
 distribution %<>% 
   mutate(dwc_locality = recode(
-    dwc_locality,
+    location_be,
     "Brussels" = "Brussels-Capital region"
     ))
 ```
@@ -362,7 +338,7 @@ distribution %<>% mutate(dwc_locationID = case_when(
   dwc_locality == "Belgium" ~ "ISO_3166-2:BE",
   dwc_locality == "Flanders" ~ "ISO_3166-2:BE-VLG",
   dwc_locality == "Wallonia" ~ "ISO_3166-2:BE-WAL",
-  dwc_locality == "Brussels" ~ "ISO_3166-2:BE-BRU"))
+  dwc_locality == "Brussels-Capital region" ~ "ISO_3166-2:BE-BRU"))
 ```
 
 Inspect values:

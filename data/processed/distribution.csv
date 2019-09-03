@@ -231,6 +231,7 @@ alien-birds-checklist:taxon:c88d7ae9c234318d2c27c351f1d5c28f,Flanders,ISO_3166-2
 alien-birds-checklist:taxon:7fbf98ba9013500c6c850cc90cb0c7ef,Flanders,ISO_3166-2:BE-VLG,BE,present,introduced,2015/2015,GBIF (data download not possible on 21/02/2019 - gbif download error),"3 occurrences in GBIF, 2015, https://waarnemingen.be"
 alien-birds-checklist:taxon:ac8350a9c9928bb53d1212fba5a39d49,Wallonia,ISO_3166-2:BE-WAL,BE,present,introduced,2012/2012,Observations.be,"occurrences in 2012, https://observations.be"
 alien-birds-checklist:taxon:3cb0ffc18e54d7d10bb56802bda5bd12,Brussels-Capital region,ISO_3166-2:BE-BRU,BE,present,introduced,1989/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
+alien-birds-checklist:taxon:3cb0ffc18e54d7d10bb56802bda5bd12,Flanders,ISO_3166-2:BE-VLG,BE,present,introduced,1989/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:97b975fcba6ecc5a4c362452136f90aa,Flanders,ISO_3166-2:BE-VLG,BE,present,introduced,2001/2001,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in GBIF, 2001, https://waarnemingen.be"
 alien-birds-checklist:taxon:d5cea67bdbe267c9fe81461a73ea2215,Flanders,ISO_3166-2:BE-VLG,BE,present,introduced,2004/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:256ae822fbda2f5bb0314844c2371d15,Flanders,ISO_3166-2:BE-VLG,BE,present,introduced,2014/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"9 occurrences in GBIF, 2014-2016"
@@ -249,4 +250,3 @@ alien-birds-checklist:taxon:85486d20e50525cc27777c7a205af8df,Belgium,ISO_3166-2:
 alien-birds-checklist:taxon:b16ca78d7f33814db1914a3a22892ee8,Belgium,ISO_3166-2:BE,BE,present,introduced,,,
 alien-birds-checklist:taxon:d07e3f902a2911fb3ab58aaaca2f3251,Belgium,ISO_3166-2:BE,BE,present,introduced,,,"4 occurrences on https://observations.be, 2018 and 2019;"
 alien-birds-checklist:taxon:87d4a296a884452eff65d38177cf7cd9,Belgium,ISO_3166-2:BE,BE,present,introduced,,,
-alien-birds-checklist:taxon:3cb0ffc18e54d7d10bb56802bda5bd12,Flanders,ISO_3166-2:BE-VLG,BE,present,introduced,1989/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
