@@ -535,10 +535,10 @@ write_csv(distribution, here("data", "processed", "distribution.csv"), na = "")
 
 ## Pre-processing
 
-Create a dataframe with all data:
+Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):
 
 ```{r}
-species_profile <- input_data
+species_profile <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
 ## Term mapping
@@ -618,7 +618,7 @@ For each descriptor, we create a separate dataframe to process the specific info
 Create separate dataframe:
 
 ```{r start_native_range}
-native_range <- input_data
+native_range <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
 Inspect `native_range`:
@@ -719,7 +719,7 @@ native_range %<>% select(taxon_id, description, type)
 Create separate dataframe:
 
 ```{r start_native_range}
-pathways <- input_data
+pathways <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
 Inspect `native_range`:
@@ -781,7 +781,7 @@ pathways %<>% select(taxon_id, description, type)
 Create separate dataframe:
 
 ```{r}
-degree_of_establishment <- input_data
+degree_of_establishment <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
 Inspect `degree_of_establishment`:
