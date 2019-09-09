@@ -1,16 +1,16 @@
 taxonID,locationID,locality,countryCode,occurrenceStatus,establishmentMeans,eventDate,source,occurrenceRemarks
-alien-birds-checklist:taxon:5330314606d16fce54e9a11562e54b52,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"15 occurrences in GBIF, 1997, https://waarnemingen.be ; occurrences in 1997 and 2017 on https://observations.be; VU in IUCN red list"
+alien-birds-checklist:taxon:5330314606d16fce54e9a11562e54b52,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list"
 alien-birds-checklist:taxon:6c6b69d1713d194ea95ba171fd8f136e,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:2a4d1c4c85be4dd40bca78295fe96a42,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:ba0cc2bfd9679460a5f3040f748039bf,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; https://waarnemingen.be"
-alien-birds-checklist:taxon:25ce7d27895274b2ed0f34cf337d8023,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2009; https://waarnemingen.be ; VU in IUCN red list"
-alien-birds-checklist:taxon:462ef4c02e5485c8ca72bc7c24468bca,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2009 and 2018, https://observations.be"
-alien-birds-checklist:taxon:347ed30a34ea8fc257b6eb8cd56b40fe,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2017, https://observations.be"
+alien-birds-checklist:taxon:ba0cc2bfd9679460a5f3040f748039bf,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be"
+alien-birds-checklist:taxon:25ce7d27895274b2ed0f34cf337d8023,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list"
+alien-birds-checklist:taxon:462ef4c02e5485c8ca72bc7c24468bca,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2009 and 2018, http://observations.be"
+alien-birds-checklist:taxon:347ed30a34ea8fc257b6eb8cd56b40fe,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2017, https://http://observations.be"
 alien-birds-checklist:taxon:1d524d4533d08b976984c4159d2fc0b7,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:262161f6a8c145783f8d7556975e2253,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1953/2019,,
 alien-birds-checklist:taxon:471a210ea21128a377a391d0e003246a,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1957/2019,,
 alien-birds-checklist:taxon:59c7d9247128d6293a77e6e39edd2fc9,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1984/2019,,
-alien-birds-checklist:taxon:d86f9f31d631c66a4df072558bcfaeb0,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 2013 and 2016; https://waarnemingen.be ; occurrences between 2001 and 2018 in https://observations.be"
+alien-birds-checklist:taxon:d86f9f31d631c66a4df072558bcfaeb0,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 2013 and 2016; http://waarnemingen.be ; occurrences between 2001 and 2018 in http://observations.be"
 alien-birds-checklist:taxon:4ba46c05f0f1ea59eb3c67e73c92ab53,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:9dd89c632bf3fb18fa86d723b1d853aa,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:a6c18a411a843b001ebc9d3f36369961,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
@@ -29,74 +29,74 @@ alien-birds-checklist:taxon:0989b08a9c716180cfcbe8bd64253b9e,ISO_3166-2:BE,Belgi
 alien-birds-checklist:taxon:558538db0944c2e36cfabfad5c25a512,ISO_3166-2:BE,Belgium,BE,present,introduced,,,1 occurrence in GBIF in 2013
 alien-birds-checklist:taxon:45e0201d2278d0d9798c9b27dc47b04e,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"on GBIF occurrences since 2005 (source Waarnemingen.be - Non-native animal occurrencesurrences in Flanders and the Brussels Capital Region, Belgium)"
 alien-birds-checklist:taxon:f61fd28d5693f9bd2a80a22a3f44dba3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:6c4987dea35147c66070d9b61ac7cd5d,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2012,,"1 occurrence in 2012, https://observations.be; CR in IUCN red list"
-alien-birds-checklist:taxon:6e687487aa52240cc0c1d74265d754d7,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2011,,"1 occurrencesurrence in 2011, https://observations.be; NT in IUCN red list"
+alien-birds-checklist:taxon:6c4987dea35147c66070d9b61ac7cd5d,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2012,,"1 occurrence in 2012, http://observations.be; CR in IUCN red list"
+alien-birds-checklist:taxon:6e687487aa52240cc0c1d74265d754d7,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2011,,"1 occurrencesurrence in 2011, http://observations.be; NT in IUCN red list"
 alien-birds-checklist:taxon:57a775b84985610f8f8893c87b6db792,ISO_3166-2:BE,Belgium,BE,present,introduced,,,records from 2005 to 2019 on observation.be
 alien-birds-checklist:taxon:6d62ed0a76bd98c63bd9a3a11deadd32,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:db8316870e3c3ff5ae495dda77e22660,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1966/2019,,
-alien-birds-checklist:taxon:d60843842cec99357319724297f0c0d7,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2016,,1 record on https://https://observations.be
+alien-birds-checklist:taxon:d60843842cec99357319724297f0c0d7,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2016,,1 record on http://observations.be
 alien-birds-checklist:taxon:ab3b77876edf02f8b8669feb1af2efed,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1950/2019,"Beck O., Anselin A. & Kuijken E. 2002. Beheer van verwilderde watervogels in Vlaanderen. Instituut voor Natuurbehoud, Brussel. 146 pp.",
 alien-birds-checklist:taxon:4abcaac78793199638b729f92a96e5d0,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:bb0f80cbba6ba72655ce5022932c18eb,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:51fbf2bba036ac8b87753b5df5dff6bc,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"52 occurrences in GBIF between 1986 and 2014, https://waarnemingen.be"
+alien-birds-checklist:taxon:51fbf2bba036ac8b87753b5df5dff6bc,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"52 occurrences in GBIF between 1986 and 2014, http://waarnemingen.be"
 alien-birds-checklist:taxon:2c702800774e22d99beec606627b204d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:eb0c992418fd48fec7e4d41de2d12d8e,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:2dd2a9a01dc4e29c0e011138f8c506c3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:22a9f13e840ef0634fc3337938848a87,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"7 occurrences in GBIF, one in 1985 then 2010 to 2016; https://waarnemingen.be"
-alien-birds-checklist:taxon:75299c560c27d6e11ec199632d358d54,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"208 occurrences in GBIF starting 2002, https://waarnemingen.be"
-alien-birds-checklist:taxon:4648fe041b5578d56ddfdcbe93f66a68,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"89 occurrences in GBIF, 1987 to 2015; https://waarnemingen.be"
+alien-birds-checklist:taxon:22a9f13e840ef0634fc3337938848a87,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"7 occurrences in GBIF, one in 1985 then 2010 to 2016; http://waarnemingen.be"
+alien-birds-checklist:taxon:75299c560c27d6e11ec199632d358d54,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"208 occurrences in GBIF starting 2002, http://waarnemingen.be"
+alien-birds-checklist:taxon:4648fe041b5578d56ddfdcbe93f66a68,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"89 occurrences in GBIF, 1987 to 2015; http://waarnemingen.be"
 alien-birds-checklist:taxon:f7a0b56fd29ab15da714f779bfd2e02d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:37e8e1cc05c72a5169aa964627fa4884,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:460b2c8b84d1d9d941f9bbb932bb8111,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1993,,
-alien-birds-checklist:taxon:c762ee15bd61ac1b256c4680b915262c,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF one in 1982, one in 2013; https://waarnemingen.be datatset"
+alien-birds-checklist:taxon:c762ee15bd61ac1b256c4680b915262c,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF one in 1982, one in 2013; http://waarnemingen.be datatset"
 alien-birds-checklist:taxon:532300570a7e45e234490d94afaf729d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:8661f665d188f71998f1049089e4f42a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:b53bfb662813ea5b3f6a757bf6f19557,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1970,,
-alien-birds-checklist:taxon:0032278eb7f0abc78bb0a702251a9110,ISO_3166-2:BE,Belgium,BE,present,introduced,,,occurrences in 2005 acc. to https://observations.be
+alien-birds-checklist:taxon:0032278eb7f0abc78bb0a702251a9110,ISO_3166-2:BE,Belgium,BE,present,introduced,,,occurrences in 2005 acc. to http://observations.be
 alien-birds-checklist:taxon:c68c5dc3241387ef6ca3e564295e314f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"10 occurrences in GBIF starting 1975 to 2015, waarnemimgen.be data set"
 alien-birds-checklist:taxon:05fc1c7111373b1b24eea8bc46b9970d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:3c0266840f0fbea7c925784e735935dc,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:e977d77ebb6225eed183816ae38a8647,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:e1b718ac29e240c8399da6a70b83a2f8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF in 2000, https://waarnemingen.be"
+alien-birds-checklist:taxon:e1b718ac29e240c8399da6a70b83a2f8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF in 2000, http://waarnemingen.be"
 alien-birds-checklist:taxon:f46ab902c99d74c8adc7ff5830138b82,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:5fb14711fa575faae9908aa6df34a62d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2011, https://observations.be; NT in IUCN red list"
+alien-birds-checklist:taxon:5fb14711fa575faae9908aa6df34a62d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2011, http://observations.be; NT in IUCN red list"
 alien-birds-checklist:taxon:c4999cdc5973a0da6feaa2d44edd676a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:9d7356b00f23c13695358edc1ca1e863,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:3a24e52f8f313bb46536098bf3a2c438,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:8a51239b9c7b087a1fb0c286241c44db,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2017,,"1 occurrence in 2017, https://observations.be"
+alien-birds-checklist:taxon:8a51239b9c7b087a1fb0c286241c44db,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2017,,"1 occurrence in 2017, http://observations.be"
 alien-birds-checklist:taxon:b70f60023bfbb02c59a6be170a5fe5c1,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1979/2018,"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus
  76(1):1-7; Hughes B., J. Criado, S. Delany, U. Gallo-Orsi, A.J. Green, M. Grussu, C. Perennou & J.A. Torres, 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the
  Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing, Strasbourg","introduced into UK in the 1940's, escaped or released from captivity (Hughes et al 1999)"
 alien-birds-checklist:taxon:b70f60023bfbb02c59a6be170a5fe5c1,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2018,"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus
  76(1):1-7; Hughes B., J. Criado, S. Delany, U. Gallo-Orsi, A.J. Green, M. Grussu, C. Perennou & J.A. Torres, 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the
  Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing, Strasbourg","introduced into UK in the 1940's, escaped or released from captivity (Hughes et al 1999)"
-alien-birds-checklist:taxon:5dc7c4c12541e9539a11ffa1e81a5c3c,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2014,observations.be,"1 occurrence in GBIF in Flanders in 2014, https://waarnemingen.be"
+alien-birds-checklist:taxon:5dc7c4c12541e9539a11ffa1e81a5c3c,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2014,observations.be,"1 occurrence in GBIF in Flanders in 2014, http://waarnemingen.be"
 alien-birds-checklist:taxon:2bc09b0b298ca6ed854c3a47beff291f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, one in 2000 and 3 in 2016"
-alien-birds-checklist:taxon:4368cbe34ef2d0ee4444870dae09c899,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF 2016, https://waarnemingen.be"
+alien-birds-checklist:taxon:4368cbe34ef2d0ee4444870dae09c899,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF 2016, http://waarnemingen.be"
 alien-birds-checklist:taxon:856f9f4890a42ff76149e65d05fe2eb7,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:647939d5a42540d06bad2dd39284be10,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:54235c4e1ee676e5fa839f2f48484050,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1880,,
 alien-birds-checklist:taxon:daf79d0f79b4622643234707843c6953,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:a4fb6061d5d08e1198d0a33196dcfa76,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:5e910079851f37652ecaf2dda03ddd58,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:3dbc391da7a23a9ea1570fed6301ca71,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016, https://waarnemingen.be ; occurrences in 2018 in https://observations.be"
+alien-birds-checklist:taxon:3dbc391da7a23a9ea1570fed6301ca71,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occurrences in 2018 in http://observations.be"
 alien-birds-checklist:taxon:261a408024217a42721b6665a10ed6f6,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:c4829565fd11173ad5f188d563cafec8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:a08fad1c432085002dd2afa8c2d65799,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:5994efbb702592972ac617c78ca62ae6,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:e58af995e6670b677d48418bed7ced85,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:444ad6a74a036e9d203cdd54252f4377,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2002, unverified, https://waarnemingen.be"
-alien-birds-checklist:taxon:73abc41ffad72f1e08413bf36fa270e9,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"records form 2018, GBIF and https://observations.be"
+alien-birds-checklist:taxon:444ad6a74a036e9d203cdd54252f4377,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2002, unverified, http://waarnemingen.be"
+alien-birds-checklist:taxon:73abc41ffad72f1e08413bf36fa270e9,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"records form 2018, GBIF and http://observations.be"
 alien-birds-checklist:taxon:34b1274f3a1c7b0acafdefafdec18f46,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:a3b3a04a7516016401a8150bda9cf564,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"extant, resident (native) in belgium acc. to IUCN red list"
 alien-birds-checklist:taxon:c4764413ee784efc8337dd7d31b7e7b9,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:742f3c0ecea03c23094892b84ed8250a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"3 occurrences in GBIF, 2012, 2014 and 2016; https://waarnemingen.be"
+alien-birds-checklist:taxon:742f3c0ecea03c23094892b84ed8250a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"3 occurrences in GBIF, 2012, 2014 and 2016; http://waarnemingen.be"
 alien-birds-checklist:taxon:6003e1b27c47844a7b6054b7a0187faf,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:66656a3ea7f46e752e7f1c24ebe6fb1c,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:4be06bdb36ec042e8b9ece675c7360ff,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"8 occurrences in GBIF, 1975 to 2016; https://waarnemingen.be"
-alien-birds-checklist:taxon:f0adce09c36f455451a422e7af613b8f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 2013 and 2015; https://waarnemingen.be"
-alien-birds-checklist:taxon:92a3c215e4edb7435f05726f0d030e20,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2015, unverified; https://waarnemingen.be"
-alien-birds-checklist:taxon:4f7da96a777ca310b06b53c8c8c3a042,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in 2016 and 2017, https://observations.be"
+alien-birds-checklist:taxon:4be06bdb36ec042e8b9ece675c7360ff,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"8 occurrences in GBIF, 1975 to 2016; http://waarnemingen.be"
+alien-birds-checklist:taxon:f0adce09c36f455451a422e7af613b8f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 2013 and 2015; http://waarnemingen.be"
+alien-birds-checklist:taxon:92a3c215e4edb7435f05726f0d030e20,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2015, unverified; http://waarnemingen.be"
+alien-birds-checklist:taxon:4f7da96a777ca310b06b53c8c8c3a042,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in 2016 and 2017, http://observations.be"
 alien-birds-checklist:taxon:e5b0d0526b22a5e965d516ac3affcef6,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:5cd91ceb822db9245f0f7a5a7b9f6312,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2005/2009,"Verbelen D. 2009 Gewone Kookaburra Dacelo novaeguineae, exoot de pas afgesneden. Natuur. Oriolus, 75(2):49-52.",
 alien-birds-checklist:taxon:e3fc3a1975e3b035af19a49c075fc89d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
@@ -104,149 +104,149 @@ alien-birds-checklist:taxon:da0902b57bbd7ac2f9b41b92312e7c00,ISO_3166-2:BE,Belgi
 alien-birds-checklist:taxon:525983480752075a2aacf3a854ab7c90,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:788a4c479684804641706e3c243754fc,ISO_3166-2:BE,Belgium,BE,present,introduced,,,EN in IUCN red list
 alien-birds-checklist:taxon:9b879737420d63c475510caa5d693013,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:2a38a7b7ac73a153d94e72b8094eb1fc,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016, https://waarnemingen.be ; occ in 2016 and 2018 https://observations.be"
-alien-birds-checklist:taxon:927b1311d9643c92ec9f664499942d62,ISO_3166-2:BE,Belgium,BE,present,introduced,,,occurrences between 2010 and 2018 in https://observations.be
-alien-birds-checklist:taxon:10cba03fc54e56a209be2001915d9f4b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"7 occurrences in GBIF 2014 and 2015, https://waarnemingen.be"
-alien-birds-checklist:taxon:38d8348c2957cd4ca52e47412e1e1b1f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF in 2011, https://waarnemingen.be"
-alien-birds-checklist:taxon:e146b4d0e26e36972269c0f3ffaaa16f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF 2010 and 2015, https://waarnemingen.be"
+alien-birds-checklist:taxon:2a38a7b7ac73a153d94e72b8094eb1fc,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occ in 2016 and 2018 http://observations.be"
+alien-birds-checklist:taxon:927b1311d9643c92ec9f664499942d62,ISO_3166-2:BE,Belgium,BE,present,introduced,,,occurrences between 2010 and 2018 in http://observations.be
+alien-birds-checklist:taxon:10cba03fc54e56a209be2001915d9f4b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"7 occurrences in GBIF 2014 and 2015, http://waarnemingen.be"
+alien-birds-checklist:taxon:38d8348c2957cd4ca52e47412e1e1b1f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF in 2011, http://waarnemingen.be"
+alien-birds-checklist:taxon:e146b4d0e26e36972269c0f3ffaaa16f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF 2010 and 2015, http://waarnemingen.be"
 alien-birds-checklist:taxon:7d0bdcc0478cd5645652952e43e3767f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:be2d3aba541e3fb275b2107f7c9f861d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,extant & vagrant (non-breeding) acc. to IUCN red list
 alien-birds-checklist:taxon:3b2370ac0f3081481433813d774daefb,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:02225ac2cca80c5c05a9a7842b34d774,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:66c1f7fd6a7e1128ee5b7f1ad9e818a7,ISO_3166-2:BE,Belgium,BE,doubtful,introduced,,,"2 occurrences in GBIF 2001 and 2003, https://waarnemingen.be"
+alien-birds-checklist:taxon:66c1f7fd6a7e1128ee5b7f1ad9e818a7,ISO_3166-2:BE,Belgium,BE,doubtful,introduced,,,"2 occurrences in GBIF 2001 and 2003, http://waarnemingen.be"
 alien-birds-checklist:taxon:2b65aebf352c649cfe2ed2253bbf95a5,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:5e30b8c3a5a87b94cf568c7a67942ff7,ISO_3166-2:BE,Belgium,BE,present,introduced,,,374 occurrences in GBIF
 alien-birds-checklist:taxon:4c8b11ebc5ee5e73712082b71d6052c0,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,1890,"Long J.L. 1981 Introduced birds of the world. The worldwide history, distribution, and influence of birds introduced to new environments.","introduced and established in eastern Belgium, 70 pairs released at Hoch Venn in the early 1890s (Long 1981)"
 alien-birds-checklist:taxon:82ed1eaf8f3f976cfb2c1150651d4017,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:37f258f2aea871c8be8bf6c1fd6cce5e,ISO_3166-2:BE,Belgium,BE,present,introduced,,,occurrences between 2012 and 2016 on https://waarnemingen.be and https://observations.be
+alien-birds-checklist:taxon:37f258f2aea871c8be8bf6c1fd6cce5e,ISO_3166-2:BE,Belgium,BE,present,introduced,,,occurrences between 2012 and 2016 on http://waarnemingen.be and http://observations.be
 alien-birds-checklist:taxon:1e91c263e764898c649ebeb227e27765,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:2445e86c52c948a7f31f0c824c2f2466,ISO_3166-2:BE,Belgium,BE,present,introduced,,,154 occurrences in GBIF
 alien-birds-checklist:taxon:aeb2f79ae271fa07fb7ec2bc51b6977f,ISO_3166-2:BE,Belgium,BE,present,introduced,1701/2019,Lever C. 2005. Naturalised Birds of the World. London: T & A D Poyser.,extant & introduced (resident) acc. to IUCN red list
-alien-birds-checklist:taxon:d86efb76af65f270b79a1ae13cdcdc66,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"5 occurrences in GBIF, one in 2001, then 2015 and 2016; https://waarnemingen.be"
+alien-birds-checklist:taxon:d86efb76af65f270b79a1ae13cdcdc66,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"5 occurrences in GBIF, one in 2001, then 2015 and 2016; http://waarnemingen.be"
 alien-birds-checklist:taxon:8858798c3624d5f3c2f9dbf174a6be75,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:ed946d864c60712f57f4ad40bd221c9b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016; https://waarnemingen.be ; VU in IUCN red list"
+alien-birds-checklist:taxon:ed946d864c60712f57f4ad40bd221c9b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016; http://waarnemingen.be ; VU in IUCN red list"
 alien-birds-checklist:taxon:e44165474b0e98f9af80e01ec52612aa,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"look for Aves, 53/3 | 2016 | 105-128"
 alien-birds-checklist:taxon:e3197005d324f1d2781d0c253e40ea01,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:5bcfa8ae9dbc0082beab0e9b71dde4e0,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:663de58cd8194f2888b2a358f892ac8a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,recorded in 2011 in Flanders
 alien-birds-checklist:taxon:c25246c69c8a4f41c61d7ef0ceb8e776,ISO_3166-2:BE,Belgium,BE,present,introduced,,,extant & vagrant (non-breeding) acc. to IUCN red list
-alien-birds-checklist:taxon:f3ea284004e53875d730389a2211e727,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrencesurrence in 2017, https://observations.be"
+alien-birds-checklist:taxon:f3ea284004e53875d730389a2211e727,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrencesurrence in 2017, http://observations.be"
 alien-birds-checklist:taxon:4f091d8ecf2a38a3a90baf45db232810,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:b7b09f889881250eb6b486d4635f0349,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:c0cccfa57cbf82b15f7ed42e3f729b90,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:2ce4036ef995d211270ced05997806df,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 1990, unverified, https://waarnemingen.be"
+alien-birds-checklist:taxon:2ce4036ef995d211270ced05997806df,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 1990, unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:1da36e5521dd75567ffe8c9387b5d0ee,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:8bcfbc95a6848f7f9a3ab819dbda9eca,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:77169d77b78c8ec30ea02560fc8eeff8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, 2015 and 2016, unverified, https://waarnemingen.be"
-alien-birds-checklist:taxon:7fc20aedced321fcb77531affa2be959,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2017, https://observations.be"
+alien-birds-checklist:taxon:77169d77b78c8ec30ea02560fc8eeff8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, 2015 and 2016, unverified, http://waarnemingen.be"
+alien-birds-checklist:taxon:7fc20aedced321fcb77531affa2be959,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2017, http://observations.be"
 alien-birds-checklist:taxon:18042eb220b3fc12f99cdb63a97524c1,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2018, https://observatios.be"
 alien-birds-checklist:taxon:d0b18908b1c78690938dd16d42967e33,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:9f3590134ec48d2ff3cf658d7ebb9c16,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:74b8e330c9a61e294ac74781dcb47cbd,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:1c269fc1e3c524ca114142825cb445a4,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:88f2ec6b4adca5d634626cab95d6c4b3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2012, https://waarnemingen.be"
-alien-birds-checklist:taxon:7d18fa8cfb6bb923740a9f41c2da89e6,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2018,,"1 occurrence in 2018, https://https://observations.be"
+alien-birds-checklist:taxon:88f2ec6b4adca5d634626cab95d6c4b3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2012, http://waarnemingen.be"
+alien-birds-checklist:taxon:7d18fa8cfb6bb923740a9f41c2da89e6,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2018,,"1 occurrence in 2018, http://observations.be"
 alien-birds-checklist:taxon:57c138ae9a9dfdee988f8ea88d542318,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:550b0bc61bd89f1010d48b2c65bc9110,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2017, https://observations.be"
+alien-birds-checklist:taxon:550b0bc61bd89f1010d48b2c65bc9110,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in 2017, http://observations.be"
 alien-birds-checklist:taxon:585184104201904ddcf480bbd3198dec,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:7df78822c896b79fd3bdc7f02fc14fda,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, 2014, 2015 and 2016; https://waarnemingen.be; endangered in native range acc to IUCN red list"
-alien-birds-checklist:taxon:40be59d1e8b52976d0c0f20c59714dbd,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF 2016, https://waarnemingen.be"
-alien-birds-checklist:taxon:cbc1c83a357b88564be44281d5ee4934,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in 2009 and 2016, https://observations.be"
-alien-birds-checklist:taxon:69a988b073d293d6fe1a6586414a8a7e,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2013/2013,,"1 occurrence in 2013, https://observations.be"
-alien-birds-checklist:taxon:4ccbfc2599b2ad68c71e217e56c397c1,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF 2009 and 2013, https://waarnemingen.be"
+alien-birds-checklist:taxon:7df78822c896b79fd3bdc7f02fc14fda,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, 2014, 2015 and 2016; http://waarnemingen.be; endangered in native range acc to IUCN red list"
+alien-birds-checklist:taxon:40be59d1e8b52976d0c0f20c59714dbd,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF 2016, http://waarnemingen.be"
+alien-birds-checklist:taxon:cbc1c83a357b88564be44281d5ee4934,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in 2009 and 2016, http://observations.be"
+alien-birds-checklist:taxon:69a988b073d293d6fe1a6586414a8a7e,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2013/2013,,"1 occurrence in 2013, http://observations.be"
+alien-birds-checklist:taxon:4ccbfc2599b2ad68c71e217e56c397c1,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF 2009 and 2013, http://waarnemingen.be"
 alien-birds-checklist:taxon:0df7814d3a861e648b00236d7f6b0f2e,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:e60f4b861ce3d46452aa6342f765dcce,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:6126a2ec86e91374171774cc571a2e93,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:44f4cc83d1059bbc63fee7220ef77bbe,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1996 and 2011 unverified; https://waarnemingen.be"
-alien-birds-checklist:taxon:5638ddfefe8e4ad6e9aa955af88867aa,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2003, unverified; https://waarnemingen.be"
+alien-birds-checklist:taxon:44f4cc83d1059bbc63fee7220ef77bbe,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1996 and 2011 unverified; http://waarnemingen.be"
+alien-birds-checklist:taxon:5638ddfefe8e4ad6e9aa955af88867aa,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2003, unverified; http://waarnemingen.be"
 alien-birds-checklist:taxon:259676714e9fbe6483f05c6e04cfdc47,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:2efe6ebcfbc26179d95f9a442e68be2c,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"13 occurrences in GBIF, between 1995 and 2016, https://waarnemingen.be"
-alien-birds-checklist:taxon:0b12442f92da55afb0a6d6f2cb387164,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2005, unverified, https://waarnemingen.be"
-alien-birds-checklist:taxon:732e78679135215b296881e14066766b,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2004/2004,,"1 occurrence in 2004, https://observations.be"
+alien-birds-checklist:taxon:2efe6ebcfbc26179d95f9a442e68be2c,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"13 occurrences in GBIF, between 1995 and 2016, http://waarnemingen.be"
+alien-birds-checklist:taxon:0b12442f92da55afb0a6d6f2cb387164,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2005, unverified, http://waarnemingen.be"
+alien-birds-checklist:taxon:732e78679135215b296881e14066766b,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2004/2004,,"1 occurrence in 2004, http://observations.be"
 alien-birds-checklist:taxon:d56242eefce4cd5a28ec2f782119d82f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:8a6c21c6ed5dc87e47c7996ca7a80394,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:f4c5568e7f2f808afbb05b0083bb5687,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:04d6ae25194dee7b718f71feb004472a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"13 occurrences in GBIF, between 1994 and 2014; https://waarnemingen.be ; occurrences between 1994 and 2018 on https://observations.be"
-alien-birds-checklist:taxon:5002b83e71fd3058cbdb70e3a9bb60c6,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1973/1973,"Claes G., publicatie: IJsvogel (1973) 2 : 15, Viversel, gebiedswaarneming","occurrences in 1973, https://observations.be"
+alien-birds-checklist:taxon:04d6ae25194dee7b718f71feb004472a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"13 occurrences in GBIF, between 1994 and 2014; http://waarnemingen.be ; occurrences between 1994 and 2018 on http://observations.be"
+alien-birds-checklist:taxon:5002b83e71fd3058cbdb70e3a9bb60c6,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1973/1973,"Claes G., publicatie: IJsvogel (1973) 2 : 15, Viversel, gebiedswaarneming","occurrences in 1973, http://observations.be"
 alien-birds-checklist:taxon:bd77599054e9ab7db2c2490feacbb980,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:efaf66030848b6d396754570c54ddf64,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2017, https://observations.be"
+alien-birds-checklist:taxon:efaf66030848b6d396754570c54ddf64,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2017, http://observations.be"
 alien-birds-checklist:taxon:92569a20b58cd25de83721588fff7b79,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:70fbfea7585d9116b4555f282b6c9e02,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, 1991 and 2013; https://waarnemingen.be"
-alien-birds-checklist:taxon:3abb49f433073b9a59255667c0a955a8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2010, https://waarnemingen.be"
+alien-birds-checklist:taxon:70fbfea7585d9116b4555f282b6c9e02,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences in GBIF, 1991 and 2013; http://waarnemingen.be"
+alien-birds-checklist:taxon:3abb49f433073b9a59255667c0a955a8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2010, http://waarnemingen.be"
 alien-birds-checklist:taxon:a079456a45a7070c67e53f420588f746,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:74d7dbf67b614afd7dfcd32369862761,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:d6a0491b4772c55256fc34558ab97613,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:e54e95c642ee805d5aa5f5e9feed1929,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016, unverified, https://waarnemingen.be"
+alien-birds-checklist:taxon:e54e95c642ee805d5aa5f5e9feed1929,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2016, unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:de33b9edfd60eaf11e4794c262d96992,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:61e2a8b6480caf09ac4fb7b4143559af,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:ce45acc830adf715a89a343c452dc318,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2013, unverified, https://waarnemingen.be"
+alien-birds-checklist:taxon:ce45acc830adf715a89a343c452dc318,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2013, unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:8e883b65660a1f6c6661765f76545e2a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:2882ad1dc7107a3e5c362030e7ad8bc1,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:32d79575fdd275826368ce9c5bab0a61,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:a918ff1d67c2e287813c507dde0a6fc3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:afc0c4b108afbaced664464d80afa1c3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 2007, unverified, https://waarnemingen.be"
+alien-birds-checklist:taxon:afc0c4b108afbaced664464d80afa1c3,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 2007, unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:6632018b5e2ed4a41b44c532eaea6dc9,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:09d7c819a4846d791d996e14c9ced8a2,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1983 and 2014, https://waarnemingen.be"
-alien-birds-checklist:taxon:3ba55688440f8b43ac94cca25ed5a373,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,,https://observations.be/waarneming/view/157503659,"1 incertain occurrence in 2018 unverified, https://observations.be"
-alien-birds-checklist:taxon:e3b96a7b9e827043ee35648f1a7859d2,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2018,,"1 occurrence in 2018, https://observations.be"
+alien-birds-checklist:taxon:09d7c819a4846d791d996e14c9ced8a2,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1983 and 2014, http://waarnemingen.be"
+alien-birds-checklist:taxon:3ba55688440f8b43ac94cca25ed5a373,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,,http://observations.be/waarneming/view/157503659,"1 incertain occurrence in 2018 unverified, http://observations.be"
+alien-birds-checklist:taxon:e3b96a7b9e827043ee35648f1a7859d2,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2018,,"1 occurrence in 2018, http://observations.be"
 alien-birds-checklist:taxon:1602ff52bf02987f28f1b5ef5275197a,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:12db9258db9771b9034ac539f97fbffa,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:021de20449c75c407915c14b84ee74c4,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1986 and 2015, https://waarnemingen.be"
+alien-birds-checklist:taxon:021de20449c75c407915c14b84ee74c4,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1986 and 2015, http://waarnemingen.be"
 alien-birds-checklist:taxon:fe6319b31cd11cca2ad571b2767eccba,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:04842fa09488a08b6c3b751386c16ad8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1992, unverified, https://waarnemingen.be"
-alien-birds-checklist:taxon:a69b9ef954259dafb979078fa8675ef5,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"31 occurrences in GBIF, 2015 and 2016, https://waarnemingen.be"
-alien-birds-checklist:taxon:c28069eae0bea3566bc1443bf519c30b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,248 occurrences. In GBIF between 1988 and 2016; https://waarnemingen.be
+alien-birds-checklist:taxon:04842fa09488a08b6c3b751386c16ad8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"2 occurrences in GBIF, 1992, unverified, http://waarnemingen.be"
+alien-birds-checklist:taxon:a69b9ef954259dafb979078fa8675ef5,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"31 occurrences in GBIF, 2015 and 2016, http://waarnemingen.be"
+alien-birds-checklist:taxon:c28069eae0bea3566bc1443bf519c30b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,248 occurrences. In GBIF between 1988 and 2016; http://waarnemingen.be
 alien-birds-checklist:taxon:ce7f7de7f34e6c9d67424073afa44631,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:c322a63acc08e4bef9f22ef12112e6c8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2017 and 2018, https://observations.be"
+alien-birds-checklist:taxon:c322a63acc08e4bef9f22ef12112e6c8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2017 and 2018, http://observations.be"
 alien-birds-checklist:taxon:8fdc17c0d2e10e582dc0b5004ba32521,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:9d293b432e24a7a6d09c544117df2d2d,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:bc274a32acf650c255605cbdbb85b352,ISO_3166-2:BE,Belgium,BE,present,introduced,2004/2018,wnm.be,
-alien-birds-checklist:taxon:de316499d377642da6854be38c16c467,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"18 occ in GBIF in 2015, https://waarnemingen.be"
+alien-birds-checklist:taxon:bc274a32acf650c255605cbdbb85b352,ISO_3166-2:BE,Belgium,BE,present,introduced,2004/2018,http://waarnemingen.be,
+alien-birds-checklist:taxon:de316499d377642da6854be38c16c467,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"18 occ in GBIF in 2015, http://waarnemingen.be"
 alien-birds-checklist:taxon:73d8e5a9baaa52af273de45b685117dd,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:6ce1f4cbb0e803d3743685d5a3af07a4,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:fb3379525ecfd9eacca9a56bf07bc306,ISO_3166-2:BE,Belgium,BE,present,introduced,,,248 occurrences in GBIF between 1988 and 2016; https://waarnemingen.be
+alien-birds-checklist:taxon:fb3379525ecfd9eacca9a56bf07bc306,ISO_3166-2:BE,Belgium,BE,present,introduced,,,248 occurrences in GBIF between 1988 and 2016; http://waarnemingen.be
 alien-birds-checklist:taxon:33a5c6c9b48821d816fcf9ae37f45931,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1989/2019,,
-alien-birds-checklist:taxon:ca7a7d47dfc67f78ec01a24549cd02ce,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2008/2018,wnm.be,
-alien-birds-checklist:taxon:9e782cbe37da27dfdb6790cd4bd2817b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2003 and 2013 in https://observations.be, EN in IUCN red list"
+alien-birds-checklist:taxon:ca7a7d47dfc67f78ec01a24549cd02ce,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2008/2018,http://waarnemingen.be,
+alien-birds-checklist:taxon:9e782cbe37da27dfdb6790cd4bd2817b,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"occurrences in 2003 and 2013 in http://observations.be, EN in IUCN red list"
 alien-birds-checklist:taxon:4f137c4048873bf81bd9cdbd4e39c92f,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:3f1ac4367878c63de5632826c5587559,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:2ba3a7c5ccdc61064440c2a924afdc19,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:8be53badf8ed1745ded4a010deabc807,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:1d46108aa7192fb6903650b624fcdea2,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1985/1985,GBIF Occurrence Download https://doi.org/10.15468/dl.ltslq6,
-alien-birds-checklist:taxon:dca0bf8cf8bf8b77c16bb5f7edd1168f,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2009/2016,GBIF Occurrence Download https://doi.org/10.15468/dl.btde22,"3 occurrences in GBIF, 2014 and 2016; https://waarnemingen.be"
+alien-birds-checklist:taxon:dca0bf8cf8bf8b77c16bb5f7edd1168f,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2009/2016,GBIF Occurrence Download https://doi.org/10.15468/dl.btde22,"3 occurrences in GBIF, 2014 and 2016; http://waarnemingen.be"
 alien-birds-checklist:taxon:ddf59ab972eb9d3041210ba04bd48b6c,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1983/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
-alien-birds-checklist:taxon:3c911b402bbe50b274b48f1bfcd75bfa,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2014/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"occurrences in 2014, 2016, 2018; https://observations.be"
+alien-birds-checklist:taxon:3c911b402bbe50b274b48f1bfcd75bfa,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2014/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"occurrences in 2014, 2016, 2018; http://observations.be"
 alien-birds-checklist:taxon:f00a5e279ec69dae9539c3b40b3e66ee,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2002/2015,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:eac4a0fcf0e1f9bfcee91c04ba43eb54,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2007/2007,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:b6e117480018ac5c5fc2b9e2cc0f1552,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2007/2014,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:ed4234f8c2e19409b6d1d97459a3f804,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2002/2002,GBIF (data download not possible on 21/02/2019 - gbif download error),
-alien-birds-checklist:taxon:9bab48cc5caba2719d8c71468c93e246,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2016/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"8 occurrences in GBIF in 2016, https://waarnemingen.be"
+alien-birds-checklist:taxon:9bab48cc5caba2719d8c71468c93e246,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2016/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"8 occurrences in GBIF in 2016, http://waarnemingen.be"
 alien-birds-checklist:taxon:278faddc5b2f8b10222082e04f01dae6,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2013/2014,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:55614c2936135f1f3fbdf949fc7fdf99,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1975/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:9ec2a2ff407f1246640b8c5249eb16b2,ISO_3166-2:BE-BRU,Brussels-Capital Region,BE,present,introduced,1979/2019,"Weiserbs A. 2010. Espèces invasives: le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.",
-alien-birds-checklist:taxon:efd8d55d44e0442774c23b7c15d022bd,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2013/2013,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in 2013 in GBIF, unverified; https://waarnemingen.be"
+alien-birds-checklist:taxon:efd8d55d44e0442774c23b7c15d022bd,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2013/2013,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in 2013 in GBIF, unverified; http://waarnemingen.be"
 alien-birds-checklist:taxon:e308de1711d7e2f41fd708f6915cc3b8,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1975/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:31ddc9bb48775972fcf38013cba89d2f,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2009/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:c88d7ae9c234318d2c27c351f1d5c28f,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2009/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
-alien-birds-checklist:taxon:7fbf98ba9013500c6c850cc90cb0c7ef,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2015/2015,GBIF (data download not possible on 21/02/2019 - gbif download error),"3 occurrences in GBIF, 2015, https://waarnemingen.be"
-alien-birds-checklist:taxon:ac8350a9c9928bb53d1212fba5a39d49,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2012/2012,Observations.be,"occurrences in 2012, https://observations.be"
+alien-birds-checklist:taxon:7fbf98ba9013500c6c850cc90cb0c7ef,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2015/2015,GBIF (data download not possible on 21/02/2019 - gbif download error),"3 occurrences in GBIF, 2015, http://waarnemingen.be"
+alien-birds-checklist:taxon:ac8350a9c9928bb53d1212fba5a39d49,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2012/2012,http://observations.be,"occurrences in 2012, http://observations.be"
 alien-birds-checklist:taxon:3cb0ffc18e54d7d10bb56802bda5bd12,ISO_3166-2:BE-BRU,Brussels-Capital Region,BE,present,introduced,1989/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:3cb0ffc18e54d7d10bb56802bda5bd12,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1989/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
-alien-birds-checklist:taxon:97b975fcba6ecc5a4c362452136f90aa,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2001/2001,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in GBIF, 2001, https://waarnemingen.be"
+alien-birds-checklist:taxon:97b975fcba6ecc5a4c362452136f90aa,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2001/2001,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in GBIF, 2001, http://waarnemingen.be"
 alien-birds-checklist:taxon:d5cea67bdbe267c9fe81461a73ea2215,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2004/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),
 alien-birds-checklist:taxon:256ae822fbda2f5bb0314844c2371d15,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2014/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"9 occurrences in GBIF, 2014-2016"
 alien-birds-checklist:taxon:3901956a33e71183d07c562b98bc56b9,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2008/2014,GBIF (data download not possible on 21/02/2019 - gbif download error),"2 occurrences in GBIF, 2008 and 2014, waarnemingem.be"
-alien-birds-checklist:taxon:bdc413f5b6466db4c61ceae1a9a151e4,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2016/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in GBIF in 2016 unverified, https://waarnemingen.be"
+alien-birds-checklist:taxon:bdc413f5b6466db4c61ceae1a9a151e4,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2016/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in GBIF in 2016 unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:1fc8e23521d1699356146ebf73633387,ISO_3166-2:BE-BRU,Brussels-Capital Region,BE,present,introduced,1998/2019,"Weiserbs A. 2010. Espèces invasives : le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.",
 alien-birds-checklist:taxon:f7bbc6cb5eb8b550e77717a0d18c19ef,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1966/1967,"de Schaetzen, R (1991) Halsbandparkieten broeden te Brussel. Mens en Vogel: 59-61","Report of a succesful breeding pair in Tervuren, but not seen anymore aftwerwards (this was not the start of the Belgian parakeet population). Not sure whether the label 'reproducing' is correct - should in face be 'failed' or 'extinct' for this population."
 alien-birds-checklist:taxon:f7bbc6cb5eb8b550e77717a0d18c19ef,ISO_3166-2:BE-BRU,Brussels-Capital Region,BE,present,introduced,1974/2019,"Weiserbs A. 2010. Espèces invasives : le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.",The current population stems from 40 to 45 birds that were intentionally released by the Meli zoo in 1974
 alien-birds-checklist:taxon:bae1178b48c500e2de083a6c17e44add,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,1993/2006,GBIF (data download not possible on 21/02/2019 - gbif download error),
-alien-birds-checklist:taxon:926f74b117ab7932032ce327dd59782c,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2015/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"2 occurrences in GBIF, 2015 and 2016 and another 2 occurrences for T. haematodus moluccanus, in 2015 and 2016; https://waarnemingen.be ;"
-alien-birds-checklist:taxon:49e77071a16e19b4cf6a9218a39db929,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2017/2018,GBIF (data download not possible on 21/02/2019 - gbif download error),"occurrences in 2017 and 2018, https://observations.be"
-alien-birds-checklist:taxon:5084a7f030bae151b2dcb0c76ab2f3ba,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2018/2018,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in 2018, https://observations.be"
-alien-birds-checklist:taxon:0922e3f075c16ff8bfab7462c899eb41,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2010/2014,GBIF (data download not possible on 21/02/2019 - gbif download error),"occurrences in 2014, https://observations.be"
-alien-birds-checklist:taxon:15c8a4b81399bde6edb80e8fd3358b41,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2017/2017,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in 2017, https://observations.be; VU in IUCN red list"
-alien-birds-checklist:taxon:85486d20e50525cc27777c7a205af8df,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"3 occurrences in GBIF, one in 2007 and two in 2015; https://waarnemingen.be"
+alien-birds-checklist:taxon:926f74b117ab7932032ce327dd59782c,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2015/2016,GBIF (data download not possible on 21/02/2019 - gbif download error),"2 occurrences in GBIF, 2015 and 2016 and another 2 occurrences for T. haematodus moluccanus, in 2015 and 2016; http://waarnemingen.be ;"
+alien-birds-checklist:taxon:49e77071a16e19b4cf6a9218a39db929,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2017/2018,GBIF (data download not possible on 21/02/2019 - gbif download error),"occurrences in 2017 and 2018, http://observations.be"
+alien-birds-checklist:taxon:5084a7f030bae151b2dcb0c76ab2f3ba,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2018/2018,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in 2018, http://observations.be"
+alien-birds-checklist:taxon:0922e3f075c16ff8bfab7462c899eb41,ISO_3166-2:BE-VLG,Flanders,BE,present,introduced,2010/2014,GBIF (data download not possible on 21/02/2019 - gbif download error),"occurrences in 2014, http://observations.be"
+alien-birds-checklist:taxon:15c8a4b81399bde6edb80e8fd3358b41,ISO_3166-2:BE-WAL,Wallonia,BE,present,introduced,2017/2017,GBIF (data download not possible on 21/02/2019 - gbif download error),"1 occurrence in 2017, http://observations.be; VU in IUCN red list"
+alien-birds-checklist:taxon:85486d20e50525cc27777c7a205af8df,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"3 occurrences in GBIF, one in 2007 and two in 2015; http://waarnemingen.be"
 alien-birds-checklist:taxon:b16ca78d7f33814db1914a3a22892ee8,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:d07e3f902a2911fb3ab58aaaca2f3251,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences on https://observations.be, 2018 and 2019;"
+alien-birds-checklist:taxon:d07e3f902a2911fb3ab58aaaca2f3251,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"4 occurrences on http://observations.be, 2018 and 2019;"
 alien-birds-checklist:taxon:87d4a296a884452eff65d38177cf7cd9,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
