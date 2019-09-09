@@ -292,7 +292,7 @@ Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/dis
 distribution %<>% mutate(dwc_taxonID = taxon_id)
 ```
 
-### locality
+### locationID
 
 Inspect values:
 
@@ -315,38 +315,34 @@ Change `Brussels` to `Brussels-Capital Region`:
 
 ```{r}
 distribution %<>% 
-  mutate(dwc_locality = recode(
+  mutate(location_be = recode(
     location_be,
     "Brussels" = "Brussels-Capital Region"
     ))
 ```
 
-Inspect mapped values: 
-
-```{r}
-distribution %>%
-  group_by(country_code, location, dwc_locality) %>%
-  count()
-```
-
-### locationID
-
 Map `locationID` to [ISO 3166 code]
 
 ```{r}
 distribution %<>% mutate(dwc_locationID = case_when(
-  dwc_locality == "Belgium" ~ "ISO_3166-2:BE",
-  dwc_locality == "Flanders" ~ "ISO_3166-2:BE-VLG",
-  dwc_locality == "Wallonia" ~ "ISO_3166-2:BE-WAL",
-  dwc_locality == "Brussels-Capital region" ~ "ISO_3166-2:BE-BRU"))
+  location_be == "Belgium" ~ "ISO_3166-2:BE",
+  location_be == "Flanders" ~ "ISO_3166-2:BE-VLG",
+  location_be == "Wallonia" ~ "ISO_3166-2:BE-WAL",
+  location_be == "Brussels-Capital Region" ~ "ISO_3166-2:BE-BRU"))
 ```
 
 Inspect values:
 
 ```{r}
 distribution %>%
-  group_by(dwc_locality, dwc_locationID) %>%
+  group_by(location, location_be, dwc_locationID) %>%
   count()
+```
+
+### locality
+
+```{r}
+distribution %>% mutate(dwc_locality = location_be)
 ```
 
 ### countryCode
