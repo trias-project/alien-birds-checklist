@@ -224,6 +224,36 @@ Map values:
 taxon %<>% mutate(dwc_kingdom = kingdom)
 ```
 
+### Phylum
+
+```{r}
+taxon %<>% mutate(dwc_phylum = phylum)
+```
+
+### Class
+
+```{r}
+taxon %<>% mutate(dwc_class = class)
+```
+
+### Order
+
+```{r}
+taxon %<>% mutate(dwc_order = order)
+```
+
+### family
+
+```{r}
+taxon %<>% mutate(dwc_family = family)
+```
+
+### genus
+
+```{r}
+taxon %<>% mutate(dwc_genus = genus)
+```
+
 ### taxonRank
 
 Inspect values:
@@ -342,7 +372,7 @@ distribution %>%
 ### locality
 
 ```{r}
-distribution %>% mutate(dwc_locality = location_be)
+distribution %<>% mutate(dwc_locality = location_be)
 ```
 
 ### countryCode
