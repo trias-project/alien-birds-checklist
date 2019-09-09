@@ -619,7 +619,7 @@ For each descriptor, we create a separate dataframe to process the specific info
  
 Create separate dataframe:
 
-```{r start_native_range}
+```{r}
 native_range <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
@@ -720,7 +720,7 @@ native_range %<>% select(taxon_id, description, type)
  
 Create separate dataframe:
 
-```{r start_native_range}
+```{r}
 pathways <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 

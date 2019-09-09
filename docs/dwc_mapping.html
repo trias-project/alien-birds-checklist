@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Cristina Preda" />
+<meta name="author" content="Tim Adriaens" />
+<meta name="author" content="Peter Desmet" />
+<meta name="author" content="Lien Reyserhove" />
+
+<meta name="date" content="2019-09-09" />
+
+<title>Darwin Core mapping</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 45px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h2 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h3 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h4 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h5 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.section h6 {
+  padding-top: 50px;
+  margin-top: -50px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">my_dataset_shortname</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="dwc_mapping.html">Darwin Core mapping</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="my_dataset_repository">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Darwin Core mapping</h1>
+<h3 class="subtitle"><em>For: Checklist of Alien Birds of Belgium</em></h3>
+<h4 class="author"><em>Cristina Preda</em></h4>
+<h4 class="author"><em>Tim Adriaens</em></h4>
+<h4 class="author"><em>Peter Desmet</em></h4>
+<h4 class="author"><em>Lien Reyserhove</em></h4>
+<h4 class="date"><em>2019-09-09</em></h4>
+
+</div>
+
+
+<div id="setup" class="section level1">
+<h1><span class="header-section-number">1</span> Setup</h1>
+<p>Load libraries:</p>
+<pre class="r"><code>library(tidyverse)      # To do data science
+library(magrittr)       # To use %&lt;&gt;% pipes
+library(here)           # To find files
+library(digest)         # To generate hashes
+library(rgbif)          # To use GBIF services
+library(googlesheets)   # To import and read Google spreadsheets 
+library(janitor)</code></pre>
+</div>
+<div id="read-source-data" class="section level1">
+<h1><span class="header-section-number">2</span> Read source data</h1>
+<p>Define column types:</p>
+<pre class="r"><code>col_types &lt;- cols(.default = col_character())</code></pre>
+<p>Retrieve the <a href="https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0">checklist of alien birds Belgium</a> which is a google spreadheet:</p>
+<pre class="r"><code>retrieve_spreadsheet &lt;- gs_title(&quot;Checklist of alien birds Belgium&quot;)</code></pre>
+<p>Select the data in the worksheet <code>checklist</code>:</p>
+<pre class="r"><code>input_data &lt;- retrieve_spreadsheet %&gt;% gs_read(&quot;checklist&quot;, col_types = col_types) # Also trims values</code></pre>
+<p>We want to add a copy of the source data to the repository:</p>
+<pre class="r"><code>write_csv(input_data, here(&quot;data&quot;, &quot;raw&quot;, &quot;alien_bird_checklist_dump.csv&quot;), na = &quot;&quot;)</code></pre>
+<p>Preview data:</p>
+<pre class="r"><code>input_data %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["scientific name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["kingdom"],"name":[2],"type":["chr"],"align":["left"]},{"label":["phylum"],"name":[3],"type":["chr"],"align":["left"]},{"label":["class"],"name":[4],"type":["chr"],"align":["left"]},{"label":["order"],"name":[5],"type":["chr"],"align":["left"]},{"label":["family"],"name":[6],"type":["chr"],"align":["left"]},{"label":["genus"],"name":[7],"type":["chr"],"align":["left"]},{"label":["taxon rank"],"name":[8],"type":["chr"],"align":["left"]},{"label":["nomenclatural code"],"name":[9],"type":["chr"],"align":["left"]},{"label":["location"],"name":[10],"type":["chr"],"align":["left"]},{"label":["country code"],"name":[11],"type":["chr"],"align":["left"]},{"label":["occurrence status"],"name":[12],"type":["chr"],"align":["left"]},{"label":["date first observation"],"name":[13],"type":["chr"],"align":["left"]},{"label":["date last observation"],"name":[14],"type":["chr"],"align":["left"]},{"label":["degree of establishment"],"name":[15],"type":["chr"],"align":["left"]},{"label":["introduction pathway"],"name":[16],"type":["chr"],"align":["left"]},{"label":["remarks"],"name":[17],"type":["chr"],"align":["left"]},{"label":["native range"],"name":[18],"type":["chr"],"align":["left"]},{"label":["realm"],"name":[19],"type":["chr"],"align":["left"]},{"label":["source"],"name":[20],"type":["chr"],"align":["left"]},{"label":["abundance"],"name":[21],"type":["chr"],"align":["left"]},{"label":["threat status"],"name":[22],"type":["lgl"],"align":["right"]},{"label":["host"],"name":[23],"type":["lgl"],"align":["right"]},{"label":["date added"],"name":[24],"type":["chr"],"align":["left"]},{"label":["added by"],"name":[25],"type":["chr"],"align":["left"]},{"label":["verified by"],"name":[26],"type":["chr"],"align":["left"]},{"label":["Source_original"],"name":[27],"type":["chr"],"align":["left"]}],"data":[{"1":"Aquila rapax (Temminck, 1828)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Aquila","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"escape","17":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list","18":"Africa | Southern Asia","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"gbif/waarnemingen.be dataset"},{"1":"Buteo auguralis Salvadori, 1865","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Buteo","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"NA","18":"Western Africa | Eastern Africa | Middle Africa","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"unified"},{"1":"Buteo jamaicensis (Gmelin, 1788)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Buteo","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"NA","18":"Northern America | Central America","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"unified"},{"1":"Haliaeetus leucocephalus (Linnaeus, 1766)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Haliaeetus","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be","18":"North America","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"gbif/waarnemingen.be dataset"},{"1":"Haliaeetus pelagicus (Pallas, 1811)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Haliaeetus","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list","18":"Russia","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"gbif/waarnemingen.be dataset"},{"1":"Haliaeetus vocifer (Daudin, 1800)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Haliaeetus","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"escape","17":"occurrences in 2009 and 2018, http://observations.be","18":"Africa","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"http://observations.be Natagora"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="process-source-data" class="section level1">
+<h1><span class="header-section-number">3</span> Process source data</h1>
+<div id="tidy-data" class="section level2">
+<h2><span class="header-section-number">3.1</span> Tidy data</h2>
+<p>Clean names:</p>
+<pre class="r"><code>input_data %&lt;&gt;% clean_names()</code></pre>
+</div>
+<div id="scientific-names" class="section level2">
+<h2><span class="header-section-number">3.2</span> Scientific names</h2>
+<p>Use the <a href="https://www.gbif.org/tools/name-parser">GBIF nameparser</a> to retrieve nomenclatural information for the scientific names in the checklist:</p>
+<pre class="r"><code>parsed_names &lt;- input_data %&gt;%
+  distinct(scientific_name) %&gt;%
+  pull() %&gt;% # Create vector from dataframe
+  parsenames() # An rgbif function</code></pre>
+<p>Show scientific names with nomenclatural issues, i.e. not of <code>type = SCIENTIFIC</code> or that could not be fully parsed. Note: these are not necessarily incorrect.</p>
+<pre class="r"><code>parsed_names %&gt;%
+  select(scientificname, type, parsed, parsedpartially, rankmarker) %&gt;%
+  filter(!(type == &quot;SCIENTIFIC&quot; &amp; parsed == &quot;TRUE&quot; &amp; parsedpartially == &quot;FALSE&quot;))</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["scientificname"],"name":[1],"type":["chr"],"align":["left"]},{"label":["type"],"name":[2],"type":["chr"],"align":["left"]},{"label":["parsed"],"name":[3],"type":["lgl"],"align":["right"]},{"label":["parsedpartially"],"name":[4],"type":["lgl"],"align":["right"]},{"label":["rankmarker"],"name":[5],"type":["chr"],"align":["left"]}],"data":[],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>There are no nomenclatural issues here, so there’s no need for cleaning of the scientific names.</p>
+</div>
+<div id="taxon-ids" class="section level2">
+<h2><span class="header-section-number">3.3</span> Taxon IDs</h2>
+<p>To link taxa with information in the extension(s), each taxon needs a unique and relatively stable <code>taxonID</code>. Here we create one in the form of <code>dataset_shortname:taxon:hash</code>, where <code>hash</code> is unique code based on scientific name and kingdom (that will remain the same as long as scientific name and kingdom remain the same):</p>
+<pre class="r"><code>vdigest &lt;- Vectorize(digest) # Vectorize digest function to work with vectors
+input_data %&lt;&gt;% mutate(taxon_id = paste(
+  &quot;alien-birds-checklist&quot;, # e.g. &quot;alien-fishes-checklist&quot;
+  &quot;taxon&quot;,
+  vdigest(paste(scientific_name, kingdom), algo = &quot;md5&quot;),
+  sep = &quot;:&quot;
+))</code></pre>
+</div>
+<div id="preview-data" class="section level2">
+<h2><span class="header-section-number">3.4</span> Preview data</h2>
+<p>Show the number of taxa and distributions per kingdom and rank:</p>
+<pre class="r"><code>input_data %&gt;%
+  group_by(kingdom, taxon_rank) %&gt;%
+  summarize(
+    `# taxa` = n_distinct(taxon_id),
+    `# distributions` = n()
+  ) %&gt;%
+  adorn_totals(&quot;row&quot;)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["kingdom"],"name":[1],"type":["chr"],"align":["left"]},{"label":["taxon_rank"],"name":[2],"type":["chr"],"align":["left"]},{"label":["# taxa"],"name":[3],"type":["int"],"align":["right"]},{"label":["# distributions"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"Animalia","2":"form","3":"1","4":"1","_rn_":"1"},{"1":"Animalia","2":"species","3":"243","4":"246","_rn_":"2"},{"1":"Total","2":"-","3":"244","4":"247","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Preview data:</p>
+<pre class="r"><code>input_data %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["scientific_name"],"name":[1],"type":["chr"],"align":["left"]},{"label":["kingdom"],"name":[2],"type":["chr"],"align":["left"]},{"label":["phylum"],"name":[3],"type":["chr"],"align":["left"]},{"label":["class"],"name":[4],"type":["chr"],"align":["left"]},{"label":["order"],"name":[5],"type":["chr"],"align":["left"]},{"label":["family"],"name":[6],"type":["chr"],"align":["left"]},{"label":["genus"],"name":[7],"type":["chr"],"align":["left"]},{"label":["taxon_rank"],"name":[8],"type":["chr"],"align":["left"]},{"label":["nomenclatural_code"],"name":[9],"type":["chr"],"align":["left"]},{"label":["location"],"name":[10],"type":["chr"],"align":["left"]},{"label":["country_code"],"name":[11],"type":["chr"],"align":["left"]},{"label":["occurrence_status"],"name":[12],"type":["chr"],"align":["left"]},{"label":["date_first_observation"],"name":[13],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[14],"type":["chr"],"align":["left"]},{"label":["degree_of_establishment"],"name":[15],"type":["chr"],"align":["left"]},{"label":["introduction_pathway"],"name":[16],"type":["chr"],"align":["left"]},{"label":["remarks"],"name":[17],"type":["chr"],"align":["left"]},{"label":["native_range"],"name":[18],"type":["chr"],"align":["left"]},{"label":["realm"],"name":[19],"type":["chr"],"align":["left"]},{"label":["source"],"name":[20],"type":["chr"],"align":["left"]},{"label":["abundance"],"name":[21],"type":["chr"],"align":["left"]},{"label":["threat_status"],"name":[22],"type":["lgl"],"align":["right"]},{"label":["host"],"name":[23],"type":["lgl"],"align":["right"]},{"label":["date_added"],"name":[24],"type":["chr"],"align":["left"]},{"label":["added_by"],"name":[25],"type":["chr"],"align":["left"]},{"label":["verified_by"],"name":[26],"type":["chr"],"align":["left"]},{"label":["source_original"],"name":[27],"type":["chr"],"align":["left"]},{"label":["taxon_id"],"name":[28],"type":["chr"],"align":["left"]}],"data":[{"1":"Aquila rapax (Temminck, 1828)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Aquila","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"escape","17":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list","18":"Africa | Southern Asia","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"gbif/waarnemingen.be dataset","28":"alien-birds-checklist:taxon:5330314606d16fce54e9a11562e54b52"},{"1":"Buteo auguralis Salvadori, 1865","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Buteo","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"NA","18":"Western Africa | Eastern Africa | Middle Africa","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"unified","28":"alien-birds-checklist:taxon:6c6b69d1713d194ea95ba171fd8f136e"},{"1":"Buteo jamaicensis (Gmelin, 1788)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Buteo","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"NA","18":"Northern America | Central America","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"unified","28":"alien-birds-checklist:taxon:2a4d1c4c85be4dd40bca78295fe96a42"},{"1":"Haliaeetus leucocephalus (Linnaeus, 1766)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Haliaeetus","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be","18":"North America","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"gbif/waarnemingen.be dataset","28":"alien-birds-checklist:taxon:ba0cc2bfd9679460a5f3040f748039bf"},{"1":"Haliaeetus pelagicus (Pallas, 1811)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Haliaeetus","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"NA","17":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list","18":"Russia","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"gbif/waarnemingen.be dataset","28":"alien-birds-checklist:taxon:25ce7d27895274b2ed0f34cf337d8023"},{"1":"Haliaeetus vocifer (Daudin, 1800)","2":"Animalia","3":"Chordata","4":"Aves","5":"Accipitriformes","6":"Accipitridae","7":"Haliaeetus","8":"species","9":"ICZN","10":"NA","11":"BE","12":"present","13":"NA","14":"NA","15":"NA","16":"escape","17":"occurrences in 2009 and 2018, http://observations.be","18":"Africa","19":"terrestrial","20":"NA","21":"NA","22":"NA","23":"NA","24":"22/02/2019","25":"Cristina Preda & Tim Adriaens","26":"NA","27":"http://observations.be Natagora","28":"alien-birds-checklist:taxon:462ef4c02e5485c8ca72bc7c24468bca"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<div id="taxon-core" class="section level1">
+<h1><span class="header-section-number">4</span> Taxon core</h1>
+<div id="pre-processing" class="section level2">
+<h2><span class="header-section-number">4.1</span> Pre-processing</h2>
+<p>Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):</p>
+<pre class="r"><code>taxon &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
+</div>
+<div id="term-mapping" class="section level2">
+<h2><span class="header-section-number">4.2</span> Term mapping</h2>
+<p>Map the data to <a href="http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml">Darwin Core Taxon</a>.</p>
+<p>Start with record-level terms which contain metadata about the dataset (which is generally the same for all records).</p>
+<div id="language" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> language</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_language = &quot;en&quot;)</code></pre>
+</div>
+<div id="license" class="section level3">
+<h3><span class="header-section-number">4.2.2</span> license</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_license = &quot;http://creativecommons.org/publicdomain/zero/1.0/&quot;)</code></pre>
+</div>
+<div id="rightsholder" class="section level3">
+<h3><span class="header-section-number">4.2.3</span> rightsHolder</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_rightsHolder = &quot;INBO&quot;)</code></pre>
+</div>
+<div id="accessrights" class="section level3">
+<h3><span class="header-section-number">4.2.4</span> accessRights</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_accessRights = &quot;https://www.inbo.be/en/norms-data-use&quot;) </code></pre>
+</div>
+<div id="datasetid" class="section level3">
+<h3><span class="header-section-number">4.2.5</span> datasetID</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_datasetID = &quot;&quot;)</code></pre>
+</div>
+<div id="institutioncode" class="section level3">
+<h3><span class="header-section-number">4.2.6</span> institutionCode</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_institutionCode = &quot;INBO&quot;)</code></pre>
+</div>
+<div id="datasetname" class="section level3">
+<h3><span class="header-section-number">4.2.7</span> datasetName</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_datasetName = &quot;Checklist of alien birds of Belgium&quot;) </code></pre>
+<p>The following terms contain information about the taxon:</p>
+</div>
+<div id="taxonid" class="section level3">
+<h3><span class="header-section-number">4.2.8</span> taxonID</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
+</div>
+<div id="scientificname" class="section level3">
+<h3><span class="header-section-number">4.2.9</span> scientificName</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_scientificName = scientific_name)</code></pre>
+</div>
+<div id="kingdom" class="section level3">
+<h3><span class="header-section-number">4.2.10</span> kingdom</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>taxon %&gt;%
+  group_by(kingdom) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["kingdom"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Animalia","2":"244"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map values:</p>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_kingdom = kingdom)</code></pre>
+</div>
+<div id="phylum" class="section level3">
+<h3><span class="header-section-number">4.2.11</span> Phylum</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_phylum = phylum)</code></pre>
+</div>
+<div id="class" class="section level3">
+<h3><span class="header-section-number">4.2.12</span> Class</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_class = class)</code></pre>
+</div>
+<div id="order" class="section level3">
+<h3><span class="header-section-number">4.2.13</span> Order</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_order = order)</code></pre>
+</div>
+<div id="family" class="section level3">
+<h3><span class="header-section-number">4.2.14</span> family</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_family = family)</code></pre>
+</div>
+<div id="genus" class="section level3">
+<h3><span class="header-section-number">4.2.15</span> genus</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_genus = genus)</code></pre>
+</div>
+<div id="taxonrank" class="section level3">
+<h3><span class="header-section-number">4.2.16</span> taxonRank</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>taxon %&gt;%
+  group_by(taxon_rank) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["taxon_rank"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"form","2":"1"},{"1":"species","2":"243"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map values by recoding to the <a href="http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml">GBIF rank vocabulary</a>:</p>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_taxonRank = taxon_rank)</code></pre>
+</div>
+<div id="nomenclaturalcode" class="section level3">
+<h3><span class="header-section-number">4.2.17</span> nomenclaturalCode</h3>
+<pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_nomenclaturalCode = &quot;ICZN&quot;)</code></pre>
+</div>
+</div>
+<div id="post-processing" class="section level2">
+<h2><span class="header-section-number">4.3</span> Post-processing</h2>
+<p>Only keep the Darwin Core columns:</p>
+<pre class="r"><code>taxon %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
+<p>Drop the <code>dwc_</code> prefix:</p>
+<pre class="r"><code>colnames(taxon) &lt;- str_replace(colnames(taxon), &quot;dwc_&quot;, &quot;&quot;)</code></pre>
+<p>Preview data:</p>
+<pre class="r"><code>taxon %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["language"],"name":[1],"type":["chr"],"align":["left"]},{"label":["license"],"name":[2],"type":["chr"],"align":["left"]},{"label":["rightsHolder"],"name":[3],"type":["chr"],"align":["left"]},{"label":["accessRights"],"name":[4],"type":["chr"],"align":["left"]},{"label":["datasetID"],"name":[5],"type":["chr"],"align":["left"]},{"label":["institutionCode"],"name":[6],"type":["chr"],"align":["left"]},{"label":["datasetName"],"name":[7],"type":["chr"],"align":["left"]},{"label":["taxonID"],"name":[8],"type":["chr"],"align":["left"]},{"label":["scientificName"],"name":[9],"type":["chr"],"align":["left"]},{"label":["kingdom"],"name":[10],"type":["chr"],"align":["left"]},{"label":["phylum"],"name":[11],"type":["chr"],"align":["left"]},{"label":["class"],"name":[12],"type":["chr"],"align":["left"]},{"label":["order"],"name":[13],"type":["chr"],"align":["left"]},{"label":["family"],"name":[14],"type":["chr"],"align":["left"]},{"label":["genus"],"name":[15],"type":["chr"],"align":["left"]},{"label":["taxonRank"],"name":[16],"type":["chr"],"align":["left"]},{"label":["nomenclaturalCode"],"name":[17],"type":["chr"],"align":["left"]}],"data":[{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:5330314606d16fce54e9a11562e54b52","9":"Aquila rapax (Temminck, 1828)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Aquila","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:6c6b69d1713d194ea95ba171fd8f136e","9":"Buteo auguralis Salvadori, 1865","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Buteo","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:2a4d1c4c85be4dd40bca78295fe96a42","9":"Buteo jamaicensis (Gmelin, 1788)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Buteo","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:ba0cc2bfd9679460a5f3040f748039bf","9":"Haliaeetus leucocephalus (Linnaeus, 1766)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Haliaeetus","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:25ce7d27895274b2ed0f34cf337d8023","9":"Haliaeetus pelagicus (Pallas, 1811)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Haliaeetus","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:462ef4c02e5485c8ca72bc7c24468bca","9":"Haliaeetus vocifer (Daudin, 1800)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Haliaeetus","16":"species","17":"ICZN"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Save to CSV:</p>
+<pre class="r"><code>write_csv(taxon, here(&quot;data&quot;, &quot;processed&quot;, &quot;taxon.csv&quot;), na = &quot;&quot;)</code></pre>
+</div>
+</div>
+<div id="distribution-extension" class="section level1">
+<h1><span class="header-section-number">5</span> Distribution extension</h1>
+<div id="pre-processing-1" class="section level2">
+<h2><span class="header-section-number">5.1</span> Pre-processing</h2>
+<p>Create a dataframe with all data:</p>
+<pre class="r"><code>distribution &lt;- input_data</code></pre>
+</div>
+<div id="term-mapping-1" class="section level2">
+<h2><span class="header-section-number">5.2</span> Term mapping</h2>
+<p>Map the data to <a href="http://rs.gbif.org/extension/gbif/1.0/distribution.xml">Species Distribution</a>.</p>
+<div id="taxonid-1" class="section level3">
+<h3><span class="header-section-number">5.2.1</span> taxonID</h3>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
+</div>
+<div id="locationid" class="section level3">
+<h3><span class="header-section-number">5.2.2</span> locationID</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(country_code, location) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["location"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"BE","2":"NA","3":"187"},{"1":"BE","2":"Belgium","3":"1"},{"1":"BE","2":"Brussels","3":"4"},{"1":"BE","2":"Flanders","3":"45"},{"1":"BE","2":"Wallonia","3":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Set current NA’s in <code>location</code> to <code>Belgium</code>:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(location_be = case_when(
+  is.na(location) ~ &quot;Belgium&quot;,
+  TRUE ~ location
+))</code></pre>
+<p>Change <code>Brussels</code> to <code>Brussels-Capital Region</code>:</p>
+<pre class="r"><code>distribution %&lt;&gt;% 
+  mutate(location_be = recode(
+    location_be,
+    &quot;Brussels&quot; = &quot;Brussels-Capital Region&quot;
+    ))</code></pre>
+<p>Map <code>locationID</code> to [ISO 3166 code]</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_locationID = case_when(
+  location_be == &quot;Belgium&quot; ~ &quot;ISO_3166-2:BE&quot;,
+  location_be == &quot;Flanders&quot; ~ &quot;ISO_3166-2:BE-VLG&quot;,
+  location_be == &quot;Wallonia&quot; ~ &quot;ISO_3166-2:BE-WAL&quot;,
+  location_be == &quot;Brussels-Capital Region&quot; ~ &quot;ISO_3166-2:BE-BRU&quot;))</code></pre>
+<p>Inspect values:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(location, location_be, dwc_locationID) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["location_be"],"name":[2],"type":["chr"],"align":["left"]},{"label":["dwc_locationID"],"name":[3],"type":["chr"],"align":["left"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"Belgium","3":"ISO_3166-2:BE","4":"187"},{"1":"Belgium","2":"Belgium","3":"ISO_3166-2:BE","4":"1"},{"1":"Brussels","2":"Brussels-Capital Region","3":"ISO_3166-2:BE-BRU","4":"4"},{"1":"Flanders","2":"Flanders","3":"ISO_3166-2:BE-VLG","4":"45"},{"1":"Wallonia","2":"Wallonia","3":"ISO_3166-2:BE-WAL","4":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="locality" class="section level3">
+<h3><span class="header-section-number">5.2.3</span> locality</h3>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_locality = location_be)</code></pre>
+</div>
+<div id="countrycode" class="section level3">
+<h3><span class="header-section-number">5.2.4</span> countryCode</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(country_code) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"BE","2":"247"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map values:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_countryCode = country_code) </code></pre>
+</div>
+<div id="occurrencestatus" class="section level3">
+<h3><span class="header-section-number">5.2.5</span> occurrenceStatus</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(occurrence_status) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["occurrence_status"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"doubtful","2":"1"},{"1":"present","2":"246"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map values:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_occurrenceStatus = occurrence_status) </code></pre>
+</div>
+<div id="establishmentmeans" class="section level3">
+<h3><span class="header-section-number">5.2.6</span> establishmentMeans</h3>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_establishmentMeans = &quot;introduced&quot;)</code></pre>
+</div>
+<div id="eventdate" class="section level3">
+<h3><span class="header-section-number">5.2.7</span> eventDate</h3>
+<p>Inspact values for <code>date_first_observation</code>:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(date_first_observation) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"188"},{"1":"1880","2":"1"},{"1":"1890s","2":"1"},{"1":"18th century","2":"1"},{"1":"1950ies","2":"1"},{"1":"1953","2":"1"},{"1":"1957","2":"1"},{"1":"1966","2":"2"},{"1":"1970","2":"1"},{"1":"1973","2":"1"},{"1":"1974","2":"1"},{"1":"1975","2":"2"},{"1":"1979","2":"2"},{"1":"1983","2":"1"},{"1":"1984","2":"1"},{"1":"1985","2":"1"},{"1":"1989","2":"3"},{"1":"1993","2":"2"},{"1":"1998","2":"1"},{"1":"2001","2":"1"},{"1":"2002","2":"2"},{"1":"2004","2":"3"},{"1":"2005","2":"1"},{"1":"2007","2":"2"},{"1":"2008","2":"2"},{"1":"2009","2":"3"},{"1":"2010","2":"1"},{"1":"2011","2":"1"},{"1":"2012","2":"2"},{"1":"2013","2":"3"},{"1":"2014","2":"3"},{"1":"2015","2":"2"},{"1":"2016","2":"3"},{"1":"2017","2":"3"},{"1":"2018","2":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>All date information should comply to the ISO 8601 standard, which requires a four-digit year as a minimum. We here transform deviating values:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(
+  date_first_observation = recode(
+    .x = date_first_observation,
+    &quot;18th century&quot; = &quot;1701&quot;,
+    &quot;1890s&quot; = &quot;1890&quot;,
+    &quot;1950ies&quot; = &quot;1950&quot;
+))</code></pre>
+<p>Inspact values for <code>date_last_observation</code>:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(date_last_observation) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["date_last_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"198"},{"1":"1967","2":"1"},{"1":"1973","2":"1"},{"1":"1985","2":"1"},{"1":"2001","2":"1"},{"1":"2002","2":"1"},{"1":"2004","2":"1"},{"1":"2006","2":"1"},{"1":"2007","2":"1"},{"1":"2009","2":"1"},{"1":"2012","2":"1"},{"1":"2013","2":"2"},{"1":"2014","2":"4"},{"1":"2015","2":"2"},{"1":"2016","2":"14"},{"1":"2017","2":"1"},{"1":"2018","2":"6"},{"1":"2019","2":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Inspect all combinations of <code>date_first_observation</code> and <code>date_last_observation</code>:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(date_first_observation, date_last_observation) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"NA","3":"187"},{"1":"NA","2":"2018","3":"1"},{"1":"1701","2":"2019","3":"1"},{"1":"1880","2":"NA","3":"1"},{"1":"1890","2":"NA","3":"1"},{"1":"1950","2":"2019","3":"1"},{"1":"1953","2":"2019","3":"1"},{"1":"1957","2":"2019","3":"1"},{"1":"1966","2":"1967","3":"1"},{"1":"1966","2":"2019","3":"1"},{"1":"1970","2":"NA","3":"1"},{"1":"1973","2":"1973","3":"1"},{"1":"1974","2":"2019","3":"1"},{"1":"1975","2":"2016","3":"2"},{"1":"1979","2":"2018","3":"1"},{"1":"1979","2":"2019","3":"1"},{"1":"1983","2":"2016","3":"1"},{"1":"1984","2":"2019","3":"1"},{"1":"1985","2":"1985","3":"1"},{"1":"1989","2":"2016","3":"2"},{"1":"1989","2":"2019","3":"1"},{"1":"1993","2":"NA","3":"1"},{"1":"1993","2":"2006","3":"1"},{"1":"1998","2":"2019","3":"1"},{"1":"2001","2":"2001","3":"1"},{"1":"2002","2":"2002","3":"1"},{"1":"2002","2":"2015","3":"1"},{"1":"2004","2":"2004","3":"1"},{"1":"2004","2":"2016","3":"1"},{"1":"2004","2":"2018","3":"1"},{"1":"2005","2":"2009","3":"1"},{"1":"2007","2":"2007","3":"1"},{"1":"2007","2":"2014","3":"1"},{"1":"2008","2":"2014","3":"1"},{"1":"2008","2":"2018","3":"1"},{"1":"2009","2":"2016","3":"3"},{"1":"2010","2":"2014","3":"1"},{"1":"2011","2":"NA","3":"1"},{"1":"2012","2":"NA","3":"1"},{"1":"2012","2":"2012","3":"1"},{"1":"2013","2":"2013","3":"2"},{"1":"2013","2":"2014","3":"1"},{"1":"2014","2":"NA","3":"1"},{"1":"2014","2":"2016","3":"2"},{"1":"2015","2":"2015","3":"1"},{"1":"2015","2":"2016","3":"1"},{"1":"2016","2":"NA","3":"1"},{"1":"2016","2":"2016","3":"2"},{"1":"2017","2":"NA","3":"1"},{"1":"2017","2":"2017","3":"1"},{"1":"2017","2":"2018","3":"1"},{"1":"2018","2":"NA","3":"2"},{"1":"2018","2":"2018","3":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map <code>eventDate</code>:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(
+  dwc_eventDate = case_when(
+    is.na(date_first_observation) &amp; is.na(date_last_observation) ~ NA_character_,
+    is.na(date_first_observation) &amp; !is.na(date_last_observation) ~ date_last_observation,
+    !is.na(date_first_observation) &amp; is.na(date_last_observation) ~ date_first_observation,
+    !is.na(date_first_observation) &amp; !is.na(date_last_observation) ~ paste(
+      date_first_observation, date_last_observation, sep = &quot;/&quot;
+    )
+  )
+)</code></pre>
+<p>Show mapping:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(date_first_observation, date_last_observation, dwc_eventDate) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[2],"type":["chr"],"align":["left"]},{"label":["dwc_eventDate"],"name":[3],"type":["chr"],"align":["left"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"NA","3":"NA","4":"187"},{"1":"NA","2":"2018","3":"2018","4":"1"},{"1":"1701","2":"2019","3":"1701/2019","4":"1"},{"1":"1880","2":"NA","3":"1880","4":"1"},{"1":"1890","2":"NA","3":"1890","4":"1"},{"1":"1950","2":"2019","3":"1950/2019","4":"1"},{"1":"1953","2":"2019","3":"1953/2019","4":"1"},{"1":"1957","2":"2019","3":"1957/2019","4":"1"},{"1":"1966","2":"1967","3":"1966/1967","4":"1"},{"1":"1966","2":"2019","3":"1966/2019","4":"1"},{"1":"1970","2":"NA","3":"1970","4":"1"},{"1":"1973","2":"1973","3":"1973/1973","4":"1"},{"1":"1974","2":"2019","3":"1974/2019","4":"1"},{"1":"1975","2":"2016","3":"1975/2016","4":"2"},{"1":"1979","2":"2018","3":"1979/2018","4":"1"},{"1":"1979","2":"2019","3":"1979/2019","4":"1"},{"1":"1983","2":"2016","3":"1983/2016","4":"1"},{"1":"1984","2":"2019","3":"1984/2019","4":"1"},{"1":"1985","2":"1985","3":"1985/1985","4":"1"},{"1":"1989","2":"2016","3":"1989/2016","4":"2"},{"1":"1989","2":"2019","3":"1989/2019","4":"1"},{"1":"1993","2":"NA","3":"1993","4":"1"},{"1":"1993","2":"2006","3":"1993/2006","4":"1"},{"1":"1998","2":"2019","3":"1998/2019","4":"1"},{"1":"2001","2":"2001","3":"2001/2001","4":"1"},{"1":"2002","2":"2002","3":"2002/2002","4":"1"},{"1":"2002","2":"2015","3":"2002/2015","4":"1"},{"1":"2004","2":"2004","3":"2004/2004","4":"1"},{"1":"2004","2":"2016","3":"2004/2016","4":"1"},{"1":"2004","2":"2018","3":"2004/2018","4":"1"},{"1":"2005","2":"2009","3":"2005/2009","4":"1"},{"1":"2007","2":"2007","3":"2007/2007","4":"1"},{"1":"2007","2":"2014","3":"2007/2014","4":"1"},{"1":"2008","2":"2014","3":"2008/2014","4":"1"},{"1":"2008","2":"2018","3":"2008/2018","4":"1"},{"1":"2009","2":"2016","3":"2009/2016","4":"3"},{"1":"2010","2":"2014","3":"2010/2014","4":"1"},{"1":"2011","2":"NA","3":"2011","4":"1"},{"1":"2012","2":"NA","3":"2012","4":"1"},{"1":"2012","2":"2012","3":"2012/2012","4":"1"},{"1":"2013","2":"2013","3":"2013/2013","4":"2"},{"1":"2013","2":"2014","3":"2013/2014","4":"1"},{"1":"2014","2":"NA","3":"2014","4":"1"},{"1":"2014","2":"2016","3":"2014/2016","4":"2"},{"1":"2015","2":"2015","3":"2015/2015","4":"1"},{"1":"2015","2":"2016","3":"2015/2016","4":"1"},{"1":"2016","2":"NA","3":"2016","4":"1"},{"1":"2016","2":"2016","3":"2016/2016","4":"2"},{"1":"2017","2":"NA","3":"2017","4":"1"},{"1":"2017","2":"2017","3":"2017/2017","4":"1"},{"1":"2017","2":"2018","3":"2017/2018","4":"1"},{"1":"2018","2":"NA","3":"2018","4":"2"},{"1":"2018","2":"2018","3":"2018/2018","4":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="source" class="section level3">
+<h3><span class="header-section-number">5.2.8</span> source</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(source) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["source"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"202"},{"1":"Beck O., Anselin A. & Kuijken E. 2002. Beheer van verwilderde watervogels in Vlaanderen. Instituut voor Natuurbehoud, Brussel. 146 pp.","2":"1"},{"1":"Claes G., publicatie: IJsvogel (1973) 2 : 15, Viversel, gebiedswaarneming","2":"1"},{"1":"de Schaetzen, R (1991) Halsbandparkieten broeden te Brussel. Mens en Vogel: 59-61","2":"1"},{"1":"GBIF (data download not possible on 21/02/2019 - gbif download error)","2":"27"},{"1":"GBIF Occurrence Download https://doi.org/10.15468/dl.btde22","2":"1"},{"1":"GBIF Occurrence Download https://doi.org/10.15468/dl.ltslq6","2":"1"},{"1":"http://observations.be","2":"1"},{"1":"http://observations.be/waarneming/view/157503659","2":"1"},{"1":"http://waarnemingen.be","2":"2"},{"1":"Lever C. 2005. Naturalised Birds of the World. London: T & A D Poyser.","2":"1"},{"1":"Long J.L. 1981 Introduced birds of the world. The worldwide history, distribution, and influence of birds introduced to new environments.","2":"1"},{"1":"observations.be","2":"1"},{"1":"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus\\n 76(1):1-7; Hughes B., J. Criado, S. Delany, U. Gallo-Orsi, A.J. Green, M. Grussu, C. Perennou & J.A. Torres, 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the\\n Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing, Strasbourg","2":"2"},{"1":"Verbelen D. 2009 Gewone Kookaburra Dacelo novaeguineae, exoot de pas afgesneden. Natuur. Oriolus, 75(2):49-52.","2":"1"},{"1":"Weiserbs A. 2010. Espèces invasives : le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.","2":"2"},{"1":"Weiserbs A. 2010. Espèces invasives: le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map values:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_source = source) </code></pre>
+</div>
+<div id="occurrenceremarks" class="section level3">
+<h3><span class="header-section-number">5.2.9</span> occurrenceRemarks</h3>
+<p>Inspect values:</p>
+<pre class="r"><code>distribution %&gt;%
+  group_by(remarks) %&gt;%
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["remarks"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"134"},{"1":"1 incertain occurrence in 2018 unverified, http://observations.be","2":"1"},{"1":"1 occurrence in 2004, http://observations.be","2":"1"},{"1":"1 occurrence in 2011, http://observations.be; NT in IUCN red list","2":"1"},{"1":"1 occurrence in 2012, http://observations.be; CR in IUCN red list","2":"1"},{"1":"1 occurrence in 2013 in GBIF, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in 2013, http://observations.be","2":"1"},{"1":"1 occurrence in 2017, http://observations.be","2":"3"},{"1":"1 occurrence in 2017, http://observations.be; VU in IUCN red list","2":"1"},{"1":"1 occurrence in 2018, http://observations.be","2":"3"},{"1":"1 occurrence in 2018, https://observatios.be","2":"1"},{"1":"1 occurrence in GBIF 2016, http://waarnemingen.be","2":"2"},{"1":"1 occurrence in GBIF in 2000, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in 2011, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in 2013","2":"1"},{"1":"1 occurrence in GBIF in 2015","2":"1"},{"1":"1 occurrence in GBIF in 2016 unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in Flanders in 2014, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 1990, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2001, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2002, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2003, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2005, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list","2":"1"},{"1":"1 occurrence in GBIF, 2010, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2012, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2013, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2015, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occ in 2016 and 2018 http://observations.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occurrences in 2018 in http://observations.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2016; http://waarnemingen.be ; VU in IUCN red list","2":"1"},{"1":"1 occurrencesurrence in 2011, http://observations.be; NT in IUCN red list","2":"1"},{"1":"1 occurrencesurrence in 2017, http://observations.be","2":"1"},{"1":"1 record on http://observations.be","2":"1"},{"1":"10 occurrences in GBIF starting 1975 to 2015, waarnemimgen.be data set","2":"1"},{"1":"13 occurrences in GBIF, between 1994 and 2014; http://waarnemingen.be ; occurrences between 1994 and 2018 on http://observations.be","2":"1"},{"1":"13 occurrences in GBIF, between 1995 and 2016, http://waarnemingen.be","2":"1"},{"1":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list","2":"1"},{"1":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be","2":"1"},{"1":"154 occurrences in GBIF","2":"1"},{"1":"18 occ in GBIF in 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in 2009 and 2016, http://observations.be","2":"1"},{"1":"2 occurrences in 2016 and 2017, http://observations.be","2":"1"},{"1":"2 occurrences in GBIF 2001 and 2003, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF 2009 and 2013, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF 2010 and 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF in 2012","2":"1"},{"1":"2 occurrences in GBIF one in 1982, one in 2013; http://waarnemingen.be datatset","2":"1"},{"1":"2 occurrences in GBIF, 1983 and 2014, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1986 and 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1992, unverified, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1996 and 2011 unverified; http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2007, unverified, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2008 and 2014, waarnemingem.be","2":"1"},{"1":"2 occurrences in GBIF, 2013 and 2015; http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2013 and 2016; http://waarnemingen.be ; occurrences between 2001 and 2018 in http://observations.be","2":"1"},{"1":"2 occurrences in GBIF, 2015 and 2016 and another 2 occurrences for T. haematodus moluccanus, in 2015 and 2016; http://waarnemingen.be ;","2":"1"},{"1":"2 occurrences on GBIF in 2014","2":"1"},{"1":"208 occurrences in GBIF starting 2002, http://waarnemingen.be","2":"1"},{"1":"248 occurrences in GBIF between 1988 and 2016; http://waarnemingen.be","2":"1"},{"1":"248 occurrences. In GBIF between 1988 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2012, 2014 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2014 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2015, http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, one in 2007 and two in 2015; http://waarnemingen.be","2":"1"},{"1":"31 occurrences in GBIF, 2015 and 2016, http://waarnemingen.be","2":"1"},{"1":"374 occurrences in GBIF","2":"1"},{"1":"4 occurrences in GBIF, 1991 and 2013; http://waarnemingen.be","2":"1"},{"1":"4 occurrences in GBIF, 2014, 2015 and 2016; http://waarnemingen.be; endangered in native range acc to IUCN red list","2":"1"},{"1":"4 occurrences in GBIF, 2015 and 2016, unverified, http://waarnemingen.be","2":"1"},{"1":"4 occurrences in GBIF, one in 2000 and 3 in 2016","2":"1"},{"1":"4 occurrences on http://observations.be, 2018 and 2019;","2":"1"},{"1":"5 occurrences in GBIF, one in 2001, then 2015 and 2016; http://waarnemingen.be","2":"1"},{"1":"52 occurrences in GBIF between 1986 and 2014, http://waarnemingen.be","2":"1"},{"1":"7 occurrences in GBIF 2014 and 2015, http://waarnemingen.be","2":"1"},{"1":"7 occurrences in GBIF, one in 1985 then 2010 to 2016; http://waarnemingen.be","2":"1"},{"1":"8 occurrences in GBIF in 2016, http://waarnemingen.be","2":"1"},{"1":"8 occurrences in GBIF, 1975 to 2016; http://waarnemingen.be","2":"1"},{"1":"89 occurrences in GBIF, 1987 to 2015; http://waarnemingen.be","2":"1"},{"1":"9 occurrences in GBIF, 2014-2016","2":"1"},{"1":"EN in IUCN red list","2":"1"},{"1":"extant & introduced (resident) acc. to IUCN red list","2":"1"},{"1":"extant & vagrant (non-breeding) acc. to IUCN red list","2":"2"},{"1":"extant, resident (native) in belgium acc. to IUCN red list","2":"1"},{"1":"introduced and established in eastern Belgium, 70 pairs released at Hoch Venn in the early 1890s (Long 1981)","2":"1"},{"1":"introduced into UK in the 1940's, escaped or released from captivity (Hughes et al 1999)","2":"2"},{"1":"look for Aves, 53/3 | 2016 | 105-128","2":"1"},{"1":"occurrences between 2010 and 2018 in http://observations.be","2":"1"},{"1":"occurrences between 2012 and 2016 on http://waarnemingen.be and http://observations.be","2":"1"},{"1":"occurrences in 1973, http://observations.be","2":"1"},{"1":"occurrences in 2003 and 2013 in http://observations.be, EN in IUCN red list","2":"1"},{"1":"occurrences in 2005 acc. to http://observations.be","2":"1"},{"1":"occurrences in 2009 and 2018, http://observations.be","2":"1"},{"1":"occurrences in 2012, http://observations.be","2":"1"},{"1":"occurrences in 2014, 2016, 2018; http://observations.be","2":"1"},{"1":"occurrences in 2014, http://observations.be","2":"1"},{"1":"occurrences in 2017 and 2018, http://observations.be","2":"2"},{"1":"occurrences in 2017, http://observations.be","2":"1"},{"1":"occurrences in 2017, https://http://observations.be","2":"1"},{"1":"on GBIF occurrences since 2005 (source Waarnemingen.be - Non-native animal occurrencesurrences in Flanders and the Brussels Capital Region, Belgium)","2":"1"},{"1":"recorded in 2011 in Flanders","2":"1"},{"1":"records form 2018, GBIF and http://observations.be","2":"1"},{"1":"records from 2005 to 2019 on observation.be","2":"1"},{"1":"Report of a succesful breeding pair in Tervuren, but not seen anymore aftwerwards (this was not the start of the Belgian parakeet population). Not sure whether the label 'reproducing' is correct - should in face be 'failed' or 'extinct' for this population.","2":"1"},{"1":"The current population stems from 40 to 45 birds that were intentionally released by the Meli zoo in 1974","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map values:</p>
+<pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_occurrenceRemarks = remarks) </code></pre>
+</div>
+</div>
+<div id="post-processing-1" class="section level2">
+<h2><span class="header-section-number">5.3</span> Post-processing</h2>
+<p>Only keep the Darwin Core columns:</p>
+<pre class="r"><code>distribution %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
+<p>Drop the <code>dwc_</code> prefix:</p>
+<pre class="r"><code>colnames(distribution) &lt;- str_replace(colnames(distribution), &quot;dwc_&quot;, &quot;&quot;)</code></pre>
+<p>Preview data:</p>
+<pre class="r"><code>distribution %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["locationID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["locality"],"name":[3],"type":["chr"],"align":["left"]},{"label":["countryCode"],"name":[4],"type":["chr"],"align":["left"]},{"label":["occurrenceStatus"],"name":[5],"type":["chr"],"align":["left"]},{"label":["establishmentMeans"],"name":[6],"type":["chr"],"align":["left"]},{"label":["eventDate"],"name":[7],"type":["chr"],"align":["left"]},{"label":["source"],"name":[8],"type":["chr"],"align":["left"]},{"label":["occurrenceRemarks"],"name":[9],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:5330314606d16fce54e9a11562e54b52","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list"},{"1":"alien-birds-checklist:taxon:6c6b69d1713d194ea95ba171fd8f136e","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"NA"},{"1":"alien-birds-checklist:taxon:2a4d1c4c85be4dd40bca78295fe96a42","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"NA"},{"1":"alien-birds-checklist:taxon:ba0cc2bfd9679460a5f3040f748039bf","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be"},{"1":"alien-birds-checklist:taxon:25ce7d27895274b2ed0f34cf337d8023","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list"},{"1":"alien-birds-checklist:taxon:462ef4c02e5485c8ca72bc7c24468bca","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"occurrences in 2009 and 2018, http://observations.be"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Save to CSV:</p>
+<pre class="r"><code>write_csv(distribution, here(&quot;data&quot;, &quot;processed&quot;, &quot;distribution.csv&quot;), na = &quot;&quot;)</code></pre>
+</div>
+</div>
+<div id="species-profile-extension" class="section level1">
+<h1><span class="header-section-number">6</span> Species profile extension</h1>
+<div id="pre-processing-2" class="section level2">
+<h2><span class="header-section-number">6.1</span> Pre-processing</h2>
+<p>Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):</p>
+<pre class="r"><code>species_profile &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
+</div>
+<div id="term-mapping-2" class="section level2">
+<h2><span class="header-section-number">6.2</span> Term mapping</h2>
+<p>Map the data to <a href="http://rs.gbif.org/extension/gbif/1.0/speciesprofile.xml">Species Profile</a>.</p>
+<div id="taxonid-2" class="section level3">
+<h3><span class="header-section-number">6.2.1</span> taxonID</h3>
+<pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
+<p>Inspect <code>realm</code>:</p>
+<pre class="r"><code>species_profile %&gt;% 
+  group_by(realm) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["realm"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"terrestrial","2":"244"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="ismarine" class="section level3">
+<h3><span class="header-section-number">6.2.2</span> isMarine</h3>
+<pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_isMarine = &quot;FALSE&quot;)</code></pre>
+</div>
+<div id="isterrestrial" class="section level3">
+<h3><span class="header-section-number">6.2.3</span> isTerrestrial</h3>
+<pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_isTerrestrial = &quot;TRUE&quot;)</code></pre>
+</div>
+<div id="isfreshwater" class="section level3">
+<h3><span class="header-section-number">6.2.4</span> isFreshwater</h3>
+<pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_isFreshwater = &quot;FALSE&quot;)</code></pre>
+</div>
+</div>
+<div id="post-processing-2" class="section level2">
+<h2><span class="header-section-number">6.3</span> Post-processing</h2>
+<p>Only keep the Darwin Core columns:</p>
+<pre class="r"><code>species_profile %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
+<p>Drop the <code>dwc_</code> prefix:</p>
+<pre class="r"><code>colnames(species_profile) &lt;- str_replace(colnames(species_profile), &quot;dwc_&quot;, &quot;&quot;)</code></pre>
+<p>Preview data:</p>
+<pre class="r"><code>species_profile %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["isMarine"],"name":[2],"type":["chr"],"align":["left"]},{"label":["isTerrestrial"],"name":[3],"type":["chr"],"align":["left"]},{"label":["isFreshwater"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:5330314606d16fce54e9a11562e54b52","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:6c6b69d1713d194ea95ba171fd8f136e","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:2a4d1c4c85be4dd40bca78295fe96a42","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:ba0cc2bfd9679460a5f3040f748039bf","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:25ce7d27895274b2ed0f34cf337d8023","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:462ef4c02e5485c8ca72bc7c24468bca","2":"FALSE","3":"TRUE","4":"FALSE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Save to CSV:</p>
+<pre class="r"><code>write_csv(species_profile, here(&quot;data&quot;, &quot;processed&quot;, &quot;speciesprofile.csv&quot;), na = &quot;&quot;)</code></pre>
+</div>
+</div>
+<div id="description-extension" class="section level1">
+<h1><span class="header-section-number">7</span> Description extension</h1>
+<p>In the description extension we want to include several important characteristics (hereafter refered to as descriptors) about the species:</p>
+<ul>
+<li>Native range</li>
+<li>Pathway of introduction</li>
+<li>Degree of establishment</li>
+</ul>
+<p>For each descriptor, we create a separate dataframe to process the specific information. We always specify <em>which descriptor</em> we map (<code>type</code> column) and its <em>specific content</em> (<code>description</code> column). After the mapping of these Darwin Core terms <code>type</code> and <code>value</code>, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as <code>language</code>).</p>
+<div id="native-range" class="section level2">
+<h2><span class="header-section-number">7.1</span> Native range</h2>
+<p>Create separate dataframe:</p>
+<pre class="r"><code>native_range &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
+<p>Inspect <code>native_range</code>:</p>
+<pre class="r"><code>native_range %&gt;% 
+  group_by(native_range) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["native_range"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"70"},{"1":"Africa","2":"28"},{"1":"Africa | Asia","2":"1"},{"1":"Africa | Eastern Europe","2":"1"},{"1":"Africa | Middle East","2":"1"},{"1":"Africa | Southern Asia","2":"1"},{"1":"Africa | Southern Asia | Southern Europe | Western Asia","2":"1"},{"1":"America","2":"2"},{"1":"Asia","2":"4"},{"1":"Asia | Australia","2":"1"},{"1":"Australia","2":"17"},{"1":"Australia | Southeastern Asia","2":"1"},{"1":"Caribbean | South America | Galapagos","2":"1"},{"1":"Central America | South America","2":"1"},{"1":"Central America | South America | Caribbean | Africa | India","2":"1"},{"1":"Central Asia | Southeastern Asia | Southern Asia","2":"1"},{"1":"Central Asia | Southern Asia | Eastern Asia","2":"1"},{"1":"China","2":"1"},{"1":"China | India","2":"1"},{"1":"East Asia","2":"1"},{"1":"Eastern Africa","2":"1"},{"1":"Eastern Asia","2":"3"},{"1":"Eastern Asia | Central Asia","2":"1"},{"1":"Eastern Asia | Southeastern Asia","2":"1"},{"1":"Eastern Asia | Southern Asia","2":"3"},{"1":"Eastern Asia | Southern Asia | Southeastern Asia","2":"1"},{"1":"Eastern Asian Russia","2":"1"},{"1":"Eurasia Africa","2":"1"},{"1":"Europe","2":"2"},{"1":"Hawaiian Islands","2":"2"},{"1":"Indonesia","2":"1"},{"1":"Japan","2":"1"},{"1":"Macaronesia","2":"1"},{"1":"Madagascar","2":"1"},{"1":"Nearctic | Neotropic","2":"2"},{"1":"New Zealand","2":"1"},{"1":"North America","2":"15"},{"1":"North America | Central America","2":"1"},{"1":"North America | Eurasia","2":"1"},{"1":"Northern America | Central America","2":"1"},{"1":"Palearctic","2":"2"},{"1":"Philippines","2":"1"},{"1":"Russia","2":"2"},{"1":"South America","2":"21"},{"1":"South America | Africa","2":"1"},{"1":"South America | Central America","2":"4"},{"1":"South America | Panama","2":"1"},{"1":"Southeast Europe","2":"1"},{"1":"Southeastern Asia","2":"3"},{"1":"Southeastern Asia | Australia","2":"3"},{"1":"Southeastern Asia | Southern Asia","2":"1"},{"1":"Southern Asia","2":"4"},{"1":"Southern Asia | Eastern Asia","2":"3"},{"1":"Southern Asia | Eastern Asia | Southeastern Asia","2":"2"},{"1":"Southern Asia | Southeastern Asia","2":"5"},{"1":"Southern Asia | Western Africa | Eastern Africa | Middle Africa","2":"1"},{"1":"Southwestern Africa","2":"1"},{"1":"Spain | Portugal","2":"1"},{"1":"Sub-Saharan Africa | Madagascar","2":"1"},{"1":"Tanzania","2":"1"},{"1":"Western Africa | Eastern Africa | Middle Africa","2":"1"},{"1":"Western Africa | Eastern Africa | Southern Africa | Middle Africa","2":"1"},{"1":"Western Africa | Middle Africa | Eastern Africa | Southern Africa","2":"5"},{"1":"Western Asia | Southern Asia","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Separate content using the pipe symbol as a separator:</p>
+<pre class="r"><code>native_range %&lt;&gt;% 
+  separate(col = native_range,
+           into = c(&quot;native_range_1&quot;, &quot;native_range_2&quot;, &quot;native_range_3&quot;, &quot;native_range_4&quot;, &quot;native_range_5&quot;),
+           sep = &quot;\\s\\|\\s&quot;,
+           remove = FALSE)</code></pre>
+<p>Change from a wide to a long dataset:</p>
+<pre class="r"><code>native_range %&lt;&gt;% 
+  gather(key = &quot;key&quot;,
+         value = &quot;value&quot;,
+         native_range_1, native_range_2, native_range_3, native_range_4, native_range_5,
+         na.rm = TRUE)</code></pre>
+<p>Show unique values for native range:</p>
+<pre class="r"><code>native_range %&gt;% 
+  group_by(value) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["value"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Africa","2":"35"},{"1":"America","2":"2"},{"1":"Asia","2":"6"},{"1":"Australia","2":"22"},{"1":"Caribbean","2":"2"},{"1":"Central America","2":"8"},{"1":"Central Asia","2":"3"},{"1":"China","2":"2"},{"1":"East Asia","2":"1"},{"1":"Eastern Africa","2":"9"},{"1":"Eastern Asia","2":"15"},{"1":"Eastern Asian Russia","2":"1"},{"1":"Eastern Europe","2":"1"},{"1":"Eurasia","2":"1"},{"1":"Eurasia Africa","2":"1"},{"1":"Europe","2":"2"},{"1":"Galapagos","2":"1"},{"1":"Hawaiian Islands","2":"2"},{"1":"India","2":"2"},{"1":"Indonesia","2":"1"},{"1":"Japan","2":"1"},{"1":"Macaronesia","2":"1"},{"1":"Madagascar","2":"2"},{"1":"Middle Africa","2":"8"},{"1":"Middle East","2":"1"},{"1":"Nearctic","2":"2"},{"1":"Neotropic","2":"2"},{"1":"New Zealand","2":"1"},{"1":"North America","2":"17"},{"1":"Northern America","2":"1"},{"1":"Palearctic","2":"2"},{"1":"Panama","2":"1"},{"1":"Philippines","2":"1"},{"1":"Portugal","2":"1"},{"1":"Russia","2":"2"},{"1":"South America","2":"30"},{"1":"Southeast Europe","2":"1"},{"1":"Southeastern Asia","2":"18"},{"1":"Southern Africa","2":"6"},{"1":"Southern Asia","2":"25"},{"1":"Southern Europe","2":"1"},{"1":"Southwestern Africa","2":"1"},{"1":"Spain","2":"1"},{"1":"Sub-Saharan Africa","2":"1"},{"1":"Tanzania","2":"1"},{"1":"Western Africa","2":"8"},{"1":"Western Asia","2":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map to the <a href="http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf">WGSRPD vocabulary</a>:</p>
+<pre class="r"><code>native_range %&lt;&gt;% mutate(
+  description = recode(
+    value,
+    &quot;Africa&quot; = &quot;Africa (WGSRPD:2)&quot;,
+    &quot;Australia&quot; = &quot;Australia (WGSRPD:50)&quot;,
+    &quot;Caribbean&quot; = &quot;Caribbean (WGSRPD:81)&quot;,
+    &quot;Central America&quot; = &quot;Central America (WGSRPD:80)&quot;,
+    &quot;China&quot; = &quot;China (WGSRPD:36)&quot;,
+    &quot;East Asia&quot; = &quot;Eastern Asia (WGSRPD:38)&quot;,
+    &quot;Eastern Asia&quot; = &quot;Eastern Asia (WGSRPD:38)&quot;,
+    &quot;Eastern Europe&quot; = &quot;Eastern Europe (WGSRPD:14)&quot;,
+    &quot;Europe&quot; = &quot;Europe (WGSRPD:1)&quot;,
+    &quot;Galapagos&quot; = &quot;Galapagos (WGSRPD:GAL)&quot;,
+    &quot;Hawaiian Islands&quot; = &quot;Hawaiian Islands (WGSRPD:HI)&quot;,
+    &quot;India&quot; = &quot;Indian Subcontinent (WGSRPD:40)&quot;,
+    &quot;Indonesia&quot; = &quot;Indonesia (WGSRPD:ID)&quot;,
+    &quot;Japan&quot; = &quot;Japan (WGSRPD:JAP)&quot;,
+    &quot;Madagascar&quot; = &quot;Madagascar (WGSRPD:MDG)&quot;,
+    &quot;New Zealand&quot; = &quot;New Zealand (WGSRPD:51)&quot;,
+    &quot;North America&quot; = &quot;Northern America (WGSRPD:7)&quot;,
+    &quot;Northern America&quot; = &quot;Northern America (WGSRPD:7)&quot;,
+    &quot;Panama&quot; = &quot;Panama (WGSRPD:PAN)&quot;,
+    &quot;Philippines&quot; = &quot;Philippines (WGSRPD:PHI)&quot;,
+    &quot;Portugal&quot; = &quot;Portugal (WGSRPD:POR)&quot;,
+    &quot;South America&quot; = &quot;Southern America (WGSRPD:8)&quot;,
+    &quot;Southeast Europe&quot; = &quot;Southeastern Europe (WGSRPD:13)&quot;,
+    &quot;Southern Africa&quot; = &quot;Southern Africa (WGSRPD:27)&quot;,
+    &quot;Spain&quot; = &quot;Spain (WGSRPD:SPA)&quot;,
+    &quot;Tanzania&quot; = &quot;Tanzania (WGSRPD:TAN)&quot;,
+    &quot;Western Asia&quot; = &quot;Western Asia (WGSRPD:34)&quot;
+  )
+)</code></pre>
+<p>Show mapping:</p>
+<pre class="r"><code>native_range %&gt;% 
+  group_by(value, description) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["value"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Africa","2":"Africa (WGSRPD:2)","3":"35"},{"1":"America","2":"America","3":"2"},{"1":"Asia","2":"Asia","3":"6"},{"1":"Australia","2":"Australia (WGSRPD:50)","3":"22"},{"1":"Caribbean","2":"Caribbean (WGSRPD:81)","3":"2"},{"1":"Central America","2":"Central America (WGSRPD:80)","3":"8"},{"1":"Central Asia","2":"Central Asia","3":"3"},{"1":"China","2":"China (WGSRPD:36)","3":"2"},{"1":"East Asia","2":"Eastern Asia (WGSRPD:38)","3":"1"},{"1":"Eastern Africa","2":"Eastern Africa","3":"9"},{"1":"Eastern Asia","2":"Eastern Asia (WGSRPD:38)","3":"15"},{"1":"Eastern Asian Russia","2":"Eastern Asian Russia","3":"1"},{"1":"Eastern Europe","2":"Eastern Europe (WGSRPD:14)","3":"1"},{"1":"Eurasia","2":"Eurasia","3":"1"},{"1":"Eurasia Africa","2":"Eurasia Africa","3":"1"},{"1":"Europe","2":"Europe (WGSRPD:1)","3":"2"},{"1":"Galapagos","2":"Galapagos (WGSRPD:GAL)","3":"1"},{"1":"Hawaiian Islands","2":"Hawaiian Islands (WGSRPD:HI)","3":"2"},{"1":"India","2":"Indian Subcontinent (WGSRPD:40)","3":"2"},{"1":"Indonesia","2":"Indonesia (WGSRPD:ID)","3":"1"},{"1":"Japan","2":"Japan (WGSRPD:JAP)","3":"1"},{"1":"Macaronesia","2":"Macaronesia","3":"1"},{"1":"Madagascar","2":"Madagascar (WGSRPD:MDG)","3":"2"},{"1":"Middle Africa","2":"Middle Africa","3":"8"},{"1":"Middle East","2":"Middle East","3":"1"},{"1":"Nearctic","2":"Nearctic","3":"2"},{"1":"Neotropic","2":"Neotropic","3":"2"},{"1":"New Zealand","2":"New Zealand (WGSRPD:51)","3":"1"},{"1":"North America","2":"Northern America (WGSRPD:7)","3":"17"},{"1":"Northern America","2":"Northern America (WGSRPD:7)","3":"1"},{"1":"Palearctic","2":"Palearctic","3":"2"},{"1":"Panama","2":"Panama (WGSRPD:PAN)","3":"1"},{"1":"Philippines","2":"Philippines (WGSRPD:PHI)","3":"1"},{"1":"Portugal","2":"Portugal (WGSRPD:POR)","3":"1"},{"1":"Russia","2":"Russia","3":"2"},{"1":"South America","2":"Southern America (WGSRPD:8)","3":"30"},{"1":"Southeast Europe","2":"Southeastern Europe (WGSRPD:13)","3":"1"},{"1":"Southeastern Asia","2":"Southeastern Asia","3":"18"},{"1":"Southern Africa","2":"Southern Africa (WGSRPD:27)","3":"6"},{"1":"Southern Asia","2":"Southern Asia","3":"25"},{"1":"Southern Europe","2":"Southern Europe","3":"1"},{"1":"Southwestern Africa","2":"Southwestern Africa","3":"1"},{"1":"Spain","2":"Spain (WGSRPD:SPA)","3":"1"},{"1":"Sub-Saharan Africa","2":"Sub-Saharan Africa","3":"1"},{"1":"Tanzania","2":"Tanzania (WGSRPD:TAN)","3":"1"},{"1":"Western Africa","2":"Western Africa","3":"8"},{"1":"Western Asia","2":"Western Asia (WGSRPD:34)","3":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map <code>type</code>:</p>
+<pre class="r"><code>native_range %&lt;&gt;% mutate(type = &quot;native range&quot;)</code></pre>
+<p>Select <code>taxon_id</code>, <code>description</code> and <code>type</code>:</p>
+<pre class="r"><code>native_range %&lt;&gt;% select(taxon_id, description, type)</code></pre>
+</div>
+<div id="pathway-of-introduction" class="section level2">
+<h2><span class="header-section-number">7.2</span> Pathway of introduction</h2>
+<p>Create separate dataframe:</p>
+<pre class="r"><code>pathways &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
+<p>Inspect <code>native_range</code>:</p>
+<pre class="r"><code>pathways %&gt;% 
+  group_by(introduction_pathway) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["introduction_pathway"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"193"},{"1":"escape","2":"48"},{"1":"escape | release | unaided","2":"1"},{"1":"release","2":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Separate content using the pipe symbol as a separator:</p>
+<pre class="r"><code>pathways %&lt;&gt;% 
+  separate(col = introduction_pathway,
+           into = c(&quot;introduction_pathway_1&quot;, &quot;introduction_pathway_2&quot;),
+           sep = &quot;\\s\\|\\s&quot;,
+           remove = FALSE)</code></pre>
+<p>Change from a wide to a long dataset:</p>
+<pre class="r"><code>pathways %&lt;&gt;% 
+  gather(key = &quot;key&quot;,
+         value = &quot;value&quot;,
+         introduction_pathway_1, introduction_pathway_2,
+         na.rm = TRUE)</code></pre>
+<p>Show unique values for native range:</p>
+<pre class="r"><code>pathways %&gt;% 
+  group_by(value) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["value"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"escape","2":"49"},{"1":"release","2":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Add prefix <code>cbd_2014_pathway:</code> to refer to the <a href="https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf">CBD standard for pathway information</a></p>
+<pre class="r"><code>pathways %&lt;&gt;% mutate(description = paste(&quot;cbd_2014_pathway&quot;, value, sep = &quot;:&quot;))</code></pre>
+<p>Add <code>type</code>:</p>
+<pre class="r"><code>pathways %&lt;&gt;% mutate(type = &quot;pathway&quot;)</code></pre>
+<p>Select <code>taxon_id</code>, <code>description</code> and <code>type</code>:</p>
+<pre class="r"><code>pathways %&lt;&gt;% select(taxon_id, description, type)</code></pre>
+</div>
+<div id="degree-of-establishment" class="section level2">
+<h2><span class="header-section-number">7.3</span> Degree of establishment</h2>
+<p>Create separate dataframe:</p>
+<pre class="r"><code>degree_of_establishment &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
+<p>Inspect <code>degree_of_establishment</code>:</p>
+<pre class="r"><code>degree_of_establishment %&gt;% 
+  group_by(degree_of_establishment) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["degree_of_establishment"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"NA","2":"203"},{"1":"captive","2":"1"},{"1":"casual","2":"5"},{"1":"colonizing","2":"1"},{"1":"established","2":"4"},{"1":"released","2":"28"},{"1":"reproducing","2":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Remove empty records:</p>
+<pre class="r"><code>degree_of_establishment %&lt;&gt;% filter(!is.na(degree_of_establishment))</code></pre>
+<p>These categories of <code>degree_of_establishment</code> are conform the vocabulary of <a href="">Blackburn et al. 2011</a> for mapping the degree of establishment. For each level, we here add the prefix <code>Blackburn et al. 2011:</code> and the categories (A-E):</p>
+<pre class="r"><code>degree_of_establishment %&lt;&gt;% 
+  mutate(description = 
+           recode(degree_of_establishment,
+              &quot;captive&quot; = &quot;captive (B1)&quot;,
+              &quot;casual&quot; = &quot;casual (C1)&quot;,
+              &quot;colonizing&quot; = &quot;colonizing (D1)&quot;,
+              &quot;established&quot; = &quot;established (C3)&quot;,
+              &quot;invasive&quot; = &quot;invasive (D2)&quot;,
+              &quot;released&quot; = &quot;released (B3)&quot;,
+              &quot;reproducing&quot; = &quot;reproducing (C2)&quot;
+))</code></pre>
+<p>Add prefix <code>Blackburn et al. 2011</code>:</p>
+<pre class="r"><code>degree_of_establishment %&lt;&gt;% mutate(description = paste(&quot;Blackburn et al. 2011&quot;, description, sep = &quot;:&quot;))</code></pre>
+<p>Inspect mapping:</p>
+<pre class="r"><code>degree_of_establishment %&gt;% 
+  group_by(degree_of_establishment, description) %&gt;% 
+  count()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["degree_of_establishment"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"captive","2":"Blackburn et al. 2011:captive (B1)","3":"1"},{"1":"casual","2":"Blackburn et al. 2011:casual (C1)","3":"5"},{"1":"colonizing","2":"Blackburn et al. 2011:colonizing (D1)","3":"1"},{"1":"established","2":"Blackburn et al. 2011:established (C3)","3":"4"},{"1":"released","2":"Blackburn et al. 2011:released (B3)","3":"28"},{"1":"reproducing","2":"Blackburn et al. 2011:reproducing (C2)","3":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Map <code>type</code>:</p>
+<pre class="r"><code>degree_of_establishment %&lt;&gt;% mutate(type = &quot;degree of establishment&quot;)</code></pre>
+<p>Select <code>taxon_id</code>, <code>description</code> and <code>type</code>:</p>
+<pre class="r"><code>degree_of_establishment %&lt;&gt;% select(taxon_id, description, type)</code></pre>
+</div>
+<div id="union-to-description-extension" class="section level2">
+<h2><span class="header-section-number">7.4</span> Union to description extension</h2>
+<p>Join <code>native_range</code> and <code>pathways</code> and <code>degree_of_establishment</code> into a single description extension:</p>
+<pre class="r"><code>description &lt;- bind_rows(native_range, pathways, degree_of_establishment)</code></pre>
+<p>Rename <code>taxon_id</code> to <code>taxonID</code>:</p>
+<pre class="r"><code>description %&lt;&gt;% rename(taxonID = taxon_id)</code></pre>
+<p>Sort on taxonID:</p>
+<pre class="r"><code>description %&lt;&gt;% arrange(taxonID) </code></pre>
+<p>Save to CSV:</p>
+<pre class="r"><code>write_csv(description, here(&quot;data&quot;, &quot;processed&quot;, &quot;description.csv&quot;), na = &quot;&quot;)</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
