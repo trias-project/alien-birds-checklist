@@ -576,7 +576,7 @@ species_profile %>% head()
 Save to CSV:
 
 ```{r}
-write_csv(species_profile, here("data", "processed", "species_profile.csv"), na = "")
+write_csv(species_profile, here("data", "processed", "speciesprofile.csv"), na = "")
 ```
 
 # Description extension
