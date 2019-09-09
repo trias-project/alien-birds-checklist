@@ -311,13 +311,13 @@ distribution %<>% mutate(location_be = case_when(
 ))
 ```
 
-Change `Brussels` to `Brussels-Capital region`:
+Change `Brussels` to `Brussels-Capital Region`:
 
 ```{r}
 distribution %<>% 
   mutate(dwc_locality = recode(
     location_be,
-    "Brussels" = "Brussels-Capital region"
+    "Brussels" = "Brussels-Capital Region"
     ))
 ```
 
