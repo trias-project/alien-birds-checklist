@@ -1,6 +1,6 @@
 ---
 title: "Darwin Core mapping"
-subtitle: "For: Checklist of Alien Birds of Belgium"
+subtitle: "For: Checklist of alien birds of Belgium"
 author:
 - Cristina Preda
 - Tim Adriaens

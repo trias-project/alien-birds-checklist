@@ -1,14 +1,16 @@
-name: "my_dataset_title"
+name: "Checklist of alien birds of Belgium"
 output_dir: "../docs"
+include: ["static/"]
 navbar:
-  title: "my_dataset_shortname"
+  title: "alien-birds-checklist"
   left:
     - text: "Darwin Core mapping"
       href: dwc_mapping.html
   right:
     - icon: fa-github fa-lg
-      href: my_dataset_repository
+      href: https://github.com/trias-project/alien-birds-checklist
 output:
   html_document:
     theme: yeti
     df_print: paged
+    css: "static/css/trias.css"
