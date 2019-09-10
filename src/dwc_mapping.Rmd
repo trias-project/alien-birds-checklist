@@ -570,13 +570,23 @@ species_profile %<>% mutate(dwc_isMarine = "FALSE")
 ### isTerrestrial
 
 ```{r}
-species_profile %<>% mutate(dwc_isTerrestrial = "TRUE")
+species_profile %<>% 
+  mutate(dwc_isTerrestrial = case_when(
+    realm == "terrestrial" ~ "TRUE",
+    TRUE ~ "FALSE"
+    )
+)
 ```
 
 ### isFreshwater
 
 ```{r}
-species_profile %<>% mutate(dwc_isFreshwater = "FALSE")
+species_profile %<>% 
+  mutate(dwc_isFreshwater = case_when(
+    realm == "freshwater" ~ "TRUE",
+    TRUE ~ "FALSE"
+    )
+)
 ```
 
 ## Post-processing
