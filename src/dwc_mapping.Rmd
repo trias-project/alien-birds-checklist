@@ -806,20 +806,14 @@ These categories of `degree_of_establishment` are conform the vocabulary of [Bla
 degree_of_establishment %<>% 
   mutate(description = 
            recode(degree_of_establishment,
-              "captive" = "captive (B1)",
-              "casual" = "casual (C1)",
-              "colonizing" = "colonizing (D1)",
-              "established" = "established (C3)",
-              "invasive" = "invasive (D2)",
-              "released" = "released (B3)",
-              "reproducing" = "reproducing (C2)"
+              "captive" = "captive (blackburn_2011:B1)",
+              "casual" = "casual (blackburn_2011:C1)",
+              "colonizing" = "colonizing (blackburn_2011:D1)",
+              "established" = "established (blackburn_2011:C3)",
+              "invasive" = "invasive (blackburn_2011:D2)",
+              "released" = "released (blackburn_2011:B3)",
+              "reproducing" = "reproducing (blackburn_2011:C2)"
 ))
-```
-
-Add prefix `Blackburn et al. 2011`:
-
-```{r}
-degree_of_establishment %<>% mutate(description = paste("Blackburn et al. 2011", description, sep = ":"))
 ```
 
 Inspect mapping:
