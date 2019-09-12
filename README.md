@@ -10,8 +10,8 @@ This repository contains the functionality to standardize the [Checklist of alie
 
 ## Published dataset
 
-* [Dataset on the IPT](<!-- Add the URL of the dataset on the IPT here -->)
-* [Dataset on GBIF](<!-- Add the DOI of the dataset on GBIF here -->)
+* [Dataset on the IPT](https://ipt.inbo.be/resource.do?r=alien-birds-checklist)
+* [Dataset on GBIF](https://doi.org/10.15468/wr3gis)
 
 ## Repo structure
 
