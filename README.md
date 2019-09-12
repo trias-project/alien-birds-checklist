@@ -50,4 +50,4 @@ The repository structure is based on [Cookiecutter Data Science](http://drivenda
 
 ## License
 
-[MIT License](LICENSE) for the code and documentation in this repository. The included data is released under another license.
+[MIT License](https://github.com/trias-project/alien-birds-checklist/blob/master/LICENSE) for the code and documentation in this repository. The included data is released under another license.
