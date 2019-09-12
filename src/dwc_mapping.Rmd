@@ -111,18 +111,18 @@ vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
 input_data %<>% mutate(taxon_id = paste(
   "alien-birds-checklist", # e.g. "alien-fishes-checklist"
   "taxon",
-  vdigest(paste(scientific_name, kingdom), algo = "md5"),
+  vdigest(scientific_name, algo = "md5"),
   sep = ":"
 ))
 ```
 
 ## Preview data
 
-Show the number of taxa and distributions per kingdom and rank:
+Show the number of taxa and distributions per rank:
 
 ```{r}
 input_data %>%
-  group_by(kingdom, taxon_rank) %>%
+  group_by(taxon_rank) %>%
   summarize(
     `# taxa` = n_distinct(taxon_id),
     `# distributions` = n()
