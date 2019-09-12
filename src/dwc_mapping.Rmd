@@ -210,30 +210,20 @@ taxon %<>% mutate(dwc_scientificName = scientific_name)
 
 ### kingdom
 
-Inspect values:
-
 ```{r}
-taxon %>%
-  group_by(kingdom) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-taxon %<>% mutate(dwc_kingdom = kingdom)
+taxon %<>% mutate(dwc_kingdom = "Animalia")
 ```
 
 ### Phylum
 
 ```{r}
-taxon %<>% mutate(dwc_phylum = phylum)
+taxon %<>% mutate(dwc_phylum = "Chordata")
 ```
 
 ### Class
 
 ```{r}
-taxon %<>% mutate(dwc_class = class)
+taxon %<>% mutate(dwc_class = "Aves")
 ```
 
 ### Order
