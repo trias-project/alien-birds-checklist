@@ -737,7 +737,7 @@ Separate content using the pipe symbol as a separator:
 ```{r}
 pathways %<>% 
   separate(col = introduction_pathway,
-           into = c("introduction_pathway_1", "introduction_pathway_2"),
+           into = c("introduction_pathway_1", "introduction_pathway_2", "introduction_pathway_3"),
            sep = "\\s\\|\\s",
            remove = FALSE)
 ```
@@ -748,7 +748,7 @@ Change from a wide to a long dataset:
 pathways %<>% 
   gather(key = "key",
          value = "value",
-         introduction_pathway_1, introduction_pathway_2,
+         introduction_pathway_1, introduction_pathway_2, introduction_pathway_3,
          na.rm = TRUE)
 ```
 
