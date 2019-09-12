@@ -14,11 +14,6 @@ output:
     toc: yes
     toc_depth: 3
     toc_float: yes
-#  pdf_document:
-#    df_print: kable
-#    number_sections: yes
-#    toc: yes
-#    toc_depth: 3
 ---
 
 # Setup 
@@ -35,28 +30,15 @@ library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
 library(digest)         # To generate hashes
 library(rgbif)          # To use GBIF services
-library(googlesheets)   # To import and read Google spreadsheets 
 library(janitor)
 ```
 
 # Read source data
 
-Define column types:
-
-```{r}
-col_types <- cols(.default = col_character())
-```
-
-Retrieve the [checklist of alien birds Belgium ](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0) which is a google spreadheet:
-
-```{r connect_google_spreadsheets}
-retrieve_spreadsheet <- gs_title("Checklist of alien birds Belgium")
-```
-
-Select the data in the worksheet `checklist`:
+Read data from the Google Spreadsheet [Checklist of alien birds Belgium](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0) (worksheet `checklist`), which is published as a csv file:
 
 ```{r read_source_data}
-input_data <- retrieve_spreadsheet %>% gs_read("checklist", col_types = col_types) # Also trims values
+input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSgGi_Un0-7cyg-SzaiE0-RYY5-WvuZNF9kG2GLgeonX6heR6U3xpechdMKWVMQ9raT6AuR86U_gQt9/pub?gid=0&single=true&output=csv", col_types = cols(.default = col_character()))
 ```
 
 We want to add a copy of the source data to the repository:
@@ -348,7 +330,8 @@ distribution %<>% mutate(dwc_locationID = case_when(
   location_be == "Belgium" ~ "ISO_3166-2:BE",
   location_be == "Flanders" ~ "ISO_3166-2:BE-VLG",
   location_be == "Wallonia" ~ "ISO_3166-2:BE-WAL",
-  location_be == "Brussels-Capital Region" ~ "ISO_3166-2:BE-BRU"))
+  location_be == "Brussels-Capital Region" ~ "ISO_3166-2:BE-BRU")
+)
 ```
 
 Inspect values:
