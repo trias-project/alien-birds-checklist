@@ -47,6 +47,8 @@ alien-birds-checklist:taxon:16e238473a69ad7c3dd28493d992bf16,Central America (WG
 alien-birds-checklist:taxon:16e238473a69ad7c3dd28493d992bf16,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:16e238473a69ad7c3dd28493d992bf16,released (blackburn_2011:B3),degree of establishment
 alien-birds-checklist:taxon:177b38de3a31818e3032dc9a3c634c30,cbd_2014_pathway:escape,pathway
+alien-birds-checklist:taxon:181a6b53c8b750dd328f07fd8224bf0e,Africa (WGSRPD:2),native range
+alien-birds-checklist:taxon:181a6b53c8b750dd328f07fd8224bf0e,Southern Europe,native range
 alien-birds-checklist:taxon:181a6b53c8b750dd328f07fd8224bf0e,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:1a36956b64f66958ce82e9457640fd8a,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:1a36956b64f66958ce82e9457640fd8a,released (blackburn_2011:B3),degree of establishment
@@ -114,6 +116,7 @@ alien-birds-checklist:taxon:34bf5ee8748ff44b29b2411c2781ccf7,cbd_2014_pathway:es
 alien-birds-checklist:taxon:34bf5ee8748ff44b29b2411c2781ccf7,cbd_2014_pathway:escape_zoo,pathway
 alien-birds-checklist:taxon:34fed7744ca533e51edd851dcbc7cff6,Southern Asia,native range
 alien-birds-checklist:taxon:34fed7744ca533e51edd851dcbc7cff6,Southeastern Asia,native range
+alien-birds-checklist:taxon:35c0c9930367b4b37e1c8ef7b582fedc,Australia (WGSRPD:50),native range
 alien-birds-checklist:taxon:35c0c9930367b4b37e1c8ef7b582fedc,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:36611146cb19000169889b5de238f19c,Southern America (WGSRPD:8),native range
 alien-birds-checklist:taxon:36611146cb19000169889b5de238f19c,cbd_2014_pathway:escape,pathway
@@ -192,6 +195,8 @@ alien-birds-checklist:taxon:5744b7d502ea1317043a4f193d5cccaf,Australia (WGSRPD:5
 alien-birds-checklist:taxon:5744b7d502ea1317043a4f193d5cccaf,Southeastern Asia,native range
 alien-birds-checklist:taxon:5744b7d502ea1317043a4f193d5cccaf,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:5744b7d502ea1317043a4f193d5cccaf,cbd_2014_pathway:escape_zoo,pathway
+alien-birds-checklist:taxon:5814a153586bc21cae2b168d9abeaf12,Southeastern Asia,native range
+alien-birds-checklist:taxon:5814a153586bc21cae2b168d9abeaf12,Southern Asia,native range
 alien-birds-checklist:taxon:5814a153586bc21cae2b168d9abeaf12,cbd_2014_pathway:escape_farm,pathway
 alien-birds-checklist:taxon:5b005b9a7bb7bf8fb633cb286f620a07,Southern Asia,native range
 alien-birds-checklist:taxon:5b005b9a7bb7bf8fb633cb286f620a07,cbd_2014_pathway:escape,pathway
@@ -254,6 +259,10 @@ alien-birds-checklist:taxon:6f2d30fffa494e9d63a7914c82c0efc7,cbd_2014_pathway:es
 alien-birds-checklist:taxon:6f2d30fffa494e9d63a7914c82c0efc7,released (blackburn_2011:B3),degree of establishment
 alien-birds-checklist:taxon:7037a771aeb28abccaa18900731daeb0,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:7037a771aeb28abccaa18900731daeb0,cbd_2014_pathway:escape,pathway
+alien-birds-checklist:taxon:712aef7dcc31a2ccc8e0fdfc03b6918c,Africa (WGSRPD:2),native range
+alien-birds-checklist:taxon:712aef7dcc31a2ccc8e0fdfc03b6918c,Western Asia (WGSRPD:34),native range
+alien-birds-checklist:taxon:712aef7dcc31a2ccc8e0fdfc03b6918c,Southern Asia,native range
+alien-birds-checklist:taxon:712aef7dcc31a2ccc8e0fdfc03b6918c,Southeastern Asia,native range
 alien-birds-checklist:taxon:735ec6110517c880ed39e5bf6ad92949,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:735ec6110517c880ed39e5bf6ad92949,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:735ec6110517c880ed39e5bf6ad92949,casual (blackburn_2011:C1),degree of establishment
@@ -281,6 +290,7 @@ alien-birds-checklist:taxon:793c837c634965e3b2a039139c3f4c8d,cbd_2014_pathway:es
 alien-birds-checklist:taxon:793c837c634965e3b2a039139c3f4c8d,cbd_2014_pathway:release_hunting,pathway
 alien-birds-checklist:taxon:793c837c634965e3b2a039139c3f4c8d,established (blackburn_2011:C3),degree of establishment
 alien-birds-checklist:taxon:79d6c70d043420a4269307a100359eb6,cbd_2014_pathway:escape_pet,pathway
+alien-birds-checklist:taxon:7b1c8ee2d67a0c7ceee523104a19434a,China (WGSRPD:36),native range
 alien-birds-checklist:taxon:7b1c8ee2d67a0c7ceee523104a19434a,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:7e58741f0c7a552e45119324368708ea,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:7e58741f0c7a552e45119324368708ea,cbd_2014_pathway:escape,pathway
@@ -303,6 +313,8 @@ alien-birds-checklist:taxon:8643bc40c8a9bd5e7bded6287dd66144,Northern America (W
 alien-birds-checklist:taxon:8643bc40c8a9bd5e7bded6287dd66144,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:864a11d7e946057065326af33dcf7930,Southern Africa (WGSRPD:27),native range
 alien-birds-checklist:taxon:864a11d7e946057065326af33dcf7930,cbd_2014_pathway:escape_pet,pathway
+alien-birds-checklist:taxon:8688fb87f5e3f0ee68342cd749340b37,China (WGSRPD:36),native range
+alien-birds-checklist:taxon:8688fb87f5e3f0ee68342cd749340b37,Myanmar,native range
 alien-birds-checklist:taxon:8688fb87f5e3f0ee68342cd749340b37,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:8aec80e4c64f45d6cbe579d3ea202646,Australia (WGSRPD:50),native range
 alien-birds-checklist:taxon:8aec80e4c64f45d6cbe579d3ea202646,cbd_2014_pathway:escape_pet,pathway
@@ -330,6 +342,7 @@ alien-birds-checklist:taxon:928f0a249bd8d9a29665b0c8dc18eb2b,Africa (WGSRPD:2),n
 alien-birds-checklist:taxon:928f0a249bd8d9a29665b0c8dc18eb2b,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:94e156350c69cb35a6110f5eddd8e18c,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:94e156350c69cb35a6110f5eddd8e18c,cbd_2014_pathway:escape_pet,pathway
+alien-birds-checklist:taxon:95b7a7c3011d680caa3574dcbb969547,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:95b7a7c3011d680caa3574dcbb969547,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:97e916e8e72c597ac17b2bf33fb66ef9,Australia (WGSRPD:50),native range
 alien-birds-checklist:taxon:97e916e8e72c597ac17b2bf33fb66ef9,cbd_2014_pathway:escape_pet,pathway
@@ -338,6 +351,7 @@ alien-birds-checklist:taxon:9b44d39cc68ff9bf9a7d9b739948ced1,cbd_2014_pathway:es
 alien-birds-checklist:taxon:9ba4fc97cd4fb0b6036b56ed4fbcc0d2,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:9ba4fc97cd4fb0b6036b56ed4fbcc0d2,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:9c4e6066ec5a9426ab70c2a6cc4112df,Europe (WGSRPD:1),native range
+alien-birds-checklist:taxon:9c4e6066ec5a9426ab70c2a6cc4112df,Asia,native range
 alien-birds-checklist:taxon:9c4e6066ec5a9426ab70c2a6cc4112df,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:9c4e6066ec5a9426ab70c2a6cc4112df,cbd_2014_pathway:escape_farm,pathway
 alien-birds-checklist:taxon:9c55a40bb74da39e6b167392b3647eab,Southern Asia,native range
@@ -388,12 +402,14 @@ alien-birds-checklist:taxon:ad39530bef62d652d73b8a42ea89ef1d,cbd_2014_pathway:es
 alien-birds-checklist:taxon:aef03d094e0fb3c0358c07e42cb75d74,Central America (WGSRPD:80),native range
 alien-birds-checklist:taxon:aef03d094e0fb3c0358c07e42cb75d74,Southern America (WGSRPD:8),native range
 alien-birds-checklist:taxon:aef03d094e0fb3c0358c07e42cb75d74,cbd_2014_pathway:escape,pathway
+alien-birds-checklist:taxon:b0ea3c59d2a48eea6798169e8cb65e87,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:b12d3a91aac14afbbfb586b5c2a99b3d,Western Africa,native range
 alien-birds-checklist:taxon:b12d3a91aac14afbbfb586b5c2a99b3d,Middle Africa,native range
 alien-birds-checklist:taxon:b12d3a91aac14afbbfb586b5c2a99b3d,Eastern Africa,native range
 alien-birds-checklist:taxon:b12d3a91aac14afbbfb586b5c2a99b3d,Southern Africa (WGSRPD:27),native range
 alien-birds-checklist:taxon:b1f5b72afec7f3dd6d37373a5063545c,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:b1f5b72afec7f3dd6d37373a5063545c,released (blackburn_2011:B3),degree of establishment
+alien-birds-checklist:taxon:b1f9190502136d6e7d407b35a5a0b140,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:b31fa2d38ea9bf5d7e0fa7edd4acc163,Australia (WGSRPD:50),native range
 alien-birds-checklist:taxon:b31fa2d38ea9bf5d7e0fa7edd4acc163,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:b4123ef82c9b850b7f4e866d56e67b25,Eastern Asia (WGSRPD:38),native range
@@ -406,6 +422,7 @@ alien-birds-checklist:taxon:b9dc18f39952c5aee8c4e28ad72caa88,Japan (WGSRPD:JAP),
 alien-birds-checklist:taxon:b9dc18f39952c5aee8c4e28ad72caa88,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:bb988b1d4bbaf3dd5785157f6ad7ab99,Southern America (WGSRPD:8),native range
 alien-birds-checklist:taxon:bb988b1d4bbaf3dd5785157f6ad7ab99,cbd_2014_pathway:escape,pathway
+alien-birds-checklist:taxon:bda0173ad429dbb615e6becf8cc5879c,Southeastern Asia,native range
 alien-birds-checklist:taxon:bda0173ad429dbb615e6becf8cc5879c,cbd_2014_pathway:escape_pet,pathway
 alien-birds-checklist:taxon:be199ce20629921ebbcadf3aaff57210,Southern America (WGSRPD:8),native range
 alien-birds-checklist:taxon:be199ce20629921ebbcadf3aaff57210,cbd_2014_pathway:escape,pathway
@@ -548,7 +565,8 @@ alien-birds-checklist:taxon:e8eb51fc61ad968b60d2aae579e6c384,Australia (WGSRPD:5
 alien-birds-checklist:taxon:e8eb51fc61ad968b60d2aae579e6c384,cbd_2014_pathway:escape,pathway
 alien-birds-checklist:taxon:e8fd9c2132ead52168c161d0443612a6,Africa (WGSRPD:2),native range
 alien-birds-checklist:taxon:e8fd9c2132ead52168c161d0443612a6,Western Asia (WGSRPD:34),native range
-alien-birds-checklist:taxon:ede5f690c450d96676f13e879b67151a,Asia,native range
+alien-birds-checklist:taxon:ede5f690c450d96676f13e879b67151a,Southern Asia,native range
+alien-birds-checklist:taxon:ede5f690c450d96676f13e879b67151a,Southeastern Asia,native range
 alien-birds-checklist:taxon:ede5f690c450d96676f13e879b67151a,Australia (WGSRPD:50),native range
 alien-birds-checklist:taxon:ede5f690c450d96676f13e879b67151a,cbd_2014_pathway:escape_farm,pathway
 alien-birds-checklist:taxon:ede5f690c450d96676f13e879b67151a,cbd_2014_pathway:escape_pet,pathway

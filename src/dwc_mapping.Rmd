@@ -196,19 +196,19 @@ taxon %<>% mutate(dwc_scientificName = scientific_name)
 taxon %<>% mutate(dwc_kingdom = "Animalia")
 ```
 
-### Phylum
+### phylum
 
 ```{r}
 taxon %<>% mutate(dwc_phylum = "Chordata")
 ```
 
-### Class
+### class
 
 ```{r}
 taxon %<>% mutate(dwc_class = "Aves")
 ```
 
-### Order
+### order
 
 ```{r}
 taxon %<>% mutate(dwc_order = order)
@@ -236,7 +236,7 @@ taxon %>%
   count()
 ```
 
-Map values by recoding to the [GBIF rank vocabulary](http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml):
+Values are conform [GBIF rank vocabulary](http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml), map as is:
 
 ```{r}
 taxon %<>% mutate(dwc_taxonRank = taxon_rank)
@@ -307,30 +307,20 @@ distribution %>%
 Set current NA's in `location` to `Belgium`:
 
 ```{r}
-distribution %<>% mutate(location_be = case_when(
+distribution %<>% mutate(location = case_when(
   is.na(location) ~ "Belgium",
   TRUE ~ location
 ))
 ```
 
-Change `Brussels` to `Brussels-Capital Region`:
-
-```{r}
-distribution %<>% 
-  mutate(location_be = recode(
-    location_be,
-    "Brussels" = "Brussels-Capital Region"
-    ))
-```
-
-Map `locationID` to [ISO 3166 code]
+Map `locationID` to ISO 3166 code:
 
 ```{r}
 distribution %<>% mutate(dwc_locationID = case_when(
-  location_be == "Belgium" ~ "ISO_3166-2:BE",
-  location_be == "Flanders" ~ "ISO_3166-2:BE-VLG",
-  location_be == "Wallonia" ~ "ISO_3166-2:BE-WAL",
-  location_be == "Brussels-Capital Region" ~ "ISO_3166-2:BE-BRU")
+  location == "Belgium" ~ "ISO_3166-2:BE",
+  location == "Flanders" ~ "ISO_3166-2:BE-VLG",
+  location == "Wallonia" ~ "ISO_3166-2:BE-WAL",
+  location == "Brussels" ~ "ISO_3166-2:BE-BRU")
 )
 ```
 
@@ -338,14 +328,28 @@ Inspect values:
 
 ```{r}
 distribution %>%
-  group_by(location, location_be, dwc_locationID) %>%
+  group_by(location, dwc_locationID) %>%
   count()
 ```
 
 ### locality
 
+Map to standard values:
+
 ```{r}
-distribution %<>% mutate(dwc_locality = location_be)
+distribution %<>% mutate(dwc_locality = recode(location, 
+  "Flanders" = "Flemish Region",
+  "Wallonia" = "Walloon Region",
+  "Brussels" = "Brussels-Capital Region"
+))
+```
+
+Inspect values:
+
+```{r}
+distribution %>%
+  group_by(location, dwc_locality) %>%
+  count()
 ```
 
 ### countryCode
@@ -409,7 +413,7 @@ distribution %<>% mutate(
 ))
 ```
 
-Inspact values for `date_last_observation`:
+Inspect values for `date_last_observation`:
 
 ```{r}
 distribution %>%
