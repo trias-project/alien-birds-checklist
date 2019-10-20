@@ -82,7 +82,30 @@ parsed_names %>%
   filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
 ```
 
-There are no nomenclatural issues here, so there's no need for cleaning of the scientific names.
+Correct typo:
+
+```{r}
+input_data %<>% mutate(scientific_name = recode(scientific_name,
+  "AnaS capensis Gmelin, 1789" = "Anas capensis Gmelin, 1789"
+))
+```
+
+Run parsing again:
+
+```{r}
+parsed_names <- input_data %>%
+  distinct(scientific_name) %>%
+  pull() %>% # Create vector from dataframe
+  parsenames() # An rgbif function
+```
+
+Check results (should be 0):
+
+```{r}
+parsed_names %>%
+  select(scientificname, type, parsed, parsedpartially, rankmarker) %>%
+  filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
+```
 
 ## Taxon IDs
 
