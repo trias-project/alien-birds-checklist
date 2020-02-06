@@ -6,7 +6,7 @@ This repository contains the functionality to standardize the _Checklist of alie
 
 ## Workflow
 
-[source data](data/raw) (maintained as a [Google Spreadsheet](https://docs.google.com/spreadsheets/d/e/2PACX-1vSgGi_Un0-7cyg-SzaiE0-RYY5-WvuZNF9kG2GLgeonX6heR6U3xpechdMKWVMQ9raT6AuR86U_gQt9/pub?gid=0&single=true&output=csv)) → Darwin Core [mapping script](https://trias-project.github.io/alien-birds-checklist/dwc_mapping.html) → generated [Darwin Core files](data/processed)
+[source data](data/raw) (maintained as a [Google Spreadsheet](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit?usp=sharing)) → Darwin Core [mapping script](https://trias-project.github.io/alien-birds-checklist/dwc_mapping.html) → generated [Darwin Core files](data/processed)
 
 ## Published dataset
 
