@@ -773,6 +773,9 @@ colnames(description) <- str_remove(colnames(description), "dwc_")
 Sort on `taxonID` (to maintain some consistency between updates of the dataset):
 
 ```{r}
+taxon %<>% arrange(taxonID)
+distribution %<>% arrange(taxonID)
+species_profile %<>% arrange(taxonID)
 description %<>% arrange(taxonID)
 ```
 
