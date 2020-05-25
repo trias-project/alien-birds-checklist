@@ -16,7 +16,7 @@ output:
     toc_float: yes
 ---
 
-# Setup 
+This document describes how we map the checklist data to Darwin Core. The source file for this document can be found [here](https://github.com/trias-project/alien-birds-checklist/blob/master/src/dwc_mapping.Rmd).
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
@@ -28,20 +28,22 @@ Load libraries:
 library(tidyverse)      # To do data science
 library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
+library(janitor)        # To clean input data
 library(digest)         # To generate hashes
 library(rgbif)          # To use GBIF services
-library(janitor)
 ```
 
 # Read source data
 
-Read data from the Google Spreadsheet [Checklist of alien birds Belgium](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0) (worksheet `checklist`), which is published as a csv file:
+The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0).
 
-```{r read_source_data}
+Read the relevant worksheet (published as csv):
+
+```{r}
 input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSgGi_Un0-7cyg-SzaiE0-RYY5-WvuZNF9kG2GLgeonX6heR6U3xpechdMKWVMQ9raT6AuR86U_gQt9/pub?gid=0&single=true&output=csv", col_types = cols(.default = col_character()))
 ```
 
-We want to add a copy of the source data to the repository:
+Copy the source data to the repository to keep track of changes:
 
 ```{r}
 write_csv(input_data, here("data", "raw", "alien_bird_checklist_dump.csv"), na = "")
@@ -53,14 +55,16 @@ Preview data:
 input_data %>% head()
 ```
 
-# Process source data
+# Preprocessing
 
 ## Tidy data
 
-Clean names:
+Clean names data somewhat:
 
 ```{r}
-input_data %<>% clean_names()
+input_data %<>%
+  remove_empty("rows") %>%    # Remove empty rows
+  clean_names()               # Have sensible (lowercase) column names
 ```
 
 ## Scientific names
@@ -116,21 +120,17 @@ Preview data:
 input_data %>% head()
 ```
 
-# Taxon core
+# Darwin Core mapping
 
-## Pre-processing
+## Taxon core
 
-Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):
+Create a dataframe with unique taxa only (ignoring multiple distribution rows):
 
 ```{r}
 taxon <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
-## Term mapping
-
 Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
-
-Start with record-level terms which contain metadata about the dataset (which is generally the same for all records).
 
 ### language
 
@@ -173,8 +173,6 @@ taxon %<>% mutate(dwc_institutionCode = "INBO")
 ```{r}
 taxon %<>% mutate(dwc_datasetName = "Checklist of alien birds of Belgium") 
 ```
-
-The following terms contain information about the taxon:
 
 ### taxonID
 
@@ -246,43 +244,13 @@ taxon %<>% mutate(dwc_taxonRank = taxon_rank)
 taxon %<>% mutate(dwc_nomenclaturalCode = "ICZN")
 ```
 
-## Post-processing
-
-Only keep the Darwin Core columns:
-
-```{r}
-taxon %<>% select(starts_with("dwc_"))
-```
-
-Drop the `dwc_` prefix:
-
-```{r}
-colnames(taxon) <- str_replace(colnames(taxon), "dwc_", "")
-```
-
-Preview data:
-
-```{r}
-taxon %>% head()
-```
-
-Save to CSV:
-
-```{r}
-write_csv(taxon, here("data", "processed", "taxon.csv"), na = "")
-```
-
 # Distribution extension
-
-## Pre-processing
 
 Create a dataframe with all data:
 
 ```{r}
 distribution <- input_data
 ```
-
-## Term mapping
 
 Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
 
@@ -302,7 +270,7 @@ distribution %>%
   count()
 ```
 
-Set current NA's in `location` to `Belgium`:
+Set current `NA`'s in `location` to `Belgium`:
 
 ```{r}
 distribution %<>% mutate(location = case_when(
@@ -390,7 +358,7 @@ distribution %<>% mutate(dwc_establishmentMeans = "introduced")
 
 ### eventDate
 
-Inspact values for `date_first_observation`:
+Inspect values for `date_first_observation`:
 
 ```{r}
 distribution %>%
@@ -482,43 +450,13 @@ Map values:
 distribution %<>% mutate(dwc_occurrenceRemarks = remarks) 
 ```
 
-## Post-processing
-
-Only keep the Darwin Core columns:
-
-```{r}
-distribution %<>% select(starts_with("dwc_"))
-```
-
-Drop the `dwc_` prefix:
-
-```{r}
-colnames(distribution) <- str_replace(colnames(distribution), "dwc_", "")
-```
-
-Preview data:
-
-```{r}
-distribution %>% head()
-```
-
-Save to CSV:
-
-```{r}
-write_csv(distribution, here("data", "processed", "distribution.csv"), na = "")
-```
-
 # Species profile extension
 
-## Pre-processing
-
-Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):
+Create a dataframe with unique taxa only (ignoring multiple distribution rows):
 
 ```{r}
 species_profile <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
-
-## Term mapping
 
 Map the data to [Species Profile](http://rs.gbif.org/extension/gbif/1.0/speciesprofile.xml).
 
@@ -545,54 +483,24 @@ species_profile %<>% mutate(dwc_isMarine = "FALSE")
 ### isTerrestrial
 
 ```{r}
-species_profile %<>% 
-  mutate(dwc_isTerrestrial = case_when(
-    realm == "terrestrial" ~ "TRUE",
-    TRUE ~ "FALSE"
-    )
-)
+species_profile %<>% mutate(dwc_isTerrestrial = case_when(
+  realm == "terrestrial" ~ "TRUE",
+  TRUE ~ "FALSE"
+))
 ```
 
 ### isFreshwater
 
 ```{r}
-species_profile %<>% 
-  mutate(dwc_isFreshwater = case_when(
-    realm == "freshwater" ~ "TRUE",
-    TRUE ~ "FALSE"
-    )
-)
-```
-
-## Post-processing
-
-Only keep the Darwin Core columns:
-
-```{r}
-species_profile %<>% select(starts_with("dwc_"))
-```
-
-Drop the `dwc_` prefix:
-
-```{r}
-colnames(species_profile) <- str_replace(colnames(species_profile), "dwc_", "")
-```
-
-Preview data:
-
-```{r}
-species_profile %>% head()
-```
-
-Save to CSV:
-
-```{r}
-write_csv(species_profile, here("data", "processed", "speciesprofile.csv"), na = "")
+species_profile %<>% mutate(dwc_isFreshwater = case_when(
+  realm == "freshwater" ~ "TRUE",
+  TRUE ~ "FALSE"
+))
 ```
 
 # Description extension
 
-In the description extension we want to include several important characteristics (hereafter refered to as descriptors) about the species:
+In the description extension we want to include several important characteristics (hereafter referred to as descriptors) about the species:
 
 - Native range
 - Pathway of introduction
@@ -608,7 +516,7 @@ Create separate dataframe:
 native_range <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
-Inspect `native_range`:
+Inspect values:
 
 ```{r}
 native_range %>% 
@@ -619,24 +527,22 @@ native_range %>%
 Separate content using the pipe symbol as a separator:
 
 ```{r}
-native_range %<>% 
-  separate(col = native_range,
-           into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
-           sep = "\\s\\|\\s",
-           remove = FALSE)
+native_range %<>% separate(
+  native_range,
+  into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
+  sep = "\\s\\|\\s",
+  remove = FALSE
+)
 ```
 
-Change from a wide to a long dataset:
+Change from a wide to a long dataset and trim:
 
 ```{r}
-native_range %<>% 
-  gather(key = "key",
-         value = "value",
-         native_range_1, native_range_2, native_range_3, native_range_4, native_range_5,
-         na.rm = TRUE)
+native_range %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
+  mutate(value = str_trim(value))
 ```
 
-Show unique values for native range:
+Inspect unique values:
 
 ```{r}
 native_range %>% 
@@ -647,41 +553,38 @@ native_range %>%
 Map to the [WGSRPD vocabulary](http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf):
 
 ```{r}
-native_range %<>% mutate(
-  description = recode(
-    value,
-    "Africa" = "Africa (WGSRPD:2)",
-    "Australia" = "Australia (WGSRPD:50)",
-    "Caribbean" = "Caribbean (WGSRPD:81)",
-    "Central America" = "Central America (WGSRPD:80)",
-    "China" = "China (WGSRPD:36)",
-    "East Asia" = "Eastern Asia (WGSRPD:38)",
-    "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
-    "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
-    "Europe" = "Europe (WGSRPD:1)",
-    "Galapagos" = "Galapagos (WGSRPD:GAL)",
-    "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
-    "India" = "Indian Subcontinent (WGSRPD:40)",
-    "Indonesia" = "Indonesia (WGSRPD:ID)",
-    "Japan" = "Japan (WGSRPD:JAP)",
-    "Madagascar" = "Madagascar (WGSRPD:MDG)",
-    "New Zealand" = "New Zealand (WGSRPD:51)",
-    "North America" = "Northern America (WGSRPD:7)",
-    "Northern America" = "Northern America (WGSRPD:7)",
-    "Panama" = "Panama (WGSRPD:PAN)",
-    "Philippines" = "Philippines (WGSRPD:PHI)",
-    "Portugal" = "Portugal (WGSRPD:POR)",
-    "South America" = "Southern America (WGSRPD:8)",
-    "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
-    "Southern Africa" = "Southern Africa (WGSRPD:27)",
-    "Spain" = "Spain (WGSRPD:SPA)",
-    "Tanzania" = "Tanzania (WGSRPD:TAN)",
-    "Western Asia" = "Western Asia (WGSRPD:34)"
-  )
-)
+native_range %<>% mutate(description = recode(value,
+  "Africa" = "Africa (WGSRPD:2)",
+  "Australia" = "Australia (WGSRPD:50)",
+  "Caribbean" = "Caribbean (WGSRPD:81)",
+  "Central America" = "Central America (WGSRPD:80)",
+  "China" = "China (WGSRPD:36)",
+  "East Asia" = "Eastern Asia (WGSRPD:38)",
+  "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
+  "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
+  "Europe" = "Europe (WGSRPD:1)",
+  "Galapagos" = "Galapagos (WGSRPD:GAL)",
+  "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
+  "India" = "Indian Subcontinent (WGSRPD:40)",
+  "Indonesia" = "Indonesia (WGSRPD:ID)",
+  "Japan" = "Japan (WGSRPD:JAP)",
+  "Madagascar" = "Madagascar (WGSRPD:MDG)",
+  "New Zealand" = "New Zealand (WGSRPD:51)",
+  "North America" = "Northern America (WGSRPD:7)",
+  "Northern America" = "Northern America (WGSRPD:7)",
+  "Panama" = "Panama (WGSRPD:PAN)",
+  "Philippines" = "Philippines (WGSRPD:PHI)",
+  "Portugal" = "Portugal (WGSRPD:POR)",
+  "South America" = "Southern America (WGSRPD:8)",
+  "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
+  "Southern Africa" = "Southern Africa (WGSRPD:27)",
+  "Spain" = "Spain (WGSRPD:SPA)",
+  "Tanzania" = "Tanzania (WGSRPD:TAN)",
+  "Western Asia" = "Western Asia (WGSRPD:34)"
+))
 ```
 
-Show mapping:
+Inspect mapped values:
 
 ```{r}
 native_range %>% 
@@ -689,7 +592,7 @@ native_range %>%
   count()
 ```
 
-Map `type`:
+Add `type` of description:
 
 ```{r}
 native_range %<>% mutate(type = "native range")
@@ -706,13 +609,13 @@ native_range %<>% select(taxon_id, description, type)
 Create separate dataframe:
 
 ```{r}
-pathways <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
+pathway <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
-Inspect `native_range`:
+Inspect values:
 
 ```{r}
-pathways %>% 
+pathway %>% 
   group_by(introduction_pathway) %>% 
   count()
 ```
@@ -720,47 +623,45 @@ pathways %>%
 Separate content using the pipe symbol as a separator:
 
 ```{r}
-pathways %<>% 
-  separate(col = introduction_pathway,
-           into = c("introduction_pathway_1", "introduction_pathway_2", "introduction_pathway_3"),
-           sep = "\\s\\|\\s",
-           remove = FALSE)
+pathway %<>% separate(
+  introduction_pathway,
+  into = c("introduction_pathway_1", "introduction_pathway_2", "introduction_pathway_3"),
+  sep = "\\s\\|\\s",
+  remove = FALSE
+)
 ```
 
-Change from a wide to a long dataset:
+Change from a wide to a long dataset and trim:
 
 ```{r}
-pathways %<>% 
-  gather(key = "key",
-         value = "value",
-         introduction_pathway_1, introduction_pathway_2, introduction_pathway_3,
-         na.rm = TRUE)
+pathway %<>% gather(key, value, starts_with("introduction_pathway_"), na.rm = TRUE) %>%
+  mutate(value = str_trim(value))
 ```
 
-Show unique values for native range:
+Inspect unique values:
 
 ```{r}
-pathways %>% 
+pathway %>% 
   group_by(value) %>% 
   count()
 ```
 
-Add prefix  `cbd_2014_pathway:` to refer to the [CBD standard for pathway information](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf)
+Add prefix `cbd_2014_pathway:` to refer to the [CBD standard for pathway information](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf)
 
 ```{r}
-pathways %<>% mutate(description = paste("cbd_2014_pathway", value, sep = ":"))
+pathway %<>% mutate(description = paste("cbd_2014_pathway", value, sep = ":"))
 ```
 
-Add `type`:
+Add `type` of description:
 
 ```{r}
-pathways %<>% mutate(type = "pathway")
+pathway %<>% mutate(type = "pathway")
 ```
 
 Select `taxon_id`, `description` and `type`:
 
 ```{r}
-pathways %<>% select(taxon_id, description, type)
+pathway %<>% select(taxon_id, description, type)
 ```
 
 ## Degree of establishment
@@ -771,7 +672,7 @@ Create separate dataframe:
 degree_of_establishment <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
 ```
 
-Inspect `degree_of_establishment`:
+Inspect values:
 
 ```{r}
 degree_of_establishment %>% 
@@ -785,23 +686,21 @@ Remove empty records:
 degree_of_establishment %<>% filter(!is.na(degree_of_establishment))
 ```
 
-These categories of `degree_of_establishment` are conform the vocabulary of [Blackburn et al. 2011]() for mapping the degree of establishment. For each level, we here add the prefix `Blackburn et al. 2011:` and the categories (A-E):
+These categories of `degree_of_establishment` are conform the vocabulary of [Blackburn et al. 2011](http://doc.rero.ch/record/24725/files/bach_puf.pdf) for mapping the degree of establishment. For each level, we here add the prefix `Blackburn et al. 2011:` and the categories (A-E):
 
 ```{r}
-degree_of_establishment %<>% 
-  mutate(description = 
-           recode(degree_of_establishment,
-              "captive" = "captive (blackburn_2011:B1)",
-              "casual" = "casual (blackburn_2011:C1)",
-              "colonizing" = "colonizing (blackburn_2011:D1)",
-              "established" = "established (blackburn_2011:C3)",
-              "invasive" = "invasive (blackburn_2011:D2)",
-              "released" = "released (blackburn_2011:B3)",
-              "reproducing" = "reproducing (blackburn_2011:C2)"
+degree_of_establishment %<>% mutate(description = recode(degree_of_establishment,
+  "captive" = "captive (blackburn_2011:B1)",
+  "casual" = "casual (blackburn_2011:C1)",
+  "colonizing" = "colonizing (blackburn_2011:D1)",
+  "established" = "established (blackburn_2011:C3)",
+  "invasive" = "invasive (blackburn_2011:D2)",
+  "released" = "released (blackburn_2011:B3)",
+  "reproducing" = "reproducing (blackburn_2011:C2)"
 ))
 ```
 
-Inspect mapping:
+Inspect mapped values:
 
 ```{r}
 degree_of_establishment %>% 
@@ -809,7 +708,7 @@ degree_of_establishment %>%
   count()
 ```
 
-Map `type`:
+Add `type` of description:
 
 ```{r}
 degree_of_establishment %<>% mutate(type = "degree of establishment")
@@ -821,28 +720,91 @@ Select `taxon_id`, `description` and `type`:
 degree_of_establishment %<>% select(taxon_id, description, type)
 ```
 
-## Union to description extension
-
-Join `native_range` and `pathways` and `degree_of_establishment` into a single description extension:
+Union native range, pathway of introduction and degree of establishment into a single description extension:
 
 ```{r}
-description <- bind_rows(native_range, pathways, degree_of_establishment)
+description <- bind_rows(native_range, pathway, degree_of_establishment)
 ```
 
-Rename `taxon_id` to `taxonID`:
+### taxonID
 
 ```{r}
-description %<>% rename(taxonID = taxon_id)
+description %<>% mutate(dwc_taxonID = taxon_id)
 ```
 
-Sort on taxonID:
+### description
 
 ```{r}
-description %<>% arrange(taxonID) 
+description %<>% mutate(dwc_description = description)
+```
+
+### type
+
+```{r}
+description %<>% mutate(dwc_type = type)
+```
+
+### language
+
+```{r}
+description %<>% mutate(dwc_language = "en")
+```
+
+# Post-processsing
+
+Only keep the Darwin Core columns:
+
+```{r}
+taxon %<>% select(starts_with("dwc_"))
+distribution %<>% select(starts_with("dwc_"))
+species_profile %<>% select(starts_with("dwc_"))
+description %<>% select(starts_with("dwc_"))
+```
+
+Drop the `dwc_` prefix:
+
+```{r}
+colnames(taxon) <- str_remove(colnames(taxon), "dwc_")
+colnames(distribution) <- str_remove(colnames(distribution), "dwc_")
+colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
+colnames(description) <- str_remove(colnames(description), "dwc_")
+```
+
+Sort on `taxonID` (to maintain some consistency between updates of the dataset):
+
+```{r}
+description %<>% arrange(taxonID)
+```
+
+Preview taxon core:
+
+```{r}
+taxon %>% head()
+```
+
+Preview distribution extension:
+
+```{r}
+distribution %>% head()
+```
+
+Preview species profile extension:
+
+```{r}
+species_profile %>% head()
+```
+
+Preview description extension:
+
+```{r}
+description %>% head(10)
 ```
 
 Save to CSV:
 
 ```{r}
+write_csv(taxon, here("data", "processed", "taxon.csv"), na = "")
+write_csv(distribution, here("data", "processed", "distribution.csv"), na = "")
+write_csv(species_profile, here("data", "processed", "speciesprofile.csv"), na = "")
 write_csv(description, here("data", "processed", "description.csv"), na = "")
 ```
