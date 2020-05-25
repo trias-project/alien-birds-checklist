@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -15,7 +14,7 @@
 <meta name="author" content="Peter Desmet" />
 <meta name="author" content="Lien Reyserhove" />
 
-<meta name="date" content="2019-10-20" />
+<meta name="date" content="2020-05-25" />
 
 <title>Darwin Core mapping</title>
 
@@ -97,7 +96,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -246,6 +244,7 @@ $(document).ready(function () {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -274,6 +273,12 @@ $(document).ready(function () {
 }
 }
 
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
 
 .toc-content {
   padding-left: 30px;
@@ -378,26 +383,25 @@ div.tocify {
 <h4 class="author">Tim Adriaens</h4>
 <h4 class="author">Peter Desmet</h4>
 <h4 class="author">Lien Reyserhove</h4>
-<h4 class="date">2019-10-20</h4>
+<h4 class="date">2020-05-25</h4>
 
 </div>
 
 
-<div id="setup" class="section level1">
-<h1><span class="header-section-number">1</span> Setup</h1>
+<p>This document describes how we map the checklist data to Darwin Core. The source file for this document can be found <a href="https://github.com/trias-project/alien-birds-checklist/blob/master/src/dwc_mapping.Rmd">here</a>.</p>
 <p>Load libraries:</p>
 <pre class="r"><code>library(tidyverse)      # To do data science
 library(magrittr)       # To use %&lt;&gt;% pipes
 library(here)           # To find files
+library(janitor)        # To clean input data
 library(digest)         # To generate hashes
-library(rgbif)          # To use GBIF services
-library(janitor)</code></pre>
-</div>
+library(rgbif)          # To use GBIF services</code></pre>
 <div id="read-source-data" class="section level1">
-<h1><span class="header-section-number">2</span> Read source data</h1>
-<p>Read data from the Google Spreadsheet <a href="https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0">Checklist of alien birds Belgium</a> (worksheet <code>checklist</code>), which is published as a csv file:</p>
+<h1><span class="header-section-number">1</span> Read source data</h1>
+<p>The data is maintained in <a href="https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0">this Google Spreadsheet</a>.</p>
+<p>Read the relevant worksheet (published as csv):</p>
 <pre class="r"><code>input_data &lt;- read_csv(&quot;https://docs.google.com/spreadsheets/d/e/2PACX-1vSgGi_Un0-7cyg-SzaiE0-RYY5-WvuZNF9kG2GLgeonX6heR6U3xpechdMKWVMQ9raT6AuR86U_gQt9/pub?gid=0&amp;single=true&amp;output=csv&quot;, col_types = cols(.default = col_character()))</code></pre>
-<p>We want to add a copy of the source data to the repository:</p>
+<p>Copy the source data to the repository to keep track of changes:</p>
 <pre class="r"><code>write_csv(input_data, here(&quot;data&quot;, &quot;raw&quot;, &quot;alien_bird_checklist_dump.csv&quot;), na = &quot;&quot;)</code></pre>
 <p>Preview data:</p>
 <pre class="r"><code>input_data %&gt;% head()</code></pre>
@@ -407,39 +411,23 @@ library(janitor)</code></pre>
   </script>
 </div>
 </div>
-<div id="process-source-data" class="section level1">
-<h1><span class="header-section-number">3</span> Process source data</h1>
+<div id="preprocessing" class="section level1">
+<h1><span class="header-section-number">2</span> Preprocessing</h1>
 <div id="tidy-data" class="section level2">
-<h2><span class="header-section-number">3.1</span> Tidy data</h2>
-<p>Clean names:</p>
-<pre class="r"><code>input_data %&lt;&gt;% clean_names()</code></pre>
+<h2><span class="header-section-number">2.1</span> Tidy data</h2>
+<p>Clean names data somewhat:</p>
+<pre class="r"><code>input_data %&lt;&gt;%
+  remove_empty(&quot;rows&quot;) %&gt;%    # Remove empty rows
+  clean_names()               # Have sensible (lowercase) column names</code></pre>
 </div>
 <div id="scientific-names" class="section level2">
-<h2><span class="header-section-number">3.2</span> Scientific names</h2>
+<h2><span class="header-section-number">2.2</span> Scientific names</h2>
 <p>Use the <a href="https://www.gbif.org/tools/name-parser">GBIF nameparser</a> to retrieve nomenclatural information for the scientific names in the checklist:</p>
 <pre class="r"><code>parsed_names &lt;- input_data %&gt;%
   distinct(scientific_name) %&gt;%
   pull() %&gt;% # Create vector from dataframe
   parsenames() # An rgbif function</code></pre>
-<p>Show scientific names with nomenclatural issues, i.e. not of <code>type = SCIENTIFIC</code> or that could not be fully parsed. Note: these are not necessarily incorrect.</p>
-<pre class="r"><code>parsed_names %&gt;%
-  select(scientificname, type, parsed, parsedpartially, rankmarker) %&gt;%
-  filter(!(type == &quot;SCIENTIFIC&quot; &amp; parsed == &quot;TRUE&quot; &amp; parsedpartially == &quot;FALSE&quot;))</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["scientificname"],"name":[1],"type":["chr"],"align":["left"]},{"label":["type"],"name":[2],"type":["chr"],"align":["left"]},{"label":["parsed"],"name":[3],"type":["lgl"],"align":["right"]},{"label":["parsedpartially"],"name":[4],"type":["lgl"],"align":["right"]},{"label":["rankmarker"],"name":[5],"type":["chr"],"align":["left"]}],"data":[{"1":"AnaS capensis Gmelin, 1789","2":"SCIENTIFIC","3":"TRUE","4":"TRUE","5":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<p>Correct typo:</p>
-<pre class="r"><code>input_data %&lt;&gt;% mutate(scientific_name = recode(scientific_name,
-  &quot;AnaS capensis Gmelin, 1789&quot; = &quot;Anas capensis Gmelin, 1789&quot;
-))</code></pre>
-<p>Run parsing again:</p>
-<pre class="r"><code>parsed_names &lt;- input_data %&gt;%
-  distinct(scientific_name) %&gt;%
-  pull() %&gt;% # Create vector from dataframe
-  parsenames() # An rgbif function</code></pre>
-<p>Check results (should be 0):</p>
+<p>Show scientific names with nomenclatural issues, i.e. not of <code>type = SCIENTIFIC</code> or that could not be fully parsed (should be 0). Note: these are not necessarily incorrect.</p>
 <pre class="r"><code>parsed_names %&gt;%
   select(scientificname, type, parsed, parsedpartially, rankmarker) %&gt;%
   filter(!(type == &quot;SCIENTIFIC&quot; &amp; parsed == &quot;TRUE&quot; &amp; parsedpartially == &quot;FALSE&quot;))</code></pre>
@@ -450,7 +438,7 @@ library(janitor)</code></pre>
 </div>
 </div>
 <div id="taxon-ids" class="section level2">
-<h2><span class="header-section-number">3.3</span> Taxon IDs</h2>
+<h2><span class="header-section-number">2.3</span> Taxon IDs</h2>
 <p>To link taxa with information in the extension(s), each taxon needs a unique and relatively stable <code>taxonID</code>. Here we create one in the form of <code>dataset_shortname:taxon:hash</code>, where <code>hash</code> is unique code based on scientific name and kingdom (that will remain the same as long as scientific name and kingdom remain the same):</p>
 <pre class="r"><code>vdigest &lt;- Vectorize(digest) # Vectorize digest function to work with vectors
 input_data %&lt;&gt;% mutate(taxon_id = paste(
@@ -461,7 +449,7 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
 ))</code></pre>
 </div>
 <div id="preview-data" class="section level2">
-<h2><span class="header-section-number">3.4</span> Preview data</h2>
+<h2><span class="header-section-number">2.4</span> Preview data</h2>
 <p>Show the number of taxa and distributions per rank:</p>
 <pre class="r"><code>input_data %&gt;%
   group_by(taxon_rank) %&gt;%
@@ -472,7 +460,7 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   adorn_totals(&quot;row&quot;)</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["taxon_rank"],"name":[1],"type":["chr"],"align":["left"]},{"label":["# taxa"],"name":[2],"type":["int"],"align":["right"]},{"label":["# distributions"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"species","2":"243","3":"246","_rn_":"1"},{"1":"subspecies","2":"1","3":"1","_rn_":"2"},{"1":"Total","2":"244","3":"247","_rn_":"3"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["taxon_rank"],"name":[1],"type":["chr"],"align":["left"]},{"label":["# taxa"],"name":[2],"type":["int"],"align":["right"]},{"label":["# distributions"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"species","2":"243","3":"247"},{"1":"subspecies","2":"1","3":"1"},{"1":"Total","2":"244","3":"248"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Preview data:</p>
@@ -484,80 +472,75 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
 </div>
 </div>
 </div>
-<div id="taxon-core" class="section level1">
-<h1><span class="header-section-number">4</span> Taxon core</h1>
-<div id="pre-processing" class="section level2">
-<h2><span class="header-section-number">4.1</span> Pre-processing</h2>
-<p>Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):</p>
+<div id="darwin-core-mapping" class="section level1">
+<h1><span class="header-section-number">3</span> Darwin Core mapping</h1>
+<div id="taxon-core" class="section level2">
+<h2><span class="header-section-number">3.1</span> Taxon core</h2>
+<p>Create a dataframe with unique taxa only (ignoring multiple distribution rows):</p>
 <pre class="r"><code>taxon &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
-</div>
-<div id="term-mapping" class="section level2">
-<h2><span class="header-section-number">4.2</span> Term mapping</h2>
 <p>Map the data to <a href="http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml">Darwin Core Taxon</a>.</p>
-<p>Start with record-level terms which contain metadata about the dataset (which is generally the same for all records).</p>
 <div id="language" class="section level3">
-<h3><span class="header-section-number">4.2.1</span> language</h3>
+<h3><span class="header-section-number">3.1.1</span> language</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_language = &quot;en&quot;)</code></pre>
 </div>
 <div id="license" class="section level3">
-<h3><span class="header-section-number">4.2.2</span> license</h3>
+<h3><span class="header-section-number">3.1.2</span> license</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_license = &quot;http://creativecommons.org/publicdomain/zero/1.0/&quot;)</code></pre>
 </div>
 <div id="rightsholder" class="section level3">
-<h3><span class="header-section-number">4.2.3</span> rightsHolder</h3>
+<h3><span class="header-section-number">3.1.3</span> rightsHolder</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_rightsHolder = &quot;INBO&quot;)</code></pre>
 </div>
 <div id="accessrights" class="section level3">
-<h3><span class="header-section-number">4.2.4</span> accessRights</h3>
+<h3><span class="header-section-number">3.1.4</span> accessRights</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_accessRights = &quot;https://www.inbo.be/en/norms-data-use&quot;) </code></pre>
 </div>
 <div id="datasetid" class="section level3">
-<h3><span class="header-section-number">4.2.5</span> datasetID</h3>
+<h3><span class="header-section-number">3.1.5</span> datasetID</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_datasetID = &quot;https://doi.org/10.15468/wr3gis&quot;)</code></pre>
 </div>
 <div id="institutioncode" class="section level3">
-<h3><span class="header-section-number">4.2.6</span> institutionCode</h3>
+<h3><span class="header-section-number">3.1.6</span> institutionCode</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_institutionCode = &quot;INBO&quot;)</code></pre>
 </div>
 <div id="datasetname" class="section level3">
-<h3><span class="header-section-number">4.2.7</span> datasetName</h3>
+<h3><span class="header-section-number">3.1.7</span> datasetName</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_datasetName = &quot;Checklist of alien birds of Belgium&quot;) </code></pre>
-<p>The following terms contain information about the taxon:</p>
 </div>
 <div id="taxonid" class="section level3">
-<h3><span class="header-section-number">4.2.8</span> taxonID</h3>
+<h3><span class="header-section-number">3.1.8</span> taxonID</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
 </div>
 <div id="scientificname" class="section level3">
-<h3><span class="header-section-number">4.2.9</span> scientificName</h3>
+<h3><span class="header-section-number">3.1.9</span> scientificName</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_scientificName = scientific_name)</code></pre>
 </div>
 <div id="kingdom" class="section level3">
-<h3><span class="header-section-number">4.2.10</span> kingdom</h3>
+<h3><span class="header-section-number">3.1.10</span> kingdom</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_kingdom = &quot;Animalia&quot;)</code></pre>
 </div>
 <div id="phylum" class="section level3">
-<h3><span class="header-section-number">4.2.11</span> phylum</h3>
+<h3><span class="header-section-number">3.1.11</span> phylum</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_phylum = &quot;Chordata&quot;)</code></pre>
 </div>
 <div id="class" class="section level3">
-<h3><span class="header-section-number">4.2.12</span> class</h3>
+<h3><span class="header-section-number">3.1.12</span> class</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_class = &quot;Aves&quot;)</code></pre>
 </div>
 <div id="order" class="section level3">
-<h3><span class="header-section-number">4.2.13</span> order</h3>
+<h3><span class="header-section-number">3.1.13</span> order</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_order = order)</code></pre>
 </div>
 <div id="family" class="section level3">
-<h3><span class="header-section-number">4.2.14</span> family</h3>
+<h3><span class="header-section-number">3.1.14</span> family</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_family = family)</code></pre>
 </div>
 <div id="genus" class="section level3">
-<h3><span class="header-section-number">4.2.15</span> genus</h3>
+<h3><span class="header-section-number">3.1.15</span> genus</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_genus = genus)</code></pre>
 </div>
 <div id="taxonrank" class="section level3">
-<h3><span class="header-section-number">4.2.16</span> taxonRank</h3>
+<h3><span class="header-section-number">3.1.16</span> taxonRank</h3>
 <p>Inspect values:</p>
 <pre class="r"><code>taxon %&gt;%
   group_by(taxon_rank) %&gt;%
@@ -571,53 +554,32 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_taxonRank = taxon_rank)</code></pre>
 </div>
 <div id="nomenclaturalcode" class="section level3">
-<h3><span class="header-section-number">4.2.17</span> nomenclaturalCode</h3>
+<h3><span class="header-section-number">3.1.17</span> nomenclaturalCode</h3>
 <pre class="r"><code>taxon %&lt;&gt;% mutate(dwc_nomenclaturalCode = &quot;ICZN&quot;)</code></pre>
 </div>
 </div>
-<div id="post-processing" class="section level2">
-<h2><span class="header-section-number">4.3</span> Post-processing</h2>
-<p>Only keep the Darwin Core columns:</p>
-<pre class="r"><code>taxon %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
-<p>Drop the <code>dwc_</code> prefix:</p>
-<pre class="r"><code>colnames(taxon) &lt;- str_replace(colnames(taxon), &quot;dwc_&quot;, &quot;&quot;)</code></pre>
-<p>Preview data:</p>
-<pre class="r"><code>taxon %&gt;% head()</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["language"],"name":[1],"type":["chr"],"align":["left"]},{"label":["license"],"name":[2],"type":["chr"],"align":["left"]},{"label":["rightsHolder"],"name":[3],"type":["chr"],"align":["left"]},{"label":["accessRights"],"name":[4],"type":["chr"],"align":["left"]},{"label":["datasetID"],"name":[5],"type":["chr"],"align":["left"]},{"label":["institutionCode"],"name":[6],"type":["chr"],"align":["left"]},{"label":["datasetName"],"name":[7],"type":["chr"],"align":["left"]},{"label":["taxonID"],"name":[8],"type":["chr"],"align":["left"]},{"label":["scientificName"],"name":[9],"type":["chr"],"align":["left"]},{"label":["kingdom"],"name":[10],"type":["chr"],"align":["left"]},{"label":["phylum"],"name":[11],"type":["chr"],"align":["left"]},{"label":["class"],"name":[12],"type":["chr"],"align":["left"]},{"label":["order"],"name":[13],"type":["chr"],"align":["left"]},{"label":["family"],"name":[14],"type":["chr"],"align":["left"]},{"label":["genus"],"name":[15],"type":["chr"],"align":["left"]},{"label":["taxonRank"],"name":[16],"type":["chr"],"align":["left"]},{"label":["nomenclaturalCode"],"name":[17],"type":["chr"],"align":["left"]}],"data":[{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:6ef305724bf67b37c9fd9ac71f383132","9":"Aquila rapax (Temminck, 1828)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Aquila","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:3f5d388b1d6e0bb2e4d1352450e494bf","9":"Buteo auguralis Salvadori, 1865","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Buteo","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:21e4e021fa4e01bed8e1e723fdd42f53","9":"Buteo jamaicensis (Gmelin, 1788)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Buteo","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:cd6c3707338fb24c14fdf508245ea744","9":"Haliaeetus leucocephalus (Linnaeus, 1766)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Haliaeetus","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:8fb68655bc22002ae5507a3c1a637421","9":"Haliaeetus pelagicus (Pallas, 1811)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Haliaeetus","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:735ec6110517c880ed39e5bf6ad92949","9":"Haliaeetus vocifer (Daudin, 1800)","10":"Animalia","11":"Chordata","12":"Aves","13":"Accipitriformes","14":"Accipitridae","15":"Haliaeetus","16":"species","17":"ICZN"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<p>Save to CSV:</p>
-<pre class="r"><code>write_csv(taxon, here(&quot;data&quot;, &quot;processed&quot;, &quot;taxon.csv&quot;), na = &quot;&quot;)</code></pre>
-</div>
 </div>
 <div id="distribution-extension" class="section level1">
-<h1><span class="header-section-number">5</span> Distribution extension</h1>
-<div id="pre-processing-1" class="section level2">
-<h2><span class="header-section-number">5.1</span> Pre-processing</h2>
+<h1><span class="header-section-number">4</span> Distribution extension</h1>
 <p>Create a dataframe with all data:</p>
 <pre class="r"><code>distribution &lt;- input_data</code></pre>
-</div>
-<div id="term-mapping-1" class="section level2">
-<h2><span class="header-section-number">5.2</span> Term mapping</h2>
 <p>Map the data to <a href="http://rs.gbif.org/extension/gbif/1.0/distribution.xml">Species Distribution</a>.</p>
 <div id="taxonid-1" class="section level3">
-<h3><span class="header-section-number">5.2.1</span> taxonID</h3>
+<h3><span class="header-section-number">4.0.1</span> taxonID</h3>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
 </div>
 <div id="locationid" class="section level3">
-<h3><span class="header-section-number">5.2.2</span> locationID</h3>
+<h3><span class="header-section-number">4.0.2</span> locationID</h3>
 <p>Inspect values:</p>
 <pre class="r"><code>distribution %&gt;%
   group_by(country_code, location) %&gt;%
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["location"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"BE","2":"Belgium","3":"1"},{"1":"BE","2":"Brussels","3":"4"},{"1":"BE","2":"Flanders","3":"48"},{"1":"BE","2":"Wallonia","3":"10"},{"1":"BE","2":"NA","3":"184"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["location"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"BE","2":"Belgium","3":"1"},{"1":"BE","2":"Brussels","3":"4"},{"1":"BE","2":"Flanders","3":"51"},{"1":"BE","2":"Wallonia","3":"11"},{"1":"BE","2":"NA","3":"181"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>Set current NA’s in <code>location</code> to <code>Belgium</code>:</p>
+<p>Set current <code>NA</code>’s in <code>location</code> to <code>Belgium</code>:</p>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(location = case_when(
   is.na(location) ~ &quot;Belgium&quot;,
   TRUE ~ location
@@ -635,12 +597,12 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["dwc_locationID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Belgium","2":"ISO_3166-2:BE","3":"185"},{"1":"Brussels","2":"ISO_3166-2:BE-BRU","3":"4"},{"1":"Flanders","2":"ISO_3166-2:BE-VLG","3":"48"},{"1":"Wallonia","2":"ISO_3166-2:BE-WAL","3":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["dwc_locationID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Belgium","2":"ISO_3166-2:BE","3":"182"},{"1":"Brussels","2":"ISO_3166-2:BE-BRU","3":"4"},{"1":"Flanders","2":"ISO_3166-2:BE-VLG","3":"51"},{"1":"Wallonia","2":"ISO_3166-2:BE-WAL","3":"11"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
 <div id="locality" class="section level3">
-<h3><span class="header-section-number">5.2.3</span> locality</h3>
+<h3><span class="header-section-number">4.0.3</span> locality</h3>
 <p>Map to standard values:</p>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_locality = recode(location, 
   &quot;Flanders&quot; = &quot;Flemish Region&quot;,
@@ -653,51 +615,51 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["dwc_locality"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Belgium","2":"Belgium","3":"185"},{"1":"Brussels","2":"Brussels-Capital Region","3":"4"},{"1":"Flanders","2":"Flemish Region","3":"48"},{"1":"Wallonia","2":"Walloon Region","3":"10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["location"],"name":[1],"type":["chr"],"align":["left"]},{"label":["dwc_locality"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Belgium","2":"Belgium","3":"182"},{"1":"Brussels","2":"Brussels-Capital Region","3":"4"},{"1":"Flanders","2":"Flemish Region","3":"51"},{"1":"Wallonia","2":"Walloon Region","3":"11"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
 <div id="countrycode" class="section level3">
-<h3><span class="header-section-number">5.2.4</span> countryCode</h3>
+<h3><span class="header-section-number">4.0.4</span> countryCode</h3>
 <p>Inspect values:</p>
 <pre class="r"><code>distribution %&gt;%
   group_by(country_code) %&gt;%
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"BE","2":"247"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["country_code"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"BE","2":"248"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Map values:</p>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_countryCode = country_code) </code></pre>
 </div>
 <div id="occurrencestatus" class="section level3">
-<h3><span class="header-section-number">5.2.5</span> occurrenceStatus</h3>
+<h3><span class="header-section-number">4.0.5</span> occurrenceStatus</h3>
 <p>Inspect values:</p>
 <pre class="r"><code>distribution %&gt;%
   group_by(occurrence_status) %&gt;%
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["occurrence_status"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"doubtful","2":"1"},{"1":"present","2":"246"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["occurrence_status"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"doubtful","2":"1"},{"1":"present","2":"247"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Map values:</p>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_occurrenceStatus = occurrence_status) </code></pre>
 </div>
 <div id="establishmentmeans" class="section level3">
-<h3><span class="header-section-number">5.2.6</span> establishmentMeans</h3>
+<h3><span class="header-section-number">4.0.6</span> establishmentMeans</h3>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_establishmentMeans = &quot;introduced&quot;)</code></pre>
 </div>
 <div id="eventdate" class="section level3">
-<h3><span class="header-section-number">5.2.7</span> eventDate</h3>
-<p>Inspact values for <code>date_first_observation</code>:</p>
+<h3><span class="header-section-number">4.0.7</span> eventDate</h3>
+<p>Inspect values for <code>date_first_observation</code>:</p>
 <pre class="r"><code>distribution %&gt;%
   group_by(date_first_observation) %&gt;%
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1880","2":"1"},{"1":"1890s","2":"1"},{"1":"18th century","2":"1"},{"1":"1950ies","2":"1"},{"1":"1953","2":"1"},{"1":"1957","2":"1"},{"1":"1966","2":"2"},{"1":"1970","2":"1"},{"1":"1973","2":"1"},{"1":"1974","2":"1"},{"1":"1975","2":"4"},{"1":"1979","2":"2"},{"1":"1982","2":"1"},{"1":"1983","2":"2"},{"1":"1984","2":"1"},{"1":"1985","2":"2"},{"1":"1986","2":"2"},{"1":"1987","2":"1"},{"1":"1988","2":"2"},{"1":"1989","2":"3"},{"1":"1990","2":"1"},{"1":"1991","2":"1"},{"1":"1992","2":"1"},{"1":"1993","2":"2"},{"1":"1994","2":"1"},{"1":"1995","2":"1"},{"1":"1996","2":"1"},{"1":"1997","2":"1"},{"1":"1998","2":"1"},{"1":"2000","2":"1"},{"1":"2001","2":"4"},{"1":"2002","2":"3"},{"1":"2003","2":"2"},{"1":"2004","2":"3"},{"1":"2005","2":"5"},{"1":"2007","2":"4"},{"1":"2008","2":"2"},{"1":"2009","2":"7"},{"1":"2010","2":"3"},{"1":"2011","2":"4"},{"1":"2012","2":"5"},{"1":"2013","2":"6"},{"1":"2014","2":"4"},{"1":"2015","2":"5"},{"1":"2016","2":"6"},{"1":"2017","2":"8"},{"1":"2018","2":"5"},{"1":"NA","2":"129"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1880","2":"1"},{"1":"1890s","2":"1"},{"1":"18th century","2":"1"},{"1":"1950ies","2":"1"},{"1":"1953","2":"1"},{"1":"1957","2":"1"},{"1":"1966","2":"2"},{"1":"1970","2":"1"},{"1":"1973","2":"1"},{"1":"1974","2":"1"},{"1":"1975","2":"4"},{"1":"1979","2":"2"},{"1":"1982","2":"1"},{"1":"1983","2":"2"},{"1":"1984","2":"1"},{"1":"1985","2":"2"},{"1":"1986","2":"2"},{"1":"1987","2":"1"},{"1":"1988","2":"2"},{"1":"1989","2":"3"},{"1":"1990","2":"1"},{"1":"1991","2":"1"},{"1":"1992","2":"1"},{"1":"1993","2":"2"},{"1":"1994","2":"1"},{"1":"1995","2":"1"},{"1":"1996","2":"1"},{"1":"1997","2":"1"},{"1":"1998","2":"1"},{"1":"2000","2":"1"},{"1":"2001","2":"4"},{"1":"2002","2":"3"},{"1":"2003","2":"2"},{"1":"2004","2":"4"},{"1":"2005","2":"6"},{"1":"2007","2":"4"},{"1":"2008","2":"2"},{"1":"2009","2":"8"},{"1":"2010","2":"3"},{"1":"2011","2":"4"},{"1":"2012","2":"5"},{"1":"2013","2":"6"},{"1":"2014","2":"4"},{"1":"2015","2":"5"},{"1":"2016","2":"6"},{"1":"2017","2":"8"},{"1":"2018","2":"5"},{"1":"2019","2":"1"},{"1":"NA","2":"126"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>All date information should comply to the ISO 8601 standard, which requires a four-digit year as a minimum. We here transform deviating values:</p>
@@ -714,7 +676,7 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["date_last_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1967","2":"1"},{"1":"1973","2":"1"},{"1":"1985","2":"1"},{"1":"2001","2":"1"},{"1":"2002","2":"1"},{"1":"2004","2":"1"},{"1":"2006","2":"1"},{"1":"2007","2":"1"},{"1":"2009","2":"1"},{"1":"2011","2":"1"},{"1":"2012","2":"1"},{"1":"2013","2":"3"},{"1":"2014","2":"6"},{"1":"2015","2":"4"},{"1":"2016","2":"18"},{"1":"2017","2":"2"},{"1":"2018","2":"12"},{"1":"2019","2":"11"},{"1":"NA","2":"180"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["date_last_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1967","2":"1"},{"1":"1973","2":"1"},{"1":"1985","2":"1"},{"1":"2001","2":"1"},{"1":"2002","2":"1"},{"1":"2004","2":"1"},{"1":"2006","2":"1"},{"1":"2007","2":"1"},{"1":"2009","2":"1"},{"1":"2011","2":"1"},{"1":"2012","2":"1"},{"1":"2013","2":"3"},{"1":"2014","2":"6"},{"1":"2015","2":"4"},{"1":"2016","2":"18"},{"1":"2017","2":"3"},{"1":"2018","2":"13"},{"1":"2019","2":"11"},{"1":"2020","2":"1"},{"1":"NA","2":"178"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Inspect all combinations of <code>date_first_observation</code> and <code>date_last_observation</code>:</p>
@@ -723,7 +685,7 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"1701","2":"2019","3":"1"},{"1":"1880","2":"NA","3":"1"},{"1":"1890","2":"NA","3":"1"},{"1":"1950","2":"2019","3":"1"},{"1":"1953","2":"2019","3":"1"},{"1":"1957","2":"2019","3":"1"},{"1":"1966","2":"1967","3":"1"},{"1":"1966","2":"2019","3":"1"},{"1":"1970","2":"NA","3":"1"},{"1":"1973","2":"1973","3":"1"},{"1":"1974","2":"2019","3":"1"},{"1":"1975","2":"2016","3":"2"},{"1":"1975","2":"NA","3":"2"},{"1":"1979","2":"2018","3":"1"},{"1":"1979","2":"2019","3":"1"},{"1":"1982","2":"NA","3":"1"},{"1":"1983","2":"2014","3":"1"},{"1":"1983","2":"2016","3":"1"},{"1":"1984","2":"2019","3":"1"},{"1":"1985","2":"1985","3":"1"},{"1":"1985","2":"2016","3":"1"},{"1":"1986","2":"2014","3":"1"},{"1":"1986","2":"2015","3":"1"},{"1":"1987","2":"2015","3":"1"},{"1":"1988","2":"NA","3":"2"},{"1":"1989","2":"2016","3":"2"},{"1":"1989","2":"2019","3":"1"},{"1":"1990","2":"NA","3":"1"},{"1":"1991","2":"2018","3":"1"},{"1":"1992","2":"NA","3":"1"},{"1":"1993","2":"2006","3":"1"},{"1":"1993","2":"NA","3":"1"},{"1":"1994","2":"2018","3":"1"},{"1":"1995","2":"2016","3":"1"},{"1":"1996","2":"2011","3":"1"},{"1":"1997","2":"2017","3":"1"},{"1":"1998","2":"2019","3":"1"},{"1":"2000","2":"NA","3":"1"},{"1":"2001","2":"2001","3":"1"},{"1":"2001","2":"2018","3":"1"},{"1":"2001","2":"NA","3":"2"},{"1":"2002","2":"2002","3":"1"},{"1":"2002","2":"2015","3":"1"},{"1":"2002","2":"NA","3":"1"},{"1":"2003","2":"NA","3":"2"},{"1":"2004","2":"2004","3":"1"},{"1":"2004","2":"2016","3":"1"},{"1":"2004","2":"2018","3":"1"},{"1":"2005","2":"2009","3":"1"},{"1":"2005","2":"2019","3":"1"},{"1":"2005","2":"NA","3":"3"},{"1":"2007","2":"2007","3":"1"},{"1":"2007","2":"2014","3":"1"},{"1":"2007","2":"NA","3":"2"},{"1":"2008","2":"2014","3":"1"},{"1":"2008","2":"2018","3":"1"},{"1":"2009","2":"2013","3":"1"},{"1":"2009","2":"2016","3":"3"},{"1":"2009","2":"2018","3":"1"},{"1":"2009","2":"NA","3":"2"},{"1":"2010","2":"2014","3":"1"},{"1":"2010","2":"NA","3":"2"},{"1":"2011","2":"NA","3":"4"},{"1":"2012","2":"2012","3":"1"},{"1":"2012","2":"NA","3":"4"},{"1":"2013","2":"2013","3":"2"},{"1":"2013","2":"2014","3":"1"},{"1":"2013","2":"2016","3":"1"},{"1":"2013","2":"NA","3":"2"},{"1":"2014","2":"2016","3":"2"},{"1":"2014","2":"NA","3":"2"},{"1":"2015","2":"2015","3":"1"},{"1":"2015","2":"2016","3":"2"},{"1":"2015","2":"NA","3":"2"},{"1":"2016","2":"2016","3":"2"},{"1":"2016","2":"NA","3":"4"},{"1":"2017","2":"2017","3":"1"},{"1":"2017","2":"2018","3":"1"},{"1":"2017","2":"NA","3":"6"},{"1":"2018","2":"2018","3":"2"},{"1":"2018","2":"NA","3":"3"},{"1":"NA","2":"2018","3":"2"},{"1":"NA","2":"NA","3":"127"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"1701","2":"2019","3":"1"},{"1":"1880","2":"NA","3":"1"},{"1":"1890","2":"NA","3":"1"},{"1":"1950","2":"2019","3":"1"},{"1":"1953","2":"2019","3":"1"},{"1":"1957","2":"2019","3":"1"},{"1":"1966","2":"1967","3":"1"},{"1":"1966","2":"2019","3":"1"},{"1":"1970","2":"NA","3":"1"},{"1":"1973","2":"1973","3":"1"},{"1":"1974","2":"2019","3":"1"},{"1":"1975","2":"2016","3":"2"},{"1":"1975","2":"NA","3":"2"},{"1":"1979","2":"2018","3":"1"},{"1":"1979","2":"2019","3":"1"},{"1":"1982","2":"NA","3":"1"},{"1":"1983","2":"2014","3":"1"},{"1":"1983","2":"2016","3":"1"},{"1":"1984","2":"2019","3":"1"},{"1":"1985","2":"1985","3":"1"},{"1":"1985","2":"2016","3":"1"},{"1":"1986","2":"2014","3":"1"},{"1":"1986","2":"2015","3":"1"},{"1":"1987","2":"2015","3":"1"},{"1":"1988","2":"NA","3":"2"},{"1":"1989","2":"2016","3":"2"},{"1":"1989","2":"2019","3":"1"},{"1":"1990","2":"NA","3":"1"},{"1":"1991","2":"2018","3":"1"},{"1":"1992","2":"NA","3":"1"},{"1":"1993","2":"2006","3":"1"},{"1":"1993","2":"NA","3":"1"},{"1":"1994","2":"2018","3":"1"},{"1":"1995","2":"2016","3":"1"},{"1":"1996","2":"2011","3":"1"},{"1":"1997","2":"2017","3":"1"},{"1":"1998","2":"2019","3":"1"},{"1":"2000","2":"NA","3":"1"},{"1":"2001","2":"2001","3":"1"},{"1":"2001","2":"2018","3":"1"},{"1":"2001","2":"NA","3":"2"},{"1":"2002","2":"2002","3":"1"},{"1":"2002","2":"2015","3":"1"},{"1":"2002","2":"NA","3":"1"},{"1":"2003","2":"NA","3":"2"},{"1":"2004","2":"2004","3":"1"},{"1":"2004","2":"2016","3":"1"},{"1":"2004","2":"2018","3":"2"},{"1":"2005","2":"2009","3":"1"},{"1":"2005","2":"2017","3":"1"},{"1":"2005","2":"2019","3":"1"},{"1":"2005","2":"NA","3":"3"},{"1":"2007","2":"2007","3":"1"},{"1":"2007","2":"2014","3":"1"},{"1":"2007","2":"NA","3":"2"},{"1":"2008","2":"2014","3":"1"},{"1":"2008","2":"2018","3":"1"},{"1":"2009","2":"2013","3":"1"},{"1":"2009","2":"2016","3":"3"},{"1":"2009","2":"2018","3":"1"},{"1":"2009","2":"NA","3":"3"},{"1":"2010","2":"2014","3":"1"},{"1":"2010","2":"NA","3":"2"},{"1":"2011","2":"NA","3":"4"},{"1":"2012","2":"2012","3":"1"},{"1":"2012","2":"NA","3":"4"},{"1":"2013","2":"2013","3":"2"},{"1":"2013","2":"2014","3":"1"},{"1":"2013","2":"2016","3":"1"},{"1":"2013","2":"NA","3":"2"},{"1":"2014","2":"2016","3":"2"},{"1":"2014","2":"NA","3":"2"},{"1":"2015","2":"2015","3":"1"},{"1":"2015","2":"2016","3":"2"},{"1":"2015","2":"NA","3":"2"},{"1":"2016","2":"2016","3":"2"},{"1":"2016","2":"NA","3":"4"},{"1":"2017","2":"2017","3":"1"},{"1":"2017","2":"2018","3":"1"},{"1":"2017","2":"NA","3":"6"},{"1":"2018","2":"2018","3":"2"},{"1":"2018","2":"NA","3":"3"},{"1":"2019","2":"2020","3":"1"},{"1":"NA","2":"2018","3":"2"},{"1":"NA","2":"NA","3":"124"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Map <code>eventDate</code>:</p>
@@ -743,68 +705,46 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[2],"type":["chr"],"align":["left"]},{"label":["dwc_eventDate"],"name":[3],"type":["chr"],"align":["left"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"1701","2":"2019","3":"1701/2019","4":"1"},{"1":"1880","2":"NA","3":"1880","4":"1"},{"1":"1890","2":"NA","3":"1890","4":"1"},{"1":"1950","2":"2019","3":"1950/2019","4":"1"},{"1":"1953","2":"2019","3":"1953/2019","4":"1"},{"1":"1957","2":"2019","3":"1957/2019","4":"1"},{"1":"1966","2":"1967","3":"1966/1967","4":"1"},{"1":"1966","2":"2019","3":"1966/2019","4":"1"},{"1":"1970","2":"NA","3":"1970","4":"1"},{"1":"1973","2":"1973","3":"1973/1973","4":"1"},{"1":"1974","2":"2019","3":"1974/2019","4":"1"},{"1":"1975","2":"2016","3":"1975/2016","4":"2"},{"1":"1975","2":"NA","3":"1975","4":"2"},{"1":"1979","2":"2018","3":"1979/2018","4":"1"},{"1":"1979","2":"2019","3":"1979/2019","4":"1"},{"1":"1982","2":"NA","3":"1982","4":"1"},{"1":"1983","2":"2014","3":"1983/2014","4":"1"},{"1":"1983","2":"2016","3":"1983/2016","4":"1"},{"1":"1984","2":"2019","3":"1984/2019","4":"1"},{"1":"1985","2":"1985","3":"1985/1985","4":"1"},{"1":"1985","2":"2016","3":"1985/2016","4":"1"},{"1":"1986","2":"2014","3":"1986/2014","4":"1"},{"1":"1986","2":"2015","3":"1986/2015","4":"1"},{"1":"1987","2":"2015","3":"1987/2015","4":"1"},{"1":"1988","2":"NA","3":"1988","4":"2"},{"1":"1989","2":"2016","3":"1989/2016","4":"2"},{"1":"1989","2":"2019","3":"1989/2019","4":"1"},{"1":"1990","2":"NA","3":"1990","4":"1"},{"1":"1991","2":"2018","3":"1991/2018","4":"1"},{"1":"1992","2":"NA","3":"1992","4":"1"},{"1":"1993","2":"2006","3":"1993/2006","4":"1"},{"1":"1993","2":"NA","3":"1993","4":"1"},{"1":"1994","2":"2018","3":"1994/2018","4":"1"},{"1":"1995","2":"2016","3":"1995/2016","4":"1"},{"1":"1996","2":"2011","3":"1996/2011","4":"1"},{"1":"1997","2":"2017","3":"1997/2017","4":"1"},{"1":"1998","2":"2019","3":"1998/2019","4":"1"},{"1":"2000","2":"NA","3":"2000","4":"1"},{"1":"2001","2":"2001","3":"2001/2001","4":"1"},{"1":"2001","2":"2018","3":"2001/2018","4":"1"},{"1":"2001","2":"NA","3":"2001","4":"2"},{"1":"2002","2":"2002","3":"2002/2002","4":"1"},{"1":"2002","2":"2015","3":"2002/2015","4":"1"},{"1":"2002","2":"NA","3":"2002","4":"1"},{"1":"2003","2":"NA","3":"2003","4":"2"},{"1":"2004","2":"2004","3":"2004/2004","4":"1"},{"1":"2004","2":"2016","3":"2004/2016","4":"1"},{"1":"2004","2":"2018","3":"2004/2018","4":"1"},{"1":"2005","2":"2009","3":"2005/2009","4":"1"},{"1":"2005","2":"2019","3":"2005/2019","4":"1"},{"1":"2005","2":"NA","3":"2005","4":"3"},{"1":"2007","2":"2007","3":"2007/2007","4":"1"},{"1":"2007","2":"2014","3":"2007/2014","4":"1"},{"1":"2007","2":"NA","3":"2007","4":"2"},{"1":"2008","2":"2014","3":"2008/2014","4":"1"},{"1":"2008","2":"2018","3":"2008/2018","4":"1"},{"1":"2009","2":"2013","3":"2009/2013","4":"1"},{"1":"2009","2":"2016","3":"2009/2016","4":"3"},{"1":"2009","2":"2018","3":"2009/2018","4":"1"},{"1":"2009","2":"NA","3":"2009","4":"2"},{"1":"2010","2":"2014","3":"2010/2014","4":"1"},{"1":"2010","2":"NA","3":"2010","4":"2"},{"1":"2011","2":"NA","3":"2011","4":"4"},{"1":"2012","2":"2012","3":"2012/2012","4":"1"},{"1":"2012","2":"NA","3":"2012","4":"4"},{"1":"2013","2":"2013","3":"2013/2013","4":"2"},{"1":"2013","2":"2014","3":"2013/2014","4":"1"},{"1":"2013","2":"2016","3":"2013/2016","4":"1"},{"1":"2013","2":"NA","3":"2013","4":"2"},{"1":"2014","2":"2016","3":"2014/2016","4":"2"},{"1":"2014","2":"NA","3":"2014","4":"2"},{"1":"2015","2":"2015","3":"2015/2015","4":"1"},{"1":"2015","2":"2016","3":"2015/2016","4":"2"},{"1":"2015","2":"NA","3":"2015","4":"2"},{"1":"2016","2":"2016","3":"2016/2016","4":"2"},{"1":"2016","2":"NA","3":"2016","4":"4"},{"1":"2017","2":"2017","3":"2017/2017","4":"1"},{"1":"2017","2":"2018","3":"2017/2018","4":"1"},{"1":"2017","2":"NA","3":"2017","4":"6"},{"1":"2018","2":"2018","3":"2018/2018","4":"2"},{"1":"2018","2":"NA","3":"2018","4":"3"},{"1":"NA","2":"2018","3":"2018","4":"2"},{"1":"NA","2":"NA","3":"NA","4":"127"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["date_first_observation"],"name":[1],"type":["chr"],"align":["left"]},{"label":["date_last_observation"],"name":[2],"type":["chr"],"align":["left"]},{"label":["dwc_eventDate"],"name":[3],"type":["chr"],"align":["left"]},{"label":["n"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"1701","2":"2019","3":"1701/2019","4":"1"},{"1":"1880","2":"NA","3":"1880","4":"1"},{"1":"1890","2":"NA","3":"1890","4":"1"},{"1":"1950","2":"2019","3":"1950/2019","4":"1"},{"1":"1953","2":"2019","3":"1953/2019","4":"1"},{"1":"1957","2":"2019","3":"1957/2019","4":"1"},{"1":"1966","2":"1967","3":"1966/1967","4":"1"},{"1":"1966","2":"2019","3":"1966/2019","4":"1"},{"1":"1970","2":"NA","3":"1970","4":"1"},{"1":"1973","2":"1973","3":"1973/1973","4":"1"},{"1":"1974","2":"2019","3":"1974/2019","4":"1"},{"1":"1975","2":"2016","3":"1975/2016","4":"2"},{"1":"1975","2":"NA","3":"1975","4":"2"},{"1":"1979","2":"2018","3":"1979/2018","4":"1"},{"1":"1979","2":"2019","3":"1979/2019","4":"1"},{"1":"1982","2":"NA","3":"1982","4":"1"},{"1":"1983","2":"2014","3":"1983/2014","4":"1"},{"1":"1983","2":"2016","3":"1983/2016","4":"1"},{"1":"1984","2":"2019","3":"1984/2019","4":"1"},{"1":"1985","2":"1985","3":"1985/1985","4":"1"},{"1":"1985","2":"2016","3":"1985/2016","4":"1"},{"1":"1986","2":"2014","3":"1986/2014","4":"1"},{"1":"1986","2":"2015","3":"1986/2015","4":"1"},{"1":"1987","2":"2015","3":"1987/2015","4":"1"},{"1":"1988","2":"NA","3":"1988","4":"2"},{"1":"1989","2":"2016","3":"1989/2016","4":"2"},{"1":"1989","2":"2019","3":"1989/2019","4":"1"},{"1":"1990","2":"NA","3":"1990","4":"1"},{"1":"1991","2":"2018","3":"1991/2018","4":"1"},{"1":"1992","2":"NA","3":"1992","4":"1"},{"1":"1993","2":"2006","3":"1993/2006","4":"1"},{"1":"1993","2":"NA","3":"1993","4":"1"},{"1":"1994","2":"2018","3":"1994/2018","4":"1"},{"1":"1995","2":"2016","3":"1995/2016","4":"1"},{"1":"1996","2":"2011","3":"1996/2011","4":"1"},{"1":"1997","2":"2017","3":"1997/2017","4":"1"},{"1":"1998","2":"2019","3":"1998/2019","4":"1"},{"1":"2000","2":"NA","3":"2000","4":"1"},{"1":"2001","2":"2001","3":"2001/2001","4":"1"},{"1":"2001","2":"2018","3":"2001/2018","4":"1"},{"1":"2001","2":"NA","3":"2001","4":"2"},{"1":"2002","2":"2002","3":"2002/2002","4":"1"},{"1":"2002","2":"2015","3":"2002/2015","4":"1"},{"1":"2002","2":"NA","3":"2002","4":"1"},{"1":"2003","2":"NA","3":"2003","4":"2"},{"1":"2004","2":"2004","3":"2004/2004","4":"1"},{"1":"2004","2":"2016","3":"2004/2016","4":"1"},{"1":"2004","2":"2018","3":"2004/2018","4":"2"},{"1":"2005","2":"2009","3":"2005/2009","4":"1"},{"1":"2005","2":"2017","3":"2005/2017","4":"1"},{"1":"2005","2":"2019","3":"2005/2019","4":"1"},{"1":"2005","2":"NA","3":"2005","4":"3"},{"1":"2007","2":"2007","3":"2007/2007","4":"1"},{"1":"2007","2":"2014","3":"2007/2014","4":"1"},{"1":"2007","2":"NA","3":"2007","4":"2"},{"1":"2008","2":"2014","3":"2008/2014","4":"1"},{"1":"2008","2":"2018","3":"2008/2018","4":"1"},{"1":"2009","2":"2013","3":"2009/2013","4":"1"},{"1":"2009","2":"2016","3":"2009/2016","4":"3"},{"1":"2009","2":"2018","3":"2009/2018","4":"1"},{"1":"2009","2":"NA","3":"2009","4":"3"},{"1":"2010","2":"2014","3":"2010/2014","4":"1"},{"1":"2010","2":"NA","3":"2010","4":"2"},{"1":"2011","2":"NA","3":"2011","4":"4"},{"1":"2012","2":"2012","3":"2012/2012","4":"1"},{"1":"2012","2":"NA","3":"2012","4":"4"},{"1":"2013","2":"2013","3":"2013/2013","4":"2"},{"1":"2013","2":"2014","3":"2013/2014","4":"1"},{"1":"2013","2":"2016","3":"2013/2016","4":"1"},{"1":"2013","2":"NA","3":"2013","4":"2"},{"1":"2014","2":"2016","3":"2014/2016","4":"2"},{"1":"2014","2":"NA","3":"2014","4":"2"},{"1":"2015","2":"2015","3":"2015/2015","4":"1"},{"1":"2015","2":"2016","3":"2015/2016","4":"2"},{"1":"2015","2":"NA","3":"2015","4":"2"},{"1":"2016","2":"2016","3":"2016/2016","4":"2"},{"1":"2016","2":"NA","3":"2016","4":"4"},{"1":"2017","2":"2017","3":"2017/2017","4":"1"},{"1":"2017","2":"2018","3":"2017/2018","4":"1"},{"1":"2017","2":"NA","3":"2017","4":"6"},{"1":"2018","2":"2018","3":"2018/2018","4":"2"},{"1":"2018","2":"NA","3":"2018","4":"3"},{"1":"2019","2":"2020","3":"2019/2020","4":"1"},{"1":"NA","2":"2018","3":"2018","4":"2"},{"1":"NA","2":"NA","3":"NA","4":"124"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 </div>
 <div id="source" class="section level3">
-<h3><span class="header-section-number">5.2.8</span> source</h3>
+<h3><span class="header-section-number">4.0.8</span> source</h3>
 <p>Inspect values:</p>
 <pre class="r"><code>distribution %&gt;%
   group_by(source) %&gt;%
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["source"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Beck O., Anselin A. & Kuijken E. 2002. Beheer van verwilderde watervogels in Vlaanderen. Instituut voor Natuurbehoud, Brussel. 146 pp.","2":"1"},{"1":"Claes G., publicatie: IJsvogel (1973) 2 : 15, Viversel, gebiedswaarneming","2":"1"},{"1":"de Schaetzen, R (1991) Halsbandparkieten broeden te Brussel. Mens en Vogel: 59-61","2":"1"},{"1":"GBIF (data download not possible on 21/02/2019 - gbif download error)","2":"27"},{"1":"GBIF Occurrence Download https://doi.org/10.15468/dl.btde22","2":"1"},{"1":"GBIF Occurrence Download https://doi.org/10.15468/dl.ltslq6","2":"1"},{"1":"http://observations.be","2":"2"},{"1":"http://observations.be/waarneming/view/157503659","2":"1"},{"1":"http://waarnemingen.be","2":"2"},{"1":"Lever C. 2005. Naturalised Birds of the World. London: T & A D Poyser.","2":"1"},{"1":"Long J.L. 1981 Introduced birds of the world. The worldwide history, distribution, and influence of birds introduced to new environments.","2":"1"},{"1":"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus 76(1):1-7 | Hughes et al. 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the  Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing. Strasbourg","2":"1"},{"1":"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus 76(1):1-7| Hughes et al. 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing. Strasbourg","2":"1"},{"1":"Verbelen D. 2009 Gewone Kookaburra Dacelo novaeguineae, exoot de pas afgesneden. Natuur. Oriolus, 75(2):49-52.","2":"1"},{"1":"Weiserbs A. 2010. Espèces invasives : le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.","2":"2"},{"1":"Weiserbs A. 2010. Espèces invasives: le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.","2":"1"},{"1":"NA","2":"202"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["source"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"Beck O., Anselin A. & Kuijken E. 2002. Beheer van verwilderde watervogels in Vlaanderen. Instituut voor Natuurbehoud, Brussel. 146 pp.","2":"1"},{"1":"Bosmans J. 2009 Eerste broedgevallen van Treurmaina Acridotheres tristis voor België in Heist-op-den-Berg (A). Natuur.oriolus 75(4): 122-123","2":"1"},{"1":"Claes G., publicatie: IJsvogel (1973) 2 : 15, Viversel, gebiedswaarneming","2":"1"},{"1":"de Schaetzen, R (1991) Halsbandparkieten broeden te Brussel. Mens en Vogel: 59-61","2":"1"},{"1":"GBIF (data download not possible on 21/02/2019 - gbif download error)","2":"27"},{"1":"GBIF Occurrence Download https://doi.org/10.15468/dl.btde22","2":"1"},{"1":"GBIF Occurrence Download https://doi.org/10.15468/dl.ltslq6","2":"1"},{"1":"http://observations.be","2":"2"},{"1":"http://observations.be/waarneming/view/157503659","2":"1"},{"1":"http://waarnemingen.be","2":"2"},{"1":"Lever C. 2005. Naturalised Birds of the World. London: T & A D Poyser.","2":"1"},{"1":"Long J.L. 1981 Introduced birds of the world. The worldwide history, distribution, and influence of birds introduced to new environments.","2":"1"},{"1":"observations.be","2":"1"},{"1":"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus 76(1):1-7 | Hughes et al. 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the  Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing. Strasbourg","2":"1"},{"1":"Spanoghe et al. 2010. Broedende Rosse Stekelstaarten Oxyura jamaicensis in Vlaanderen: een aanwinst ? Natuur.oriolus 76(1):1-7| Hughes et al. 1999. The status of the North American Ruddy Duck Oxyura jamaicensis in the Western Palearctic: towards an action plan for eradication. Council of Europe Publication T-PVS/Birds (99) 9. Council of Europe Publishing. Strasbourg","2":"1"},{"1":"Verbelen D. 2009 Gewone Kookaburra Dacelo novaeguineae, exoot de pas afgesneden. Natuur. Oriolus, 75(2):49-52.","2":"1"},{"1":"Vermeersch G., A. Anselin & K. Devos 2006. Bijzondere broedvogels in Vlaanderen in de periode 1994-2005. Populatietrends en recente status van zeldzame, kolonievormende en exotische broedvogels in Vlaanderen. Mededeling INBO.M.2006.2. Instituut voor Natuur- en Bosonderzoek, Brussel.","2":"1"},{"1":"Weiserbs A. 2010. Espèces invasives : le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.","2":"2"},{"1":"Weiserbs A. 2010. Espèces invasives: le cas des Psittacidés en Belgique. Incidences, évaluation des risques et éventail de mesures. Aves 47(1):21-35.","2":"1"},{"1":"NA","2":"200"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Map values:</p>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_source = source) </code></pre>
 </div>
 <div id="occurrenceremarks" class="section level3">
-<h3><span class="header-section-number">5.2.9</span> occurrenceRemarks</h3>
+<h3><span class="header-section-number">4.0.9</span> occurrenceRemarks</h3>
 <p>Inspect values:</p>
 <pre class="r"><code>distribution %&gt;%
   group_by(remarks) %&gt;%
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["remarks"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1 incertain occurrence in 2018 unverified, http://observations.be","2":"1"},{"1":"1 occurrence in 2004, http://observations.be","2":"1"},{"1":"1 occurrence in 2011, http://observations.be; NT in IUCN red list","2":"1"},{"1":"1 occurrence in 2012, http://observations.be; CR in IUCN red list","2":"1"},{"1":"1 occurrence in 2013 in GBIF, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in 2013, http://observations.be","2":"1"},{"1":"1 occurrence in 2017, http://observations.be","2":"3"},{"1":"1 occurrence in 2017, http://observations.be; VU in IUCN red list","2":"1"},{"1":"1 occurrence in 2018, http://observations.be","2":"3"},{"1":"1 occurrence in 2018, https://observatios.be","2":"1"},{"1":"1 occurrence in GBIF 2016, http://waarnemingen.be","2":"2"},{"1":"1 occurrence in GBIF in 2000, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in 2011, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in 2013","2":"1"},{"1":"1 occurrence in GBIF in 2015","2":"1"},{"1":"1 occurrence in GBIF in 2016 unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in Flanders in 2014, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 1990, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2001, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2002, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2003, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2005, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list","2":"1"},{"1":"1 occurrence in GBIF, 2010, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2012, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2013, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2015, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occ in 2016 and 2018 http://observations.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occurrences in 2018 in http://observations.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2016; http://waarnemingen.be ; VU in IUCN red list","2":"1"},{"1":"1 occurrencesurrence in 2011, http://observations.be; NT in IUCN red list","2":"1"},{"1":"1 occurrencesurrence in 2017, http://observations.be","2":"1"},{"1":"1 record on http://observations.be","2":"1"},{"1":"10 occurrences in GBIF starting 1975 to 2015, waarnemimgen.be data set","2":"1"},{"1":"13 occurrences in GBIF, between 1994 and 2014; http://waarnemingen.be ; occurrences between 1994 and 2018 on http://observations.be","2":"1"},{"1":"13 occurrences in GBIF, between 1995 and 2016, http://waarnemingen.be","2":"1"},{"1":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list","2":"1"},{"1":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be","2":"1"},{"1":"154 occurrences in GBIF","2":"1"},{"1":"18 occ in GBIF in 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in 2009 and 2016, http://observations.be","2":"1"},{"1":"2 occurrences in 2016 and 2017, http://observations.be","2":"1"},{"1":"2 occurrences in GBIF 2001 and 2003, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF 2009 and 2013, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF 2010 and 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF in 2012","2":"1"},{"1":"2 occurrences in GBIF one in 1982, one in 2013; http://waarnemingen.be datatset","2":"1"},{"1":"2 occurrences in GBIF, 1983 and 2014, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1986 and 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1992, unverified, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1996 and 2011 unverified; http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2007, unverified, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2008 and 2014, waarnemingem.be","2":"1"},{"1":"2 occurrences in GBIF, 2013 and 2015; http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2013 and 2016; http://waarnemingen.be ; occurrences between 2001 and 2018 in http://observations.be","2":"1"},{"1":"2 occurrences in GBIF, 2015 and 2016 and another 2 occurrences for T. haematodus moluccanus, in 2015 and 2016; http://waarnemingen.be ;","2":"1"},{"1":"2 occurrences on GBIF in 2014","2":"1"},{"1":"208 occurrences in GBIF starting 2002, http://waarnemingen.be","2":"1"},{"1":"248 occurrences in GBIF between 1988 and 2016; http://waarnemingen.be","2":"1"},{"1":"248 occurrences. In GBIF between 1988 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2012, 2014 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2014 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2015, http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, one in 2007 and two in 2015; http://waarnemingen.be","2":"1"},{"1":"31 occurrences in GBIF, 2015 and 2016, http://waarnemingen.be","2":"1"},{"1":"374 occurrences in GBIF","2":"1"},{"1":"4 occurrences in GBIF, 1991 and 2013; http://waarnemingen.be","2":"1"},{"1":"4 occurrences in GBIF, 2014, 2015 and 2016; http://waarnemingen.be; endangered in native range acc to IUCN red list","2":"1"},{"1":"4 occurrences in GBIF, 2015 and 2016, unverified, http://waarnemingen.be","2":"1"},{"1":"4 occurrences in GBIF, one in 2000 and 3 in 2016","2":"1"},{"1":"4 occurrences on http://observations.be, 2018 and 2019;","2":"1"},{"1":"5 occurrences in GBIF, one in 2001, then 2015 and 2016; http://waarnemingen.be","2":"1"},{"1":"52 occurrences in GBIF between 1986 and 2014, http://waarnemingen.be","2":"1"},{"1":"7 occurrences in GBIF 2014 and 2015, http://waarnemingen.be","2":"1"},{"1":"7 occurrences in GBIF, one in 1985 then 2010 to 2016; http://waarnemingen.be","2":"1"},{"1":"8 occurrences in GBIF in 2016, http://waarnemingen.be","2":"1"},{"1":"8 occurrences in GBIF, 1975 to 2016; http://waarnemingen.be","2":"1"},{"1":"89 occurrences in GBIF, 1987 to 2015; http://waarnemingen.be","2":"1"},{"1":"9 occurrences in GBIF, 2014-2016","2":"1"},{"1":"EN in IUCN red list","2":"1"},{"1":"extant & introduced (resident) acc. to IUCN red list","2":"1"},{"1":"extant & vagrant (non-breeding) acc. to IUCN red list","2":"2"},{"1":"extant, resident (native) in belgium acc. to IUCN red list","2":"1"},{"1":"introduced and established in eastern Belgium, 70 pairs released at Hoch Venn in the early 1890s (Long 1981)","2":"1"},{"1":"introduced into UK in the 1940's, escaped or released from captivity (Hughes et al 1999)","2":"2"},{"1":"look for Aves, 53/3 | 2016 | 105-128","2":"1"},{"1":"NT in IUCN red list","2":"1"},{"1":"NT in IUCN redlist","2":"1"},{"1":"occurrences between 2010 and 2018 in http://observations.be","2":"1"},{"1":"occurrences between 2012 and 2016 on http://waarnemingen.be and http://observations.be","2":"1"},{"1":"occurrences in 1973, http://observations.be","2":"1"},{"1":"occurrences in 2003 and 2013 in http://observations.be, EN in IUCN red list","2":"1"},{"1":"occurrences in 2005 acc. to http://observations.be","2":"1"},{"1":"occurrences in 2009 and 2018, http://observations.be","2":"1"},{"1":"occurrences in 2012, http://observations.be","2":"1"},{"1":"occurrences in 2014, 2016, 2018; http://observations.be","2":"1"},{"1":"occurrences in 2014, http://observations.be","2":"1"},{"1":"occurrences in 2017 and 2018, http://observations.be","2":"2"},{"1":"occurrences in 2017, http://observations.be","2":"1"},{"1":"occurrences in 2017, https://http://observations.be","2":"1"},{"1":"on GBIF occurrences since 2005 (source Waarnemingen.be - Non-native animal occurrencesurrences in Flanders and the Brussels Capital Region, Belgium)","2":"1"},{"1":"recorded in 2011 in Flanders","2":"1"},{"1":"records form 2018, GBIF and http://observations.be","2":"1"},{"1":"records from 2005 to 2019 on observation.be","2":"1"},{"1":"Report of a succesful breeding pair in Tervuren, but not seen anymore aftwerwards (this was not the start of the Belgian parakeet population). Not sure whether the label 'reproducing' is correct - should in face be 'failed' or 'extinct' for this population.","2":"1"},{"1":"The current population stems from 40 to 45 birds that were intentionally released by the Meli zoo in 1974","2":"1"},{"1":"VU in IUCN red list","2":"3"},{"1":"NA","2":"129"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["remarks"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"1 incertain occurrence in 2018 unverified, http://observations.be","2":"1"},{"1":"1 occurrence in 2004, http://observations.be","2":"1"},{"1":"1 occurrence in 2011, http://observations.be; NT in IUCN red list","2":"1"},{"1":"1 occurrence in 2012, http://observations.be; CR in IUCN red list","2":"1"},{"1":"1 occurrence in 2013 in GBIF, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in 2013, http://observations.be","2":"1"},{"1":"1 occurrence in 2017, http://observations.be","2":"3"},{"1":"1 occurrence in 2017, http://observations.be; VU in IUCN red list","2":"1"},{"1":"1 occurrence in 2018, http://observations.be","2":"3"},{"1":"1 occurrence in 2018, https://observatios.be","2":"1"},{"1":"1 occurrence in GBIF 2016, http://waarnemingen.be","2":"2"},{"1":"1 occurrence in GBIF in 2000, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in 2011, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in 2013","2":"1"},{"1":"1 occurrence in GBIF in 2015","2":"1"},{"1":"1 occurrence in GBIF in 2016 unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF in Flanders in 2014, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 1990, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2001, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2002, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2003, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2005, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list","2":"1"},{"1":"1 occurrence in GBIF, 2010, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2012, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2013, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2015, unverified; http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occ in 2016 and 2018 http://observations.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, http://waarnemingen.be ; occurrences in 2018 in http://observations.be","2":"1"},{"1":"1 occurrence in GBIF, 2016, unverified, http://waarnemingen.be","2":"1"},{"1":"1 occurrence in GBIF, 2016; http://waarnemingen.be ; VU in IUCN red list","2":"1"},{"1":"1 occurrencesurrence in 2011, http://observations.be; NT in IUCN red list","2":"1"},{"1":"1 occurrencesurrence in 2017, http://observations.be","2":"1"},{"1":"1 record on http://observations.be","2":"1"},{"1":"10 occurrences in GBIF starting 1975 to 2015, waarnemimgen.be data set","2":"1"},{"1":"13 occurrences in GBIF, between 1994 and 2014; http://waarnemingen.be ; occurrences between 1994 and 2018 on http://observations.be","2":"1"},{"1":"13 occurrences in GBIF, between 1995 and 2016, http://waarnemingen.be","2":"1"},{"1":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list","2":"1"},{"1":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be","2":"1"},{"1":"154 occurrences in GBIF","2":"1"},{"1":"18 occ in GBIF in 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in 2009 and 2016, http://observations.be","2":"1"},{"1":"2 occurrences in 2016 and 2017, http://observations.be","2":"1"},{"1":"2 occurrences in GBIF 2001 and 2003, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF 2009 and 2013, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF 2010 and 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF in 2012","2":"1"},{"1":"2 occurrences in GBIF one in 1982, one in 2013; http://waarnemingen.be datatset","2":"1"},{"1":"2 occurrences in GBIF, 1983 and 2014, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1986 and 2015, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1992, unverified, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 1996 and 2011 unverified; http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2007, unverified, http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2008 and 2014, waarnemingem.be","2":"1"},{"1":"2 occurrences in GBIF, 2013 and 2015; http://waarnemingen.be","2":"1"},{"1":"2 occurrences in GBIF, 2013 and 2016; http://waarnemingen.be ; occurrences between 2001 and 2018 in http://observations.be","2":"1"},{"1":"2 occurrences in GBIF, 2015 and 2016 and another 2 occurrences for T. haematodus moluccanus, in 2015 and 2016; http://waarnemingen.be ;","2":"1"},{"1":"2 occurrences on GBIF in 2014","2":"1"},{"1":"208 occurrences in GBIF starting 2002, http://waarnemingen.be","2":"1"},{"1":"248 occurrences in GBIF between 1988 and 2016; http://waarnemingen.be","2":"1"},{"1":"248 occurrences. In GBIF between 1988 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2012, 2014 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2014 and 2016; http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, 2015, http://waarnemingen.be","2":"1"},{"1":"3 occurrences in GBIF, one in 2007 and two in 2015; http://waarnemingen.be","2":"1"},{"1":"31 occurrences in GBIF, 2015 and 2016, http://waarnemingen.be","2":"1"},{"1":"374 occurrences in GBIF","2":"1"},{"1":"4 occurrences in GBIF, 1991 and 2013; http://waarnemingen.be","2":"1"},{"1":"4 occurrences in GBIF, 2014, 2015 and 2016; http://waarnemingen.be; endangered in native range acc to IUCN red list","2":"1"},{"1":"4 occurrences in GBIF, 2015 and 2016, unverified, http://waarnemingen.be","2":"1"},{"1":"4 occurrences in GBIF, one in 2000 and 3 in 2016","2":"1"},{"1":"4 occurrences on http://observations.be, 2018 and 2019;","2":"1"},{"1":"5 occurrences in GBIF, one in 2001, then 2015 and 2016; http://waarnemingen.be","2":"1"},{"1":"52 occurrences in GBIF between 1986 and 2014, http://waarnemingen.be","2":"1"},{"1":"7 occurrences in GBIF 2014 and 2015, http://waarnemingen.be","2":"1"},{"1":"7 occurrences in GBIF, one in 1985 then 2010 to 2016; http://waarnemingen.be","2":"1"},{"1":"8 occurrences in GBIF in 2016, http://waarnemingen.be","2":"1"},{"1":"8 occurrences in GBIF, 1975 to 2016; http://waarnemingen.be","2":"1"},{"1":"89 occurrences in GBIF, 1987 to 2015; http://waarnemingen.be","2":"1"},{"1":"9 occurrences in GBIF, 2014-2016","2":"1"},{"1":"breeding confirmed in 2005 Antwerpse Linkeroevergebied, Prosperdorp","2":"1"},{"1":"confirmed breeding in 2020","2":"1"},{"1":"EN in IUCN red list","2":"1"},{"1":"extant & introduced (resident) acc. to IUCN red list","2":"1"},{"1":"extant & vagrant (non-breeding) acc. to IUCN red list","2":"2"},{"1":"extant, resident (native) in belgium acc. to IUCN red list","2":"1"},{"1":"introduced and established in eastern Belgium, 70 pairs released at Hoch Venn in the early 1890s (Long 1981)","2":"1"},{"1":"introduced into UK in the 1940's, escaped or released from captivity (Hughes et al 1999)","2":"2"},{"1":"look for Aves, 53/3 | 2016 | 105-128","2":"1"},{"1":"NT in IUCN red list","2":"1"},{"1":"NT in IUCN redlist","2":"1"},{"1":"occurrences between 2010 and 2018 in http://observations.be","2":"1"},{"1":"occurrences between 2012 and 2016 on http://waarnemingen.be and http://observations.be","2":"1"},{"1":"occurrences in 1973, http://observations.be","2":"1"},{"1":"occurrences in 2003 and 2013 in http://observations.be, EN in IUCN red list","2":"1"},{"1":"occurrences in 2005 acc. to http://observations.be","2":"1"},{"1":"occurrences in 2009 and 2018, http://observations.be","2":"1"},{"1":"occurrences in 2012, http://observations.be","2":"1"},{"1":"occurrences in 2014, 2016, 2018; http://observations.be","2":"1"},{"1":"occurrences in 2014, http://observations.be","2":"1"},{"1":"occurrences in 2017 and 2018, http://observations.be","2":"2"},{"1":"occurrences in 2017, http://observations.be","2":"1"},{"1":"occurrences in 2017, https://http://observations.be","2":"1"},{"1":"Offagne","2":"1"},{"1":"on GBIF occurrences since 2005 (source Waarnemingen.be - Non-native animal occurrencesurrences in Flanders and the Brussels Capital Region, Belgium)","2":"1"},{"1":"recorded in 2011 in Flanders","2":"1"},{"1":"records form 2018, GBIF and http://observations.be","2":"1"},{"1":"records from 2005 to 2019 on observation.be","2":"1"},{"1":"Report of a succesful breeding pair in Tervuren, but not seen anymore aftwerwards (this was not the start of the Belgian parakeet population). Not sure whether the label 'reproducing' is correct - should in face be 'failed' or 'extinct' for this population.","2":"1"},{"1":"The current population stems from 40 to 45 birds that were intentionally released by the Meli zoo in 1974","2":"1"},{"1":"VU in IUCN red list","2":"3"},{"1":"NA","2":"127"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Map values:</p>
 <pre class="r"><code>distribution %&lt;&gt;% mutate(dwc_occurrenceRemarks = remarks) </code></pre>
 </div>
 </div>
-<div id="post-processing-1" class="section level2">
-<h2><span class="header-section-number">5.3</span> Post-processing</h2>
-<p>Only keep the Darwin Core columns:</p>
-<pre class="r"><code>distribution %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
-<p>Drop the <code>dwc_</code> prefix:</p>
-<pre class="r"><code>colnames(distribution) &lt;- str_replace(colnames(distribution), &quot;dwc_&quot;, &quot;&quot;)</code></pre>
-<p>Preview data:</p>
-<pre class="r"><code>distribution %&gt;% head()</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["locationID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["locality"],"name":[3],"type":["chr"],"align":["left"]},{"label":["countryCode"],"name":[4],"type":["chr"],"align":["left"]},{"label":["occurrenceStatus"],"name":[5],"type":["chr"],"align":["left"]},{"label":["establishmentMeans"],"name":[6],"type":["chr"],"align":["left"]},{"label":["eventDate"],"name":[7],"type":["chr"],"align":["left"]},{"label":["source"],"name":[8],"type":["chr"],"align":["left"]},{"label":["occurrenceRemarks"],"name":[9],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:6ef305724bf67b37c9fd9ac71f383132","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"1997/2017","8":"NA","9":"15 occurrences in GBIF, 1997, http://waarnemingen.be ; occurrences in 1997 and 2017 on http://observations.be; VU in IUCN red list"},{"1":"alien-birds-checklist:taxon:3f5d388b1d6e0bb2e4d1352450e494bf","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"NA"},{"1":"alien-birds-checklist:taxon:21e4e021fa4e01bed8e1e723fdd42f53","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"NA"},{"1":"alien-birds-checklist:taxon:cd6c3707338fb24c14fdf508245ea744","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"2013/2016","8":"NA","9":"15 occurrences in GBIF, one in 2013, the rest in 2015 and 2016; http://waarnemingen.be"},{"1":"alien-birds-checklist:taxon:8fb68655bc22002ae5507a3c1a637421","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"2009","8":"NA","9":"1 occurrence in GBIF, 2009; http://waarnemingen.be ; VU in IUCN red list"},{"1":"alien-birds-checklist:taxon:735ec6110517c880ed39e5bf6ad92949","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"2009/2018","8":"NA","9":"occurrences in 2009 and 2018, http://observations.be"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<p>Save to CSV:</p>
-<pre class="r"><code>write_csv(distribution, here(&quot;data&quot;, &quot;processed&quot;, &quot;distribution.csv&quot;), na = &quot;&quot;)</code></pre>
-</div>
-</div>
 <div id="species-profile-extension" class="section level1">
-<h1><span class="header-section-number">6</span> Species profile extension</h1>
-<div id="pre-processing-2" class="section level2">
-<h2><span class="header-section-number">6.1</span> Pre-processing</h2>
-<p>Create a dataframe with unique taxa only (ignoring potential multiple distribution rows):</p>
+<h1><span class="header-section-number">5</span> Species profile extension</h1>
+<p>Create a dataframe with unique taxa only (ignoring multiple distribution rows):</p>
 <pre class="r"><code>species_profile &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
-</div>
-<div id="term-mapping-2" class="section level2">
-<h2><span class="header-section-number">6.2</span> Term mapping</h2>
 <p>Map the data to <a href="http://rs.gbif.org/extension/gbif/1.0/speciesprofile.xml">Species Profile</a>.</p>
 <div id="taxonid-2" class="section level3">
-<h3><span class="header-section-number">6.2.1</span> taxonID</h3>
+<h3><span class="header-section-number">5.0.1</span> taxonID</h3>
 <pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
 <p>Inspect <code>realm</code>:</p>
 <pre class="r"><code>species_profile %&gt;% 
@@ -817,48 +757,27 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
 </div>
 </div>
 <div id="ismarine" class="section level3">
-<h3><span class="header-section-number">6.2.2</span> isMarine</h3>
+<h3><span class="header-section-number">5.0.2</span> isMarine</h3>
 <pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_isMarine = &quot;FALSE&quot;)</code></pre>
 </div>
 <div id="isterrestrial" class="section level3">
-<h3><span class="header-section-number">6.2.3</span> isTerrestrial</h3>
-<pre class="r"><code>species_profile %&lt;&gt;% 
-  mutate(dwc_isTerrestrial = case_when(
-    realm == &quot;terrestrial&quot; ~ &quot;TRUE&quot;,
-    TRUE ~ &quot;FALSE&quot;
-    )
-)</code></pre>
+<h3><span class="header-section-number">5.0.3</span> isTerrestrial</h3>
+<pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_isTerrestrial = case_when(
+  realm == &quot;terrestrial&quot; ~ &quot;TRUE&quot;,
+  TRUE ~ &quot;FALSE&quot;
+))</code></pre>
 </div>
 <div id="isfreshwater" class="section level3">
-<h3><span class="header-section-number">6.2.4</span> isFreshwater</h3>
-<pre class="r"><code>species_profile %&lt;&gt;% 
-  mutate(dwc_isFreshwater = case_when(
-    realm == &quot;freshwater&quot; ~ &quot;TRUE&quot;,
-    TRUE ~ &quot;FALSE&quot;
-    )
-)</code></pre>
-</div>
-</div>
-<div id="post-processing-2" class="section level2">
-<h2><span class="header-section-number">6.3</span> Post-processing</h2>
-<p>Only keep the Darwin Core columns:</p>
-<pre class="r"><code>species_profile %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
-<p>Drop the <code>dwc_</code> prefix:</p>
-<pre class="r"><code>colnames(species_profile) &lt;- str_replace(colnames(species_profile), &quot;dwc_&quot;, &quot;&quot;)</code></pre>
-<p>Preview data:</p>
-<pre class="r"><code>species_profile %&gt;% head()</code></pre>
-<div data-pagedtable="false">
-<script data-pagedtable-source type="application/json">
-{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["isMarine"],"name":[2],"type":["chr"],"align":["left"]},{"label":["isTerrestrial"],"name":[3],"type":["chr"],"align":["left"]},{"label":["isFreshwater"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:6ef305724bf67b37c9fd9ac71f383132","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:3f5d388b1d6e0bb2e4d1352450e494bf","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:21e4e021fa4e01bed8e1e723fdd42f53","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:cd6c3707338fb24c14fdf508245ea744","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:8fb68655bc22002ae5507a3c1a637421","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:735ec6110517c880ed39e5bf6ad92949","2":"FALSE","3":"TRUE","4":"FALSE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
-<p>Save to CSV:</p>
-<pre class="r"><code>write_csv(species_profile, here(&quot;data&quot;, &quot;processed&quot;, &quot;speciesprofile.csv&quot;), na = &quot;&quot;)</code></pre>
+<h3><span class="header-section-number">5.0.4</span> isFreshwater</h3>
+<pre class="r"><code>species_profile %&lt;&gt;% mutate(dwc_isFreshwater = case_when(
+  realm == &quot;freshwater&quot; ~ &quot;TRUE&quot;,
+  TRUE ~ &quot;FALSE&quot;
+))</code></pre>
 </div>
 </div>
 <div id="description-extension" class="section level1">
-<h1><span class="header-section-number">7</span> Description extension</h1>
-<p>In the description extension we want to include several important characteristics (hereafter refered to as descriptors) about the species:</p>
+<h1><span class="header-section-number">6</span> Description extension</h1>
+<p>In the description extension we want to include several important characteristics (hereafter referred to as descriptors) about the species:</p>
 <ul>
 <li>Native range</li>
 <li>Pathway of introduction</li>
@@ -866,10 +785,10 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
 </ul>
 <p>For each descriptor, we create a separate dataframe to process the specific information. We always specify <em>which descriptor</em> we map (<code>type</code> column) and its <em>specific content</em> (<code>description</code> column). After the mapping of these Darwin Core terms <code>type</code> and <code>value</code>, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as <code>language</code>).</p>
 <div id="native-range" class="section level2">
-<h2><span class="header-section-number">7.1</span> Native range</h2>
+<h2><span class="header-section-number">6.1</span> Native range</h2>
 <p>Create separate dataframe:</p>
 <pre class="r"><code>native_range &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
-<p>Inspect <code>native_range</code>:</p>
+<p>Inspect values:</p>
 <pre class="r"><code>native_range %&gt;% 
   group_by(native_range) %&gt;% 
   count()</code></pre>
@@ -879,18 +798,16 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   </script>
 </div>
 <p>Separate content using the pipe symbol as a separator:</p>
-<pre class="r"><code>native_range %&lt;&gt;% 
-  separate(col = native_range,
-           into = c(&quot;native_range_1&quot;, &quot;native_range_2&quot;, &quot;native_range_3&quot;, &quot;native_range_4&quot;, &quot;native_range_5&quot;),
-           sep = &quot;\\s\\|\\s&quot;,
-           remove = FALSE)</code></pre>
-<p>Change from a wide to a long dataset:</p>
-<pre class="r"><code>native_range %&lt;&gt;% 
-  gather(key = &quot;key&quot;,
-         value = &quot;value&quot;,
-         native_range_1, native_range_2, native_range_3, native_range_4, native_range_5,
-         na.rm = TRUE)</code></pre>
-<p>Show unique values for native range:</p>
+<pre class="r"><code>native_range %&lt;&gt;% separate(
+  native_range,
+  into = c(&quot;native_range_1&quot;, &quot;native_range_2&quot;, &quot;native_range_3&quot;, &quot;native_range_4&quot;, &quot;native_range_5&quot;),
+  sep = &quot;\\s\\|\\s&quot;,
+  remove = FALSE
+)</code></pre>
+<p>Change from a wide to a long dataset and trim:</p>
+<pre class="r"><code>native_range %&lt;&gt;% gather(key, value, starts_with(&quot;native_range_&quot;), na.rm = TRUE) %&gt;%
+  mutate(value = str_trim(value))</code></pre>
+<p>Inspect unique values:</p>
 <pre class="r"><code>native_range %&gt;% 
   group_by(value) %&gt;% 
   count()</code></pre>
@@ -900,39 +817,36 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
   </script>
 </div>
 <p>Map to the <a href="http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf">WGSRPD vocabulary</a>:</p>
-<pre class="r"><code>native_range %&lt;&gt;% mutate(
-  description = recode(
-    value,
-    &quot;Africa&quot; = &quot;Africa (WGSRPD:2)&quot;,
-    &quot;Australia&quot; = &quot;Australia (WGSRPD:50)&quot;,
-    &quot;Caribbean&quot; = &quot;Caribbean (WGSRPD:81)&quot;,
-    &quot;Central America&quot; = &quot;Central America (WGSRPD:80)&quot;,
-    &quot;China&quot; = &quot;China (WGSRPD:36)&quot;,
-    &quot;East Asia&quot; = &quot;Eastern Asia (WGSRPD:38)&quot;,
-    &quot;Eastern Asia&quot; = &quot;Eastern Asia (WGSRPD:38)&quot;,
-    &quot;Eastern Europe&quot; = &quot;Eastern Europe (WGSRPD:14)&quot;,
-    &quot;Europe&quot; = &quot;Europe (WGSRPD:1)&quot;,
-    &quot;Galapagos&quot; = &quot;Galapagos (WGSRPD:GAL)&quot;,
-    &quot;Hawaiian Islands&quot; = &quot;Hawaiian Islands (WGSRPD:HI)&quot;,
-    &quot;India&quot; = &quot;Indian Subcontinent (WGSRPD:40)&quot;,
-    &quot;Indonesia&quot; = &quot;Indonesia (WGSRPD:ID)&quot;,
-    &quot;Japan&quot; = &quot;Japan (WGSRPD:JAP)&quot;,
-    &quot;Madagascar&quot; = &quot;Madagascar (WGSRPD:MDG)&quot;,
-    &quot;New Zealand&quot; = &quot;New Zealand (WGSRPD:51)&quot;,
-    &quot;North America&quot; = &quot;Northern America (WGSRPD:7)&quot;,
-    &quot;Northern America&quot; = &quot;Northern America (WGSRPD:7)&quot;,
-    &quot;Panama&quot; = &quot;Panama (WGSRPD:PAN)&quot;,
-    &quot;Philippines&quot; = &quot;Philippines (WGSRPD:PHI)&quot;,
-    &quot;Portugal&quot; = &quot;Portugal (WGSRPD:POR)&quot;,
-    &quot;South America&quot; = &quot;Southern America (WGSRPD:8)&quot;,
-    &quot;Southeast Europe&quot; = &quot;Southeastern Europe (WGSRPD:13)&quot;,
-    &quot;Southern Africa&quot; = &quot;Southern Africa (WGSRPD:27)&quot;,
-    &quot;Spain&quot; = &quot;Spain (WGSRPD:SPA)&quot;,
-    &quot;Tanzania&quot; = &quot;Tanzania (WGSRPD:TAN)&quot;,
-    &quot;Western Asia&quot; = &quot;Western Asia (WGSRPD:34)&quot;
-  )
-)</code></pre>
-<p>Show mapping:</p>
+<pre class="r"><code>native_range %&lt;&gt;% mutate(description = recode(value,
+  &quot;Africa&quot; = &quot;Africa (WGSRPD:2)&quot;,
+  &quot;Australia&quot; = &quot;Australia (WGSRPD:50)&quot;,
+  &quot;Caribbean&quot; = &quot;Caribbean (WGSRPD:81)&quot;,
+  &quot;Central America&quot; = &quot;Central America (WGSRPD:80)&quot;,
+  &quot;China&quot; = &quot;China (WGSRPD:36)&quot;,
+  &quot;East Asia&quot; = &quot;Eastern Asia (WGSRPD:38)&quot;,
+  &quot;Eastern Asia&quot; = &quot;Eastern Asia (WGSRPD:38)&quot;,
+  &quot;Eastern Europe&quot; = &quot;Eastern Europe (WGSRPD:14)&quot;,
+  &quot;Europe&quot; = &quot;Europe (WGSRPD:1)&quot;,
+  &quot;Galapagos&quot; = &quot;Galapagos (WGSRPD:GAL)&quot;,
+  &quot;Hawaiian Islands&quot; = &quot;Hawaiian Islands (WGSRPD:HI)&quot;,
+  &quot;India&quot; = &quot;Indian Subcontinent (WGSRPD:40)&quot;,
+  &quot;Indonesia&quot; = &quot;Indonesia (WGSRPD:ID)&quot;,
+  &quot;Japan&quot; = &quot;Japan (WGSRPD:JAP)&quot;,
+  &quot;Madagascar&quot; = &quot;Madagascar (WGSRPD:MDG)&quot;,
+  &quot;New Zealand&quot; = &quot;New Zealand (WGSRPD:51)&quot;,
+  &quot;North America&quot; = &quot;Northern America (WGSRPD:7)&quot;,
+  &quot;Northern America&quot; = &quot;Northern America (WGSRPD:7)&quot;,
+  &quot;Panama&quot; = &quot;Panama (WGSRPD:PAN)&quot;,
+  &quot;Philippines&quot; = &quot;Philippines (WGSRPD:PHI)&quot;,
+  &quot;Portugal&quot; = &quot;Portugal (WGSRPD:POR)&quot;,
+  &quot;South America&quot; = &quot;Southern America (WGSRPD:8)&quot;,
+  &quot;Southeast Europe&quot; = &quot;Southeastern Europe (WGSRPD:13)&quot;,
+  &quot;Southern Africa&quot; = &quot;Southern Africa (WGSRPD:27)&quot;,
+  &quot;Spain&quot; = &quot;Spain (WGSRPD:SPA)&quot;,
+  &quot;Tanzania&quot; = &quot;Tanzania (WGSRPD:TAN)&quot;,
+  &quot;Western Asia&quot; = &quot;Western Asia (WGSRPD:34)&quot;
+))</code></pre>
+<p>Inspect mapped values:</p>
 <pre class="r"><code>native_range %&gt;% 
   group_by(value, description) %&gt;% 
   count()</code></pre>
@@ -941,104 +855,158 @@ input_data %&lt;&gt;% mutate(taxon_id = paste(
 {"columns":[{"label":["value"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"Africa","2":"Africa (WGSRPD:2)","3":"43"},{"1":"America","2":"America","3":"2"},{"1":"Asia","2":"Asia","3":"6"},{"1":"Australia","2":"Australia (WGSRPD:50)","3":"28"},{"1":"Caribbean","2":"Caribbean (WGSRPD:81)","3":"2"},{"1":"Central America","2":"Central America (WGSRPD:80)","3":"11"},{"1":"Central Asia","2":"Central Asia","3":"4"},{"1":"China","2":"China (WGSRPD:36)","3":"4"},{"1":"Eastern Africa","2":"Eastern Africa","3":"12"},{"1":"Eastern Asia","2":"Eastern Asia (WGSRPD:38)","3":"18"},{"1":"Eastern Asian Russia","2":"Eastern Asian Russia","3":"2"},{"1":"Eastern Europe","2":"Eastern Europe (WGSRPD:14)","3":"1"},{"1":"Ethiopia","2":"Ethiopia","3":"1"},{"1":"Eurasia","2":"Eurasia","3":"1"},{"1":"Eurasia Africa","2":"Eurasia Africa","3":"1"},{"1":"Europe","2":"Europe (WGSRPD:1)","3":"2"},{"1":"Galapagos","2":"Galapagos (WGSRPD:GAL)","3":"1"},{"1":"Hawaiian Islands","2":"Hawaiian Islands (WGSRPD:HI)","3":"2"},{"1":"India","2":"Indian Subcontinent (WGSRPD:40)","3":"2"},{"1":"Indonesia","2":"Indonesia (WGSRPD:ID)","3":"1"},{"1":"Japan","2":"Japan (WGSRPD:JAP)","3":"1"},{"1":"Macaronesia","2":"Macaronesia","3":"1"},{"1":"Madagascar","2":"Madagascar (WGSRPD:MDG)","3":"2"},{"1":"Middle Africa","2":"Middle Africa","3":"11"},{"1":"Middle East","2":"Middle East","3":"1"},{"1":"Myanmar","2":"Myanmar","3":"1"},{"1":"Nearctic","2":"Nearctic","3":"2"},{"1":"Neotropic","2":"Neotropic","3":"2"},{"1":"New Zealand","2":"New Zealand (WGSRPD:51)","3":"4"},{"1":"North America","2":"Northern America (WGSRPD:7)","3":"19"},{"1":"Northern Africa","2":"Northern Africa","3":"1"},{"1":"Northern America","2":"Northern America (WGSRPD:7)","3":"1"},{"1":"Palearctic","2":"Palearctic","3":"2"},{"1":"Panama","2":"Panama (WGSRPD:PAN)","3":"1"},{"1":"Papua New Guinea","2":"Papua New Guinea","3":"1"},{"1":"Philippines","2":"Philippines (WGSRPD:PHI)","3":"1"},{"1":"Portugal","2":"Portugal (WGSRPD:POR)","3":"1"},{"1":"Russia","2":"Russia","3":"2"},{"1":"South America","2":"Southern America (WGSRPD:8)","3":"37"},{"1":"Southeast Europe","2":"Southeastern Europe (WGSRPD:13)","3":"1"},{"1":"Southeastern Asia","2":"Southeastern Asia","3":"26"},{"1":"Southern Africa","2":"Southern Africa (WGSRPD:27)","3":"9"},{"1":"Southern Asia","2":"Southern Asia","3":"31"},{"1":"Southern Europe","2":"Southern Europe","3":"2"},{"1":"Southwestern Africa","2":"Southwestern Africa","3":"1"},{"1":"Spain","2":"Spain (WGSRPD:SPA)","3":"2"},{"1":"Sub-Saharan Africa","2":"Sub-Saharan Africa","3":"1"},{"1":"Tanzania","2":"Tanzania (WGSRPD:TAN)","3":"1"},{"1":"Western Africa","2":"Western Africa","3":"9"},{"1":"Western Asia","2":"Western Asia (WGSRPD:34)","3":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>Map <code>type</code>:</p>
+<p>Add <code>type</code> of description:</p>
 <pre class="r"><code>native_range %&lt;&gt;% mutate(type = &quot;native range&quot;)</code></pre>
 <p>Select <code>taxon_id</code>, <code>description</code> and <code>type</code>:</p>
 <pre class="r"><code>native_range %&lt;&gt;% select(taxon_id, description, type)</code></pre>
 </div>
 <div id="pathway-of-introduction" class="section level2">
-<h2><span class="header-section-number">7.2</span> Pathway of introduction</h2>
+<h2><span class="header-section-number">6.2</span> Pathway of introduction</h2>
 <p>Create separate dataframe:</p>
-<pre class="r"><code>pathways &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
-<p>Inspect <code>native_range</code>:</p>
-<pre class="r"><code>pathways %&gt;% 
+<pre class="r"><code>pathway &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
+<p>Inspect values:</p>
+<pre class="r"><code>pathway %&gt;% 
   group_by(introduction_pathway) %&gt;% 
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["introduction_pathway"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"escape","2":"91"},{"1":"escape_farm","2":"4"},{"1":"escape_farm | escape_pet","2":"2"},{"1":"escape_pet","2":"90"},{"1":"escape_pet | escape_farm","2":"8"},{"1":"escape_pet | escape_farm | escape_zoo","2":"1"},{"1":"escape_pet | escape_farm | release_hunting","2":"1"},{"1":"escape_pet | escape_zoo","2":"3"},{"1":"escape_zoo","2":"3"},{"1":"release","2":"1"},{"1":"release_hunting","2":"3"},{"1":"release_hunting | escape_pet","2":"1"},{"1":"unaided | escape_pet | escape_zoo","2":"1"},{"1":"NA","2":"35"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["introduction_pathway"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"escape","2":"91"},{"1":"escape_farm","2":"4"},{"1":"escape_farm | escape_pet","2":"2"},{"1":"escape_pet","2":"90"},{"1":"escape_pet | escape_farm","2":"8"},{"1":"escape_pet | escape_farm | escape_zoo","2":"1"},{"1":"escape_pet | escape_farm | release_hunting","2":"1"},{"1":"escape_pet | escape_zoo","2":"3"},{"1":"escape_zoo","2":"4"},{"1":"release","2":"1"},{"1":"release_hunting","2":"3"},{"1":"release_hunting | escape_pet","2":"1"},{"1":"unaided | escape_pet | escape_zoo","2":"1"},{"1":"NA","2":"34"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Separate content using the pipe symbol as a separator:</p>
-<pre class="r"><code>pathways %&lt;&gt;% 
-  separate(col = introduction_pathway,
-           into = c(&quot;introduction_pathway_1&quot;, &quot;introduction_pathway_2&quot;, &quot;introduction_pathway_3&quot;),
-           sep = &quot;\\s\\|\\s&quot;,
-           remove = FALSE)</code></pre>
-<p>Change from a wide to a long dataset:</p>
-<pre class="r"><code>pathways %&lt;&gt;% 
-  gather(key = &quot;key&quot;,
-         value = &quot;value&quot;,
-         introduction_pathway_1, introduction_pathway_2, introduction_pathway_3,
-         na.rm = TRUE)</code></pre>
-<p>Show unique values for native range:</p>
-<pre class="r"><code>pathways %&gt;% 
+<pre class="r"><code>pathway %&lt;&gt;% separate(
+  introduction_pathway,
+  into = c(&quot;introduction_pathway_1&quot;, &quot;introduction_pathway_2&quot;, &quot;introduction_pathway_3&quot;),
+  sep = &quot;\\s\\|\\s&quot;,
+  remove = FALSE
+)</code></pre>
+<p>Change from a wide to a long dataset and trim:</p>
+<pre class="r"><code>pathway %&lt;&gt;% gather(key, value, starts_with(&quot;introduction_pathway_&quot;), na.rm = TRUE) %&gt;%
+  mutate(value = str_trim(value))</code></pre>
+<p>Inspect unique values:</p>
+<pre class="r"><code>pathway %&gt;% 
   group_by(value) %&gt;% 
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["value"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"escape","2":"91"},{"1":"escape_farm","2":"16"},{"1":"escape_pet","2":"107"},{"1":"escape_zoo","2":"8"},{"1":"release","2":"1"},{"1":"release_hunting","2":"5"},{"1":"unaided","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["value"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"escape","2":"91"},{"1":"escape_farm","2":"16"},{"1":"escape_pet","2":"107"},{"1":"escape_zoo","2":"9"},{"1":"release","2":"1"},{"1":"release_hunting","2":"5"},{"1":"unaided","2":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Add prefix <code>cbd_2014_pathway:</code> to refer to the <a href="https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf">CBD standard for pathway information</a></p>
-<pre class="r"><code>pathways %&lt;&gt;% mutate(description = paste(&quot;cbd_2014_pathway&quot;, value, sep = &quot;:&quot;))</code></pre>
-<p>Add <code>type</code>:</p>
-<pre class="r"><code>pathways %&lt;&gt;% mutate(type = &quot;pathway&quot;)</code></pre>
+<pre class="r"><code>pathway %&lt;&gt;% mutate(description = paste(&quot;cbd_2014_pathway&quot;, value, sep = &quot;:&quot;))</code></pre>
+<p>Add <code>type</code> of description:</p>
+<pre class="r"><code>pathway %&lt;&gt;% mutate(type = &quot;pathway&quot;)</code></pre>
 <p>Select <code>taxon_id</code>, <code>description</code> and <code>type</code>:</p>
-<pre class="r"><code>pathways %&lt;&gt;% select(taxon_id, description, type)</code></pre>
+<pre class="r"><code>pathway %&lt;&gt;% select(taxon_id, description, type)</code></pre>
 </div>
 <div id="degree-of-establishment" class="section level2">
-<h2><span class="header-section-number">7.3</span> Degree of establishment</h2>
+<h2><span class="header-section-number">6.3</span> Degree of establishment</h2>
 <p>Create separate dataframe:</p>
 <pre class="r"><code>degree_of_establishment &lt;- input_data %&gt;% distinct(taxon_id, .keep_all = TRUE)</code></pre>
-<p>Inspect <code>degree_of_establishment</code>:</p>
+<p>Inspect values:</p>
 <pre class="r"><code>degree_of_establishment %&gt;% 
   group_by(degree_of_establishment) %&gt;% 
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["degree_of_establishment"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"captive","2":"1"},{"1":"casual","2":"11"},{"1":"colonizing","2":"1"},{"1":"established","2":"4"},{"1":"released","2":"28"},{"1":"reproducing","2":"2"},{"1":"NA","2":"197"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["degree_of_establishment"],"name":[1],"type":["chr"],"align":["left"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"captive","2":"1"},{"1":"casual","2":"11"},{"1":"colonizing","2":"1"},{"1":"established","2":"4"},{"1":"released","2":"28"},{"1":"reproducing","2":"5"},{"1":"NA","2":"194"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <p>Remove empty records:</p>
 <pre class="r"><code>degree_of_establishment %&lt;&gt;% filter(!is.na(degree_of_establishment))</code></pre>
-<p>These categories of <code>degree_of_establishment</code> are conform the vocabulary of <a href="">Blackburn et al. 2011</a> for mapping the degree of establishment. For each level, we here add the prefix <code>Blackburn et al. 2011:</code> and the categories (A-E):</p>
-<pre class="r"><code>degree_of_establishment %&lt;&gt;% 
-  mutate(description = 
-           recode(degree_of_establishment,
-              &quot;captive&quot; = &quot;captive (blackburn_2011:B1)&quot;,
-              &quot;casual&quot; = &quot;casual (blackburn_2011:C1)&quot;,
-              &quot;colonizing&quot; = &quot;colonizing (blackburn_2011:D1)&quot;,
-              &quot;established&quot; = &quot;established (blackburn_2011:C3)&quot;,
-              &quot;invasive&quot; = &quot;invasive (blackburn_2011:D2)&quot;,
-              &quot;released&quot; = &quot;released (blackburn_2011:B3)&quot;,
-              &quot;reproducing&quot; = &quot;reproducing (blackburn_2011:C2)&quot;
+<p>These categories of <code>degree_of_establishment</code> are conform the vocabulary of <a href="http://doc.rero.ch/record/24725/files/bach_puf.pdf">Blackburn et al. 2011</a> for mapping the degree of establishment. For each level, we here add the prefix <code>Blackburn et al. 2011:</code> and the categories (A-E):</p>
+<pre class="r"><code>degree_of_establishment %&lt;&gt;% mutate(description = recode(degree_of_establishment,
+  &quot;captive&quot; = &quot;captive (blackburn_2011:B1)&quot;,
+  &quot;casual&quot; = &quot;casual (blackburn_2011:C1)&quot;,
+  &quot;colonizing&quot; = &quot;colonizing (blackburn_2011:D1)&quot;,
+  &quot;established&quot; = &quot;established (blackburn_2011:C3)&quot;,
+  &quot;invasive&quot; = &quot;invasive (blackburn_2011:D2)&quot;,
+  &quot;released&quot; = &quot;released (blackburn_2011:B3)&quot;,
+  &quot;reproducing&quot; = &quot;reproducing (blackburn_2011:C2)&quot;
 ))</code></pre>
-<p>Inspect mapping:</p>
+<p>Inspect mapped values:</p>
 <pre class="r"><code>degree_of_establishment %&gt;% 
   group_by(degree_of_establishment, description) %&gt;% 
   count()</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["degree_of_establishment"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"captive","2":"captive (blackburn_2011:B1)","3":"1"},{"1":"casual","2":"casual (blackburn_2011:C1)","3":"11"},{"1":"colonizing","2":"colonizing (blackburn_2011:D1)","3":"1"},{"1":"established","2":"established (blackburn_2011:C3)","3":"4"},{"1":"released","2":"released (blackburn_2011:B3)","3":"28"},{"1":"reproducing","2":"reproducing (blackburn_2011:C2)","3":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["degree_of_establishment"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["n"],"name":[3],"type":["int"],"align":["right"]}],"data":[{"1":"captive","2":"captive (blackburn_2011:B1)","3":"1"},{"1":"casual","2":"casual (blackburn_2011:C1)","3":"11"},{"1":"colonizing","2":"colonizing (blackburn_2011:D1)","3":"1"},{"1":"established","2":"established (blackburn_2011:C3)","3":"4"},{"1":"released","2":"released (blackburn_2011:B3)","3":"28"},{"1":"reproducing","2":"reproducing (blackburn_2011:C2)","3":"5"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
-<p>Map <code>type</code>:</p>
+<p>Add <code>type</code> of description:</p>
 <pre class="r"><code>degree_of_establishment %&lt;&gt;% mutate(type = &quot;degree of establishment&quot;)</code></pre>
 <p>Select <code>taxon_id</code>, <code>description</code> and <code>type</code>:</p>
 <pre class="r"><code>degree_of_establishment %&lt;&gt;% select(taxon_id, description, type)</code></pre>
+<p>Union native range, pathway of introduction and degree of establishment into a single description extension:</p>
+<pre class="r"><code>description &lt;- bind_rows(native_range, pathway, degree_of_establishment)</code></pre>
+<div id="taxonid-3" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> taxonID</h3>
+<pre class="r"><code>description %&lt;&gt;% mutate(dwc_taxonID = taxon_id)</code></pre>
 </div>
-<div id="union-to-description-extension" class="section level2">
-<h2><span class="header-section-number">7.4</span> Union to description extension</h2>
-<p>Join <code>native_range</code> and <code>pathways</code> and <code>degree_of_establishment</code> into a single description extension:</p>
-<pre class="r"><code>description &lt;- bind_rows(native_range, pathways, degree_of_establishment)</code></pre>
-<p>Rename <code>taxon_id</code> to <code>taxonID</code>:</p>
-<pre class="r"><code>description %&lt;&gt;% rename(taxonID = taxon_id)</code></pre>
-<p>Sort on taxonID:</p>
-<pre class="r"><code>description %&lt;&gt;% arrange(taxonID) </code></pre>
+<div id="description" class="section level3">
+<h3><span class="header-section-number">6.3.2</span> description</h3>
+<pre class="r"><code>description %&lt;&gt;% mutate(dwc_description = description)</code></pre>
+</div>
+<div id="type" class="section level3">
+<h3><span class="header-section-number">6.3.3</span> type</h3>
+<pre class="r"><code>description %&lt;&gt;% mutate(dwc_type = type)</code></pre>
+</div>
+<div id="language-1" class="section level3">
+<h3><span class="header-section-number">6.3.4</span> language</h3>
+<pre class="r"><code>description %&lt;&gt;% mutate(dwc_language = &quot;en&quot;)</code></pre>
+</div>
+</div>
+</div>
+<div id="post-processsing" class="section level1">
+<h1><span class="header-section-number">7</span> Post-processsing</h1>
+<p>Only keep the Darwin Core columns:</p>
+<pre class="r"><code>taxon %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))
+distribution %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))
+species_profile %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))
+description %&lt;&gt;% select(starts_with(&quot;dwc_&quot;))</code></pre>
+<p>Drop the <code>dwc_</code> prefix:</p>
+<pre class="r"><code>colnames(taxon) &lt;- str_remove(colnames(taxon), &quot;dwc_&quot;)
+colnames(distribution) &lt;- str_remove(colnames(distribution), &quot;dwc_&quot;)
+colnames(species_profile) &lt;- str_remove(colnames(species_profile), &quot;dwc_&quot;)
+colnames(description) &lt;- str_remove(colnames(description), &quot;dwc_&quot;)</code></pre>
+<p>Sort on <code>taxonID</code> (to maintain some consistency between updates of the dataset):</p>
+<pre class="r"><code>taxon %&lt;&gt;% arrange(taxonID)
+distribution %&lt;&gt;% arrange(taxonID)
+species_profile %&lt;&gt;% arrange(taxonID)
+description %&lt;&gt;% arrange(taxonID)</code></pre>
+<p>Preview taxon core:</p>
+<pre class="r"><code>taxon %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["language"],"name":[1],"type":["chr"],"align":["left"]},{"label":["license"],"name":[2],"type":["chr"],"align":["left"]},{"label":["rightsHolder"],"name":[3],"type":["chr"],"align":["left"]},{"label":["accessRights"],"name":[4],"type":["chr"],"align":["left"]},{"label":["datasetID"],"name":[5],"type":["chr"],"align":["left"]},{"label":["institutionCode"],"name":[6],"type":["chr"],"align":["left"]},{"label":["datasetName"],"name":[7],"type":["chr"],"align":["left"]},{"label":["taxonID"],"name":[8],"type":["chr"],"align":["left"]},{"label":["scientificName"],"name":[9],"type":["chr"],"align":["left"]},{"label":["kingdom"],"name":[10],"type":["chr"],"align":["left"]},{"label":["phylum"],"name":[11],"type":["chr"],"align":["left"]},{"label":["class"],"name":[12],"type":["chr"],"align":["left"]},{"label":["order"],"name":[13],"type":["chr"],"align":["left"]},{"label":["family"],"name":[14],"type":["chr"],"align":["left"]},{"label":["genus"],"name":[15],"type":["chr"],"align":["left"]},{"label":["taxonRank"],"name":[16],"type":["chr"],"align":["left"]},{"label":["nomenclaturalCode"],"name":[17],"type":["chr"],"align":["left"]}],"data":[{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:01618c26be3a3de6bc68f52e85f835f7","9":"Lamprotornis purpureus (Statius Muller, 1776)","10":"Animalia","11":"Chordata","12":"Aves","13":"Passeriformes","14":"Sturnidae","15":"Lamprotornis","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:02a68ca9782b6059cba1de5b0982e3be","9":"Chen canagica (Sevastianov, 1802)","10":"Animalia","11":"Chordata","12":"Aves","13":"Anseriformes","14":"Anatidae","15":"Chen","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:02b9a1f07eb0261a093c544b7bde82c7","9":"Neochmia ruficauda (Gould, 1837)","10":"Animalia","11":"Chordata","12":"Aves","13":"Passeriformes","14":"Estrildidae","15":"Neochmia","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:032ebf7daaca04554b301519defa9e6e","9":"Pteronetta hartlaubii (Cassin, 1860)","10":"Animalia","11":"Chordata","12":"Aves","13":"Anseriformes","14":"Anatidae","15":"Pteronetta","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:0355544c8efb0e8215798995f9a95eb4","9":"Platycercus adscitus (Latham, 1790)","10":"Animalia","11":"Chordata","12":"Aves","13":"Psittaciformes","14":"Psittacidae","15":"Platycercus","16":"species","17":"ICZN"},{"1":"en","2":"http://creativecommons.org/publicdomain/zero/1.0/","3":"INBO","4":"https://www.inbo.be/en/norms-data-use","5":"https://doi.org/10.15468/wr3gis","6":"INBO","7":"Checklist of alien birds of Belgium","8":"alien-birds-checklist:taxon:06c841aebefcabf51b72de806a635894","9":"Anthropoides virgo (Linnaeus, 1758)","10":"Animalia","11":"Chordata","12":"Aves","13":"Gruiformes","14":"Gruidae","15":"Anthropoides","16":"species","17":"ICZN"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Preview distribution extension:</p>
+<pre class="r"><code>distribution %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["locationID"],"name":[2],"type":["chr"],"align":["left"]},{"label":["locality"],"name":[3],"type":["chr"],"align":["left"]},{"label":["countryCode"],"name":[4],"type":["chr"],"align":["left"]},{"label":["occurrenceStatus"],"name":[5],"type":["chr"],"align":["left"]},{"label":["establishmentMeans"],"name":[6],"type":["chr"],"align":["left"]},{"label":["eventDate"],"name":[7],"type":["chr"],"align":["left"]},{"label":["source"],"name":[8],"type":["chr"],"align":["left"]},{"label":["occurrenceRemarks"],"name":[9],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:01618c26be3a3de6bc68f52e85f835f7","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"NA"},{"1":"alien-birds-checklist:taxon:02a68ca9782b6059cba1de5b0982e3be","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"2002","8":"NA","9":"208 occurrences in GBIF starting 2002, http://waarnemingen.be"},{"1":"alien-birds-checklist:taxon:02b9a1f07eb0261a093c544b7bde82c7","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"2009/2013","8":"NA","9":"2 occurrences in GBIF 2009 and 2013, http://waarnemingen.be"},{"1":"alien-birds-checklist:taxon:032ebf7daaca04554b301519defa9e6e","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"1 occurrence in GBIF 2016, http://waarnemingen.be"},{"1":"alien-birds-checklist:taxon:0355544c8efb0e8215798995f9a95eb4","2":"ISO_3166-2:BE-WAL","3":"Walloon Region","4":"BE","5":"present","6":"introduced","7":"2012/2012","8":"http://observations.be","9":"occurrences in 2012, http://observations.be"},{"1":"alien-birds-checklist:taxon:06c841aebefcabf51b72de806a635894","2":"ISO_3166-2:BE","3":"Belgium","4":"BE","5":"present","6":"introduced","7":"NA","8":"NA","9":"look for Aves, 53/3 | 2016 | 105-128"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Preview species profile extension:</p>
+<pre class="r"><code>species_profile %&gt;% head()</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["isMarine"],"name":[2],"type":["chr"],"align":["left"]},{"label":["isTerrestrial"],"name":[3],"type":["chr"],"align":["left"]},{"label":["isFreshwater"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:01618c26be3a3de6bc68f52e85f835f7","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:02a68ca9782b6059cba1de5b0982e3be","2":"FALSE","3":"FALSE","4":"TRUE"},{"1":"alien-birds-checklist:taxon:02b9a1f07eb0261a093c544b7bde82c7","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:032ebf7daaca04554b301519defa9e6e","2":"FALSE","3":"FALSE","4":"TRUE"},{"1":"alien-birds-checklist:taxon:0355544c8efb0e8215798995f9a95eb4","2":"FALSE","3":"TRUE","4":"FALSE"},{"1":"alien-birds-checklist:taxon:06c841aebefcabf51b72de806a635894","2":"FALSE","3":"FALSE","4":"TRUE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>Preview description extension:</p>
+<pre class="r"><code>description %&gt;% head(10)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["taxonID"],"name":[1],"type":["chr"],"align":["left"]},{"label":["description"],"name":[2],"type":["chr"],"align":["left"]},{"label":["type"],"name":[3],"type":["chr"],"align":["left"]},{"label":["language"],"name":[4],"type":["chr"],"align":["left"]}],"data":[{"1":"alien-birds-checklist:taxon:02a68ca9782b6059cba1de5b0982e3be","2":"Eastern Asian Russia","3":"native range","4":"en"},{"1":"alien-birds-checklist:taxon:02a68ca9782b6059cba1de5b0982e3be","2":"cbd_2014_pathway:escape_pet","3":"pathway","4":"en"},{"1":"alien-birds-checklist:taxon:02a68ca9782b6059cba1de5b0982e3be","2":"cbd_2014_pathway:escape_farm","3":"pathway","4":"en"},{"1":"alien-birds-checklist:taxon:02b9a1f07eb0261a093c544b7bde82c7","2":"Australia (WGSRPD:50)","3":"native range","4":"en"},{"1":"alien-birds-checklist:taxon:02b9a1f07eb0261a093c544b7bde82c7","2":"cbd_2014_pathway:escape","3":"pathway","4":"en"},{"1":"alien-birds-checklist:taxon:032ebf7daaca04554b301519defa9e6e","2":"Africa (WGSRPD:2)","3":"native range","4":"en"},{"1":"alien-birds-checklist:taxon:032ebf7daaca04554b301519defa9e6e","2":"cbd_2014_pathway:escape_pet","3":"pathway","4":"en"},{"1":"alien-birds-checklist:taxon:0355544c8efb0e8215798995f9a95eb4","2":"Australia (WGSRPD:50)","3":"native range","4":"en"},{"1":"alien-birds-checklist:taxon:0355544c8efb0e8215798995f9a95eb4","2":"cbd_2014_pathway:escape","3":"pathway","4":"en"},{"1":"alien-birds-checklist:taxon:0355544c8efb0e8215798995f9a95eb4","2":"released (blackburn_2011:B3)","3":"degree of establishment","4":"en"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
 <p>Save to CSV:</p>
-<pre class="r"><code>write_csv(description, here(&quot;data&quot;, &quot;processed&quot;, &quot;description.csv&quot;), na = &quot;&quot;)</code></pre>
-</div>
+<pre class="r"><code>write_csv(taxon, here(&quot;data&quot;, &quot;processed&quot;, &quot;taxon.csv&quot;), na = &quot;&quot;)
+write_csv(distribution, here(&quot;data&quot;, &quot;processed&quot;, &quot;distribution.csv&quot;), na = &quot;&quot;)
+write_csv(species_profile, here(&quot;data&quot;, &quot;processed&quot;, &quot;speciesprofile.csv&quot;), na = &quot;&quot;)
+write_csv(description, here(&quot;data&quot;, &quot;processed&quot;, &quot;description.csv&quot;), na = &quot;&quot;)</code></pre>
 </div>
 
 
