@@ -80,7 +80,7 @@ alien-birds-checklist:taxon:1b1604cfc1effab2db6ab2386604a7b6,ISO_3166-2:BE,Belgi
 alien-birds-checklist:taxon:37e2914ab2a3e3efeecbf5a0c62bd5fd,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:e8fd9c2132ead52168c161d0443612a6,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:b0ea3c59d2a48eea6798169e8cb65e87,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:4a9485f6919d491dffb9da492b9bd053,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
+alien-birds-checklist:taxon:4a9485f6919d491dffb9da492b9bd053,ISO_3166-2:BE-VLG,Flemish Region,BE,present,introduced,2019/2020,,confirmed breeding in 2020
 alien-birds-checklist:taxon:dae2438194dddd256ff909e6ebdc02c7,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"1 occurrence in GBIF, 2002, unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:d78f450d9c1d21123e4d35a98e04fd85,ISO_3166-2:BE,Belgium,BE,present,introduced,,,"records form 2018, GBIF and http://observations.be"
 alien-birds-checklist:taxon:95b7a7c3011d680caa3574dcbb969547,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
@@ -176,9 +176,10 @@ alien-birds-checklist:taxon:94e156350c69cb35a6110f5eddd8e18c,ISO_3166-2:BE,Belgi
 alien-birds-checklist:taxon:5c8aec7f688ab5cc6642f7cd45c5d7f5,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:d26111913e9a2be20a64962d963d0c50,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:7391ac5bdfe5602ffc172caa61cf6913,ISO_3166-2:BE,Belgium,BE,present,introduced,2013,,"1 occurrence in GBIF, 2013, unverified, http://waarnemingen.be"
-alien-birds-checklist:taxon:cfefaeec27558579c3b2ecf7fadaf01c,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
+alien-birds-checklist:taxon:cfefaeec27558579c3b2ecf7fadaf01c,ISO_3166-2:BE-VLG,Flemish Region,BE,present,introduced,2004/2018,"Vermeersch G., A. Anselin & K. Devos 2006. Bijzondere broedvogels in Vlaanderen in de periode 1994-2005. Populatietrends en recente status van zeldzame, kolonievormende en exotische broedvogels in Vlaanderen. Mededeling INBO.M.2006.2. Instituut voor Natuur- en Bosonderzoek, Brussel.","breeding confirmed in 2005 Antwerpse Linkeroevergebied, Prosperdorp"
+alien-birds-checklist:taxon:cfefaeec27558579c3b2ecf7fadaf01c,ISO_3166-2:BE-WAL,Walloon Region,BE,present,introduced,2009,observations.be,Offagne
 alien-birds-checklist:taxon:a843dc3474bec2492bc224732c58e7ea,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
-alien-birds-checklist:taxon:69d729d4e836622de5ac7cc92ee7f296,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
+alien-birds-checklist:taxon:69d729d4e836622de5ac7cc92ee7f296,ISO_3166-2:BE-VLG,Flemish Region,BE,present,introduced,2005/2017,Bosmans J. 2009 Eerste broedgevallen van Treurmaina Acridotheres tristis voor België in Heist-op-den-Berg (A). Natuur.oriolus 75(4): 122-123,
 alien-birds-checklist:taxon:4ca8cffef93fa1da75e8499068663618,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
 alien-birds-checklist:taxon:f203b8d072eb9a711820f77b73841f5a,ISO_3166-2:BE,Belgium,BE,present,introduced,2007,,"2 occurrences in GBIF, 2007, unverified, http://waarnemingen.be"
 alien-birds-checklist:taxon:01618c26be3a3de6bc68f52e85f835f7,ISO_3166-2:BE,Belgium,BE,present,introduced,,,
