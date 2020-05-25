@@ -74,32 +74,7 @@ parsed_names <- input_data %>%
   parsenames() # An rgbif function
 ```
 
-Show scientific names with nomenclatural issues, i.e. not of `type = SCIENTIFIC` or that could not be fully parsed. Note: these are not necessarily incorrect.
-
-```{r}
-parsed_names %>%
-  select(scientificname, type, parsed, parsedpartially, rankmarker) %>%
-  filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
-```
-
-Correct typo:
-
-```{r}
-input_data %<>% mutate(scientific_name = recode(scientific_name,
-  "AnaS capensis Gmelin, 1789" = "Anas capensis Gmelin, 1789"
-))
-```
-
-Run parsing again:
-
-```{r}
-parsed_names <- input_data %>%
-  distinct(scientific_name) %>%
-  pull() %>% # Create vector from dataframe
-  parsenames() # An rgbif function
-```
-
-Check results (should be 0):
+Show scientific names with nomenclatural issues, i.e. not of `type = SCIENTIFIC` or that could not be fully parsed (should be 0). Note: these are not necessarily incorrect.
 
 ```{r}
 parsed_names %>%
