@@ -417,11 +417,19 @@ Map `eventDate`:
 ```{r}
 distribution %<>% mutate(
   dwc_eventDate = case_when(
-    is.na(date_first_observation) & is.na(date_last_observation) ~ NA_character_,
-    is.na(date_first_observation) & !is.na(date_last_observation) ~ date_last_observation,
-    !is.na(date_first_observation) & is.na(date_last_observation) ~ date_first_observation,
+    is.na(date_first_observation) & is.na(date_last_observation) ~ "",
+    is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
+      "", 
+      date_last_observation, 
+      sep = "/"),
+    !is.na(date_first_observation) & is.na(date_last_observation) ~ paste(
+      date_first_observation, 
+      "", 
+      sep = "/"),
     !is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
-      date_first_observation, date_last_observation, sep = "/"
+      date_first_observation, 
+      date_last_observation, 
+      sep = "/"
     )
   )
 )
