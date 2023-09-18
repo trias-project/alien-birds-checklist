@@ -548,6 +548,8 @@ A single taxon can have multiple native ranges of the same type, expressed as mu
 description %<>% mutate(dwc_taxonID = taxon_id)
 ```
 
+### description
+
 Inspect values:
 
 ```{r}
@@ -620,61 +622,14 @@ Inspect mapped values:
 
 ```{r}
 description %>% 
-  group_by(value, description) %>% 
+  group_by(value, dwc_description) %>% 
   count()
-```
-
-Add `type` of description:
-
-```{r}
-native_range %<>% mutate(type = "native range")
-```
-
-Select `taxon_id`, `description` and `type`:
-
-```{r}
-native_range %<>% select(taxon_id, description, type)
-```
-
-## Pathway of introduction
- 
-
-
-Select `taxon_id`, `description` and `type`:
-
-```{r}
-pathway %<>% select(taxon_id, description, type)
-```
-
-
-Select `taxon_id`, `description` and `type`:
-
-```{r}
-degree_of_establishment %<>% select(taxon_id, description, type)
-```
-
-Union native range, pathway of introduction and degree of establishment into a single description extension:
-
-```{r}
-description <- bind_rows(native_range, pathway, degree_of_establishment)
-```
-
-### taxonID
-
-```{r}
-description %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### description
-
-```{r}
-description %<>% mutate(dwc_description = description)
 ```
 
 ### type
 
 ```{r}
-description %<>% mutate(dwc_type = type)
+description %<>% mutate(dwc_type = "native range")
 ```
 
 ### language
