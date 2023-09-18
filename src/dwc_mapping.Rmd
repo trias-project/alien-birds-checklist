@@ -525,26 +525,33 @@ species_profile %<>% mutate(dwc_isFreshwater = case_when(
 
 # Description extension
 
-In the description extension we want to include several important characteristics (hereafter referred to as descriptors) about the species:
+Map the data to [Taxon Description](http://rs.gbif.org/extension/gbif/1.0/description.xml).
 
-- Native range
-- Pathway of introduction
-- Degree of establishment
-
-For each descriptor, we create a separate dataframe to process the specific information. We always specify _which descriptor_ we map (`type` column) and its _specific content_ (`description` column). After the mapping of these Darwin Core terms `type` and `value`, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as `language`).
-
-## Native range
- 
-Create separate dataframe:
+Create `description`:
 
 ```{r}
-native_range <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
+description <- input_data
+```
+
+In the description extension we want to include the native range of the species.
+A single taxon can have multiple native ranges of the same type, expressed as multiple rows in the description extension. The mapping will be as following:
+
+- `type` = `native range`
+- `description` = the specific content of the field `native_range`
+- `language` = `en`
+
+## Term mapping
+
+### taxonID
+
+```{r}
+description %<>% mutate(dwc_taxonID = taxon_id)
 ```
 
 Inspect values:
 
 ```{r}
-native_range %>% 
+description %>% 
   group_by(native_range) %>% 
   count()
 ```
@@ -552,7 +559,7 @@ native_range %>%
 Separate content using the pipe symbol as a separator:
 
 ```{r}
-native_range %<>% separate(
+description %<>% separate(
   native_range,
   into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
   sep = "\\s\\|\\s",
@@ -563,14 +570,14 @@ native_range %<>% separate(
 Change from a wide to a long dataset and trim:
 
 ```{r}
-native_range %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
+description %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
   mutate(value = str_trim(value))
 ```
 
 Inspect unique values:
 
 ```{r}
-native_range %>% 
+description %>% 
   group_by(value) %>% 
   count()
 ```
@@ -578,7 +585,7 @@ native_range %>%
 Map to the [WGSRPD vocabulary](http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf):
 
 ```{r}
-native_range %<>% mutate(description = recode(value,
+description %<>% mutate(dwc_description = recode(value,
   "Africa" = "Africa (WGSRPD:2)",
   "Australia" = "Australia (WGSRPD:50)",
   "Caribbean" = "Caribbean (WGSRPD:81)",
@@ -612,7 +619,7 @@ native_range %<>% mutate(description = recode(value,
 Inspect mapped values:
 
 ```{r}
-native_range %>% 
+description %>% 
   group_by(value, description) %>% 
   count()
 ```
