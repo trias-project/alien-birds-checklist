@@ -358,6 +358,21 @@ These categories of `degree_of_establishment` are conform the [Darwin Core Degre
 ```{r}
 distribution %<>% mutate(dwc_degreeOfEstablishment = degree_of_establishment) 
 ```
+
+### pathway
+
+Inspect values:
+
+```{r}
+distribution %>% 
+  group_by(introduction_pathway) %>% 
+  count()
+```
+
+```{r}
+distribution %<>% mutate(dwc_pathway = introduction_pathway)
+```
+
 ### eventDate
 
 Inspect values for `date_first_observation`:
@@ -608,57 +623,7 @@ native_range %<>% select(taxon_id, description, type)
 
 ## Pathway of introduction
  
-Create separate dataframe:
 
-```{r}
-pathway <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Inspect values:
-
-```{r}
-pathway %>% 
-  group_by(introduction_pathway) %>% 
-  count()
-```
-
-Separate content using the pipe symbol as a separator:
-
-```{r}
-pathway %<>% separate(
-  introduction_pathway,
-  into = c("introduction_pathway_1", "introduction_pathway_2", "introduction_pathway_3"),
-  sep = "\\s\\|\\s",
-  remove = FALSE
-)
-```
-
-Change from a wide to a long dataset and trim:
-
-```{r}
-pathway %<>% gather(key, value, starts_with("introduction_pathway_"), na.rm = TRUE) %>%
-  mutate(value = str_trim(value))
-```
-
-Inspect unique values:
-
-```{r}
-pathway %>% 
-  group_by(value) %>% 
-  count()
-```
-
-Add prefix `cbd_2014_pathway:` to refer to the [CBD standard for pathway information](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf)
-
-```{r}
-pathway %<>% mutate(description = paste("cbd_2014_pathway", value, sep = ":"))
-```
-
-Add `type` of description:
-
-```{r}
-pathway %<>% mutate(type = "pathway")
-```
 
 Select `taxon_id`, `description` and `type`:
 
@@ -666,8 +631,6 @@ Select `taxon_id`, `description` and `type`:
 pathway %<>% select(taxon_id, description, type)
 ```
 
-## Degree of establishment
- 
 
 Select `taxon_id`, `description` and `type`:
 
