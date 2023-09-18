@@ -102,24 +102,11 @@ input_data %<>% mutate(taxon_id = paste(
 
 ## Preview data
 
-Show the number of taxa and distributions per rank:
-
-```{r}
-input_data %>%
-  group_by(taxon_rank) %>%
-  summarize(
-    `# taxa` = n_distinct(taxon_id),
-    `# distributions` = n()
-  ) %>%
-  adorn_totals("row")
-```
-
 Preview data:
 
 ```{r}
 input_data %>% head()
 ```
-
 # Darwin Core mapping
 
 ## Taxon core
@@ -356,6 +343,36 @@ distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status)
 distribution %<>% mutate(dwc_establishmentMeans = "introduced")
 ```
 
+### degreeOfEstablishment
+
+Inspect values:
+
+```{r}
+distribution %>% 
+  group_by(degree_of_establishment) %>% 
+  count()
+```
+
+These categories of `degree_of_establishment` are conform the [Darwin Core Degree of Establishment vocabulary](http://rs.gbif.org/vocabulary/dwc/degree_of_establishment_2022-02-02.xml).
+
+```{r}
+distribution %<>% mutate(dwc_degreeOfEstablishment = degree_of_establishment) 
+```
+
+### pathway
+
+Inspect values:
+
+```{r}
+distribution %>% 
+  group_by(introduction_pathway) %>% 
+  count()
+```
+
+```{r}
+distribution %<>% mutate(dwc_pathway = introduction_pathway)
+```
+
 ### eventDate
 
 Inspect values for `date_first_observation`:
@@ -400,11 +417,19 @@ Map `eventDate`:
 ```{r}
 distribution %<>% mutate(
   dwc_eventDate = case_when(
-    is.na(date_first_observation) & is.na(date_last_observation) ~ NA_character_,
-    is.na(date_first_observation) & !is.na(date_last_observation) ~ date_last_observation,
-    !is.na(date_first_observation) & is.na(date_last_observation) ~ date_first_observation,
+    is.na(date_first_observation) & is.na(date_last_observation) ~ "",
+    is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
+      "", 
+      date_last_observation, 
+      sep = "/"),
+    !is.na(date_first_observation) & is.na(date_last_observation) ~ paste(
+      date_first_observation, 
+      "", 
+      sep = "/"),
     !is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
-      date_first_observation, date_last_observation, sep = "/"
+      date_first_observation, 
+      date_last_observation, 
+      sep = "/"
     )
   )
 )
@@ -500,26 +525,33 @@ species_profile %<>% mutate(dwc_isFreshwater = case_when(
 
 # Description extension
 
-In the description extension we want to include several important characteristics (hereafter referred to as descriptors) about the species:
+Map the data to [Taxon Description](http://rs.gbif.org/extension/gbif/1.0/description.xml).
 
-- Native range
-- Pathway of introduction
-- Degree of establishment
-
-For each descriptor, we create a separate dataframe to process the specific information. We always specify _which descriptor_ we map (`type` column) and its _specific content_ (`description` column). After the mapping of these Darwin Core terms `type` and `value`, we merge the dataframes to generate one single description extension. We then continue the mapping process by adding the other Darwin Core terms (which content is independent of the type of descriptor, such as `language`).
-
-## Native range
- 
-Create separate dataframe:
+Create `description`:
 
 ```{r}
-native_range <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
+description <- input_data
+```
+
+In the description extension we want to include the native range of the species.
+A single taxon can have multiple native ranges of the same type, expressed as multiple rows in the description extension. The mapping will be as following:
+
+- `type` = `native range`
+- `description` = the specific content of the field `native_range`
+- `language` = `en`
+
+## Term mapping
+
+### taxonID
+
+```{r}
+description %<>% mutate(dwc_taxonID = taxon_id)
 ```
 
 Inspect values:
 
 ```{r}
-native_range %>% 
+description %>% 
   group_by(native_range) %>% 
   count()
 ```
@@ -527,7 +559,7 @@ native_range %>%
 Separate content using the pipe symbol as a separator:
 
 ```{r}
-native_range %<>% separate(
+description %<>% separate(
   native_range,
   into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
   sep = "\\s\\|\\s",
@@ -538,14 +570,14 @@ native_range %<>% separate(
 Change from a wide to a long dataset and trim:
 
 ```{r}
-native_range %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
+description %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
   mutate(value = str_trim(value))
 ```
 
 Inspect unique values:
 
 ```{r}
-native_range %>% 
+description %>% 
   group_by(value) %>% 
   count()
 ```
@@ -553,7 +585,7 @@ native_range %>%
 Map to the [WGSRPD vocabulary](http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf):
 
 ```{r}
-native_range %<>% mutate(description = recode(value,
+description %<>% mutate(dwc_description = recode(value,
   "Africa" = "Africa (WGSRPD:2)",
   "Australia" = "Australia (WGSRPD:50)",
   "Caribbean" = "Caribbean (WGSRPD:81)",
@@ -587,7 +619,7 @@ native_range %<>% mutate(description = recode(value,
 Inspect mapped values:
 
 ```{r}
-native_range %>% 
+description %>% 
   group_by(value, description) %>% 
   count()
 ```
@@ -606,57 +638,7 @@ native_range %<>% select(taxon_id, description, type)
 
 ## Pathway of introduction
  
-Create separate dataframe:
 
-```{r}
-pathway <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Inspect values:
-
-```{r}
-pathway %>% 
-  group_by(introduction_pathway) %>% 
-  count()
-```
-
-Separate content using the pipe symbol as a separator:
-
-```{r}
-pathway %<>% separate(
-  introduction_pathway,
-  into = c("introduction_pathway_1", "introduction_pathway_2", "introduction_pathway_3"),
-  sep = "\\s\\|\\s",
-  remove = FALSE
-)
-```
-
-Change from a wide to a long dataset and trim:
-
-```{r}
-pathway %<>% gather(key, value, starts_with("introduction_pathway_"), na.rm = TRUE) %>%
-  mutate(value = str_trim(value))
-```
-
-Inspect unique values:
-
-```{r}
-pathway %>% 
-  group_by(value) %>% 
-  count()
-```
-
-Add prefix `cbd_2014_pathway:` to refer to the [CBD standard for pathway information](https://www.cbd.int/doc/meetings/sbstta/sbstta-18/official/sbstta-18-09-add1-en.pdf)
-
-```{r}
-pathway %<>% mutate(description = paste("cbd_2014_pathway", value, sep = ":"))
-```
-
-Add `type` of description:
-
-```{r}
-pathway %<>% mutate(type = "pathway")
-```
 
 Select `taxon_id`, `description` and `type`:
 
@@ -664,55 +646,6 @@ Select `taxon_id`, `description` and `type`:
 pathway %<>% select(taxon_id, description, type)
 ```
 
-## Degree of establishment
- 
-Create separate dataframe:
-
-```{r}
-degree_of_establishment <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Inspect values:
-
-```{r}
-degree_of_establishment %>% 
-  group_by(degree_of_establishment) %>% 
-  count()
-```
-
-Remove empty records:
-
-```{r}
-degree_of_establishment %<>% filter(!is.na(degree_of_establishment))
-```
-
-These categories of `degree_of_establishment` are conform the vocabulary of [Blackburn et al. 2011](http://doc.rero.ch/record/24725/files/bach_puf.pdf) for mapping the degree of establishment. For each level, we here add the prefix `Blackburn et al. 2011:` and the categories (A-E):
-
-```{r}
-degree_of_establishment %<>% mutate(description = recode(degree_of_establishment,
-  "captive" = "captive (blackburn_2011:B1)",
-  "casual" = "casual (blackburn_2011:C1)",
-  "colonizing" = "colonizing (blackburn_2011:D1)",
-  "established" = "established (blackburn_2011:C3)",
-  "invasive" = "invasive (blackburn_2011:D2)",
-  "released" = "released (blackburn_2011:B3)",
-  "reproducing" = "reproducing (blackburn_2011:C2)"
-))
-```
-
-Inspect mapped values:
-
-```{r}
-degree_of_establishment %>% 
-  group_by(degree_of_establishment, description) %>% 
-  count()
-```
-
-Add `type` of description:
-
-```{r}
-degree_of_establishment %<>% mutate(type = "degree of establishment")
-```
 
 Select `taxon_id`, `description` and `type`:
 
