@@ -102,24 +102,11 @@ input_data %<>% mutate(taxon_id = paste(
 
 ## Preview data
 
-Show the number of taxa and distributions per rank:
-
-```{r}
-input_data %>%
-  group_by(taxon_rank) %>%
-  summarize(
-    `# taxa` = n_distinct(taxon_id),
-    `# distributions` = n()
-  ) %>%
-  adorn_totals("row")
-```
-
 Preview data:
 
 ```{r}
 input_data %>% head()
 ```
-
 # Darwin Core mapping
 
 ## Taxon core
@@ -356,6 +343,21 @@ distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status)
 distribution %<>% mutate(dwc_establishmentMeans = "introduced")
 ```
 
+### degreeOfEstablishment
+
+Inspect values:
+
+```{r}
+distribution %>% 
+  group_by(degree_of_establishment) %>% 
+  count()
+```
+
+These categories of `degree_of_establishment` are conform the [Darwin Core Degree of Establishment vocabulary](http://rs.gbif.org/vocabulary/dwc/degree_of_establishment_2022-02-02.xml).
+
+```{r}
+distribution %<>% mutate(dwc_degreeOfEstablishment = degree_of_establishment) 
+```
 ### eventDate
 
 Inspect values for `date_first_observation`:
@@ -666,53 +668,6 @@ pathway %<>% select(taxon_id, description, type)
 
 ## Degree of establishment
  
-Create separate dataframe:
-
-```{r}
-degree_of_establishment <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Inspect values:
-
-```{r}
-degree_of_establishment %>% 
-  group_by(degree_of_establishment) %>% 
-  count()
-```
-
-Remove empty records:
-
-```{r}
-degree_of_establishment %<>% filter(!is.na(degree_of_establishment))
-```
-
-These categories of `degree_of_establishment` are conform the vocabulary of [Blackburn et al. 2011](http://doc.rero.ch/record/24725/files/bach_puf.pdf) for mapping the degree of establishment. For each level, we here add the prefix `Blackburn et al. 2011:` and the categories (A-E):
-
-```{r}
-degree_of_establishment %<>% mutate(description = recode(degree_of_establishment,
-  "captive" = "captive (blackburn_2011:B1)",
-  "casual" = "casual (blackburn_2011:C1)",
-  "colonizing" = "colonizing (blackburn_2011:D1)",
-  "established" = "established (blackburn_2011:C3)",
-  "invasive" = "invasive (blackburn_2011:D2)",
-  "released" = "released (blackburn_2011:B3)",
-  "reproducing" = "reproducing (blackburn_2011:C2)"
-))
-```
-
-Inspect mapped values:
-
-```{r}
-degree_of_establishment %>% 
-  group_by(degree_of_establishment, description) %>% 
-  count()
-```
-
-Add `type` of description:
-
-```{r}
-degree_of_establishment %<>% mutate(type = "degree of establishment")
-```
 
 Select `taxon_id`, `description` and `type`:
 
