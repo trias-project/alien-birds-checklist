@@ -106,248 +106,67 @@ taxon <-
   )
 ```
 
-# Distribution extension
+## Distribution extension
 
-Create a dataframe with all data:
+Create a dataframe with all data (including multiple distributions). Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
 
-```{r}
-distribution <- input_data
-```
+Information for `eventDate` is contained in `date_first_observation` and `date_last_observation`, which we will express here in an ISO 8601 date format `yyyy/yyyy` (`start_date/end_date`).
 
-Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
+Not all cells for `date_first_observation` (DFO) and/or `date_last_observation` (DLO) are populated. So, we used the following rules for those records: 
 
-### taxonID
-
-```{r}
-distribution %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### locationID
-
-Inspect values:
+***case 1.*** If `DFO` is empty and `DLO` is empty, `eventDate` is `NA` 
+***case 2.***  If `DFO` is empty and `DLO` is not empty: eventDate = `/DLO`
+***case 3.*** If `DFO` is not empty and `DLO` is empty, eventDate is `DFO/`
 
 ```{r}
-distribution %>%
-  group_by(country_code, location) %>%
-  count()
-```
-
-Set current `NA`'s in `location` to `Belgium`:
-
-```{r}
-distribution %<>% mutate(location = case_when(
-  is.na(location) ~ "Belgium",
-  TRUE ~ location
-))
-```
-
-Map `locationID` to ISO 3166 code:
-
-```{r}
-distribution %<>% mutate(dwc_locationID = case_when(
-  location == "Belgium" ~ "ISO_3166-2:BE",
-  location == "Flanders" ~ "ISO_3166-2:BE-VLG",
-  location == "Wallonia" ~ "ISO_3166-2:BE-WAL",
-  location == "Brussels" ~ "ISO_3166-2:BE-BRU")
-)
-```
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(location, dwc_locationID) %>%
-  count()
-```
-
-### locality
-
-Map to standard values:
-
-```{r}
-distribution %<>% mutate(dwc_locality = recode(location, 
-  "Flanders" = "Flemish Region",
-  "Wallonia" = "Walloon Region",
-  "Brussels" = "Brussels-Capital Region"
-))
-```
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(location, dwc_locality) %>%
-  count()
-```
-
-### countryCode
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(country_code) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_countryCode = country_code) 
-```
-
-### occurrenceStatus
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(occurrence_status) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status) 
-```
-
-### establishmentMeans
-
-```{r}
-distribution %<>% mutate(dwc_establishmentMeans = "introduced")
-```
-
-### degreeOfEstablishment
-
-Inspect values:
-
-```{r}
-distribution %>% 
-  group_by(degree_of_establishment) %>% 
-  count()
-```
-
-These categories of `degree_of_establishment` are conform the [Darwin Core Degree of Establishment vocabulary](http://rs.gbif.org/vocabulary/dwc/degree_of_establishment_2022-02-02.xml).
-
-```{r}
-distribution %<>% mutate(dwc_degreeOfEstablishment = degree_of_establishment) 
-```
-
-### pathway
-
-Inspect values:
-
-```{r}
-distribution %>% 
-  group_by(old_introduction_pathway_will_be_deleted) %>% 
-  count()
-```
-
-```{r}
-distribution %<>% mutate(dwc_pathway = old_introduction_pathway_will_be_deleted)
-```
-
-### eventDate
-
-Inspect values for `date_first_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation) %>%
-  count()
-```
-
-All date information should comply to the ISO 8601 standard, which requires a four-digit year as a minimum.
-We here transform deviating values:
-
-```{r}
-distribution %<>% mutate(
-  date_first_observation = recode(
-    .x = date_first_observation,
-    "18th century" = "1701",
-    "1890s" = "1890",
-    "1950ies" = "1950"
-))
-```
-
-Inspect values for `date_last_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_last_observation) %>%
-  count()
-```
-
-Inspect all combinations of `date_first_observation` and `date_last_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation, date_last_observation) %>%
-  count()
-```
-
-Map `eventDate`:
-
-```{r}
-distribution %<>% mutate(
-  dwc_eventDate = case_when(
-    is.na(date_first_observation) & is.na(date_last_observation) ~ "",
-    is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
-      "", 
-      date_last_observation, 
-      sep = "/"),
-    !is.na(date_first_observation) & is.na(date_last_observation) ~ paste(
-      date_first_observation, 
-      "", 
-      sep = "/"),
-    !is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
-      date_first_observation, 
-      date_last_observation, 
-      sep = "/"
-    )
-  )
-)
-```
-
-Show mapping:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation, date_last_observation, dwc_eventDate) %>%
-  count()
-```
-
-### source
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(source) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_source = source) 
-```
-
-### occurrenceRemarks
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(occurrence_remarks) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_occurrenceRemarks = occurrence_remarks) 
+distribution <-
+  input_data %>%
+  # # pathway
+  # pivot_longer(
+  #   names_to = "key",
+  #   values_to = "pathway",
+  #   starts_with("introduction_pathway"),
+  #   values_drop_na = FALSE) %>%
+  # filter( # keep NA value for species with no pathway provided
+  #   !is.na(pathway) |
+  #     (is.na(pathway) & key == "introduction_pathway_1")
+  #   ) %>%
+  # other terms
+  mutate(
+    taxonID = taxon_id,
+    locationID = case_when(
+      location == "Belgium" ~ "ISO_3166-2:BE",
+      location == "Flanders" ~ "ISO_3166-2:BE-VLG",
+      location == "Wallonia" ~ "ISO_3166-2:BE-WAL",
+      location == "Brussels" ~ "ISO_3166-2:BE-BRU"
+    ),
+    locality = case_when(
+      location == "Belgium" ~ "Belgium",
+      location == "Flanders" ~ "Flemish Region",
+      location == "Wallonia" ~ "Walloon Region",
+      location == "Brussels" ~ "Brussels-Capital Region"
+    ),
+    countryCode = country_code,
+    occurrenceStatus = occurrence_status,
+    establishmentMeans = establishment_means,
+    degreeOfEstablishment = degree_of_establishment,
+    pathway = old_introduction_pathway_will_be_deleted,
+    eventDate = case_when(
+      is.na(date_first_observation) & is.na(date_last_observation) ~ NA,
+      is.na(date_first_observation) ~ paste0("/", date_last_observation),
+      is.na(date_last_observation) ~ paste0(date_first_observation, "/"),
+      !is.na(date_first_observation) & !is.na(date_last_observation) ~ 
+        paste(date_first_observation, date_last_observation, sep = "/")
+    ),
+    source = source,
+    occurrenceRemarks = occurrence_remarks
+  ) %>%
+  select(
+    "taxonID", "locationID", "locality", "countryCode", "occurrenceStatus",
+    "establishmentMeans", "degreeOfEstablishment", "pathway", 
+    "eventDate", "source", "occurrenceRemarks"
+  ) %>%
+  arrange(taxonID)
 ```
 
 # Species profile extension
@@ -518,7 +337,6 @@ description %<>% mutate(dwc_language = "en")
 Only keep the Darwin Core columns:
 
 ```{r}
-distribution %<>% select(starts_with("dwc_"))
 species_profile %<>% select(starts_with("dwc_"))
 description %<>% select(starts_with("dwc_"))
 ```
@@ -526,7 +344,6 @@ description %<>% select(starts_with("dwc_"))
 Drop the `dwc_` prefix:
 
 ```{r}
-colnames(distribution) <- str_remove(colnames(distribution), "dwc_")
 colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
 colnames(description) <- str_remove(colnames(description), "dwc_")
 ```
@@ -534,7 +351,6 @@ colnames(description) <- str_remove(colnames(description), "dwc_")
 Sort on `taxonID` (to maintain some consistency between updates of the dataset):
 
 ```{r}
-distribution %<>% arrange(taxonID)
 species_profile %<>% arrange(taxonID)
 description %<>% arrange(taxonID)
 ```
