@@ -6,6 +6,7 @@ author:
 - Tim Adriaens
 - Peter Desmet
 - Lien Reyserhove
+- Sanne Govaert
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -26,669 +27,224 @@ Load libraries:
 
 ```{r}
 library(tidyverse)      # To do data science
-library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
 library(janitor)        # To clean input data
-library(digest)         # To generate hashes
-library(rgbif)          # To use GBIF services
 ```
 
 # Read source data
 
-The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0).
+The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1LeXXbry2ArK2rngsmFjz_xErwE1KwQ8ujtvHNmTVA6E/edit#gid=1556976278).
 
 Read the relevant worksheet (published as csv):
 
 ```{r}
-input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSgGi_Un0-7cyg-SzaiE0-RYY5-WvuZNF9kG2GLgeonX6heR6U3xpechdMKWVMQ9raT6AuR86U_gQt9/pub?gid=0&single=true&output=csv", col_types = cols(.default = col_character()))
+raw_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=1556976278&single=true&output=csv", col_types = cols(.default = col_character()))
 ```
 
 Copy the source data to the repository to keep track of changes:
 
 ```{r}
-write_csv(input_data, here("data", "raw", "alien_bird_checklist_dump.csv"), na = "")
+write_csv(raw_data, here("data", "raw", "alien_bird_checklist_dump.csv"), na = "")
 ```
 
-Preview data: 
+# Preprocessing: tidy data and add taxon ID's
+
+To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. We have created one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom. Once this is created, it is added to the source data. 
 
 ```{r}
-input_data %>% head()
+input_data <-
+  raw_data %>%
+  remove_empty("rows") %>%
+  clean_names() %>%
+  mutate(
+    taxon_id = paste(
+      "alien-birds-checklist",
+      "taxon",
+      .data$taxon_id_hash,
+      sep = ":"
+    )
+  )
 ```
 
-# Preprocessing
-
-## Tidy data
-
-Clean names data somewhat:
-
-```{r}
-input_data %<>%
-  remove_empty("rows") %>%    # Remove empty rows
-  clean_names()               # Have sensible (lowercase) column names
-```
-
-## Scientific names
-
-Use the [GBIF nameparser](https://www.gbif.org/tools/name-parser) to retrieve nomenclatural information for the scientific names in the checklist:
-
-```{r}
-parsed_names <- input_data %>%
-  distinct(scientific_name) %>%
-  pull() %>% # Create vector from dataframe
-  parsenames() # An rgbif function
-```
-
-Show scientific names with nomenclatural issues, i.e. not of `type = SCIENTIFIC` or that could not be fully parsed (should be 0). Note: these are not necessarily incorrect.
-
-```{r}
-parsed_names %>%
-  select(scientificname, type, parsed, parsedpartially, rankmarker) %>%
-  filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
-```
-
-## Taxon IDs
-
-To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. Here we create one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom (that will remain the same as long as scientific name and kingdom remain the same):
-
-```{r}
-vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
-input_data %<>% mutate(taxon_id = paste(
-  "alien-birds-checklist", # e.g. "alien-fishes-checklist"
-  "taxon",
-  vdigest(scientific_name, algo = "md5"),
-  sep = ":"
-))
-```
-
-## Preview data
-
-Preview data:
-
-```{r}
-input_data %>% head()
-```
 # Darwin Core mapping
 
 ## Taxon core
 
-Create a dataframe with unique taxa only (ignoring multiple distribution rows):
+Create a dataframe with unique taxa only (ignoring multiple distribution rows). Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
 
 ```{r}
-taxon <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
-
-### language
-
-```{r}
-taxon %<>% mutate(dwc_language = "en")
-```
-
-### license
-
-```{r}
-taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.0/")
-```
-
-### rightsHolder
-
-```{r}
-taxon %<>% mutate(dwc_rightsHolder = "INBO")
-```
-
-### accessRights
-
-```{r}
-taxon %<>% mutate(dwc_accessRights = "https://www.inbo.be/en/norms-data-use") 
-```
-
-### datasetID
-
-```{r}
-taxon %<>% mutate(dwc_datasetID = "https://doi.org/10.15468/wr3gis")
-```
-
-### institutionCode
-
-```{r}
-taxon %<>% mutate(dwc_institutionCode = "INBO")
-```
-
-### datasetName
-
-```{r}
-taxon %<>% mutate(dwc_datasetName = "Checklist of alien birds of Belgium") 
-```
-
-### taxonID
-
-```{r}
-taxon %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### scientificName
-
-```{r}
-taxon %<>% mutate(dwc_scientificName = scientific_name)
-```
-
-### kingdom
-
-```{r}
-taxon %<>% mutate(dwc_kingdom = "Animalia")
-```
-
-### phylum
-
-```{r}
-taxon %<>% mutate(dwc_phylum = "Chordata")
-```
-
-### class
-
-```{r}
-taxon %<>% mutate(dwc_class = "Aves")
-```
-
-### order
-
-```{r}
-taxon %<>% mutate(dwc_order = order)
-```
-
-### family
-
-```{r}
-taxon %<>% mutate(dwc_family = family)
-```
-
-### genus
-
-```{r}
-taxon %<>% mutate(dwc_genus = genus)
-```
-
-### taxonRank
-
-Inspect values:
-
-```{r}
-taxon %>%
-  group_by(taxon_rank) %>%
-  count()
-```
-
-Values are conform [GBIF rank vocabulary](http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml), map as is:
-
-```{r}
-taxon %<>% mutate(dwc_taxonRank = taxon_rank)
-```
-
-### nomenclaturalCode
-
-```{r}
-taxon %<>% mutate(dwc_nomenclaturalCode = "ICZN")
-```
-
-# Distribution extension
-
-Create a dataframe with all data:
-
-```{r}
-distribution <- input_data
-```
-
-Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
-
-### taxonID
-
-```{r}
-distribution %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### locationID
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(country_code, location) %>%
-  count()
-```
-
-Set current `NA`'s in `location` to `Belgium`:
-
-```{r}
-distribution %<>% mutate(location = case_when(
-  is.na(location) ~ "Belgium",
-  TRUE ~ location
-))
-```
-
-Map `locationID` to ISO 3166 code:
-
-```{r}
-distribution %<>% mutate(dwc_locationID = case_when(
-  location == "Belgium" ~ "ISO_3166-2:BE",
-  location == "Flanders" ~ "ISO_3166-2:BE-VLG",
-  location == "Wallonia" ~ "ISO_3166-2:BE-WAL",
-  location == "Brussels" ~ "ISO_3166-2:BE-BRU")
-)
-```
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(location, dwc_locationID) %>%
-  count()
-```
-
-### locality
-
-Map to standard values:
-
-```{r}
-distribution %<>% mutate(dwc_locality = recode(location, 
-  "Flanders" = "Flemish Region",
-  "Wallonia" = "Walloon Region",
-  "Brussels" = "Brussels-Capital Region"
-))
-```
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(location, dwc_locality) %>%
-  count()
-```
-
-### countryCode
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(country_code) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_countryCode = country_code) 
-```
-
-### occurrenceStatus
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(occurrence_status) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_occurrenceStatus = occurrence_status) 
-```
-
-### establishmentMeans
-
-```{r}
-distribution %<>% mutate(dwc_establishmentMeans = "introduced")
-```
-
-### degreeOfEstablishment
-
-Inspect values:
-
-```{r}
-distribution %>% 
-  group_by(degree_of_establishment) %>% 
-  count()
-```
-
-These categories of `degree_of_establishment` are conform the [Darwin Core Degree of Establishment vocabulary](http://rs.gbif.org/vocabulary/dwc/degree_of_establishment_2022-02-02.xml).
-
-```{r}
-distribution %<>% mutate(dwc_degreeOfEstablishment = degree_of_establishment) 
-```
-
-### pathway
-
-Inspect values:
-
-```{r}
-distribution %>% 
-  group_by(introduction_pathway) %>% 
-  count()
-```
-
-```{r}
-distribution %<>% mutate(dwc_pathway = introduction_pathway)
-```
-
-### eventDate
-
-Inspect values for `date_first_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation) %>%
-  count()
-```
-
-All date information should comply to the ISO 8601 standard, which requires a four-digit year as a minimum.
-We here transform deviating values:
-
-```{r}
-distribution %<>% mutate(
-  date_first_observation = recode(
-    .x = date_first_observation,
-    "18th century" = "1701",
-    "1890s" = "1890",
-    "1950ies" = "1950"
-))
-```
-
-Inspect values for `date_last_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_last_observation) %>%
-  count()
-```
-
-Inspect all combinations of `date_first_observation` and `date_last_observation`:
-
-```{r}
-distribution %>%
-  group_by(date_first_observation, date_last_observation) %>%
-  count()
-```
-
-Map `eventDate`:
-
-```{r}
-distribution %<>% mutate(
-  dwc_eventDate = case_when(
-    is.na(date_first_observation) & is.na(date_last_observation) ~ "",
-    is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
-      "", 
-      date_last_observation, 
-      sep = "/"),
-    !is.na(date_first_observation) & is.na(date_last_observation) ~ paste(
-      date_first_observation, 
-      "", 
-      sep = "/"),
-    !is.na(date_first_observation) & !is.na(date_last_observation) ~ paste(
-      date_first_observation, 
-      date_last_observation, 
-      sep = "/"
-    )
+taxon <-
+  input_data %>%
+  distinct(taxon_id, .keep_all = TRUE) %>%
+  mutate(
+    language = "en",
+    license = "http://creativecommons.org/publicdomain/zero/1.0/",
+    rightsHolder = "INBO",
+    accessRights = "https://www.inbo.be/en/norms-data-use",
+    datasetID = "https://doi.org/10.15468/wr3gis",
+    institutionCode = "INBO",
+    datasetName = "Checklist of alien birds of Belgium",
+    taxonID = taxon_id,
+    scientificName = scientific_name,
+    kingdom = kingdom,
+    phylum = phylum,
+    class = class,
+    order = order,
+    family = family,
+    genus = genus,
+    taxonRank = taxon_rank,
+    nomenclaturalCode = nomenclatural_code,
+    .keep = "none"
+  ) %>% 
+  arrange(taxonID) %>% 
+  select(
+    "language", "license", "rightsHolder", "accessRights", "datasetID",
+    "institutionCode", "datasetName", "taxonID", "scientificName", "kingdom", 
+    "phylum", "class", "order", "family", "genus", "taxonRank",
+    "nomenclaturalCode"
   )
-)
 ```
 
-Show mapping:
+## Distribution extension
+
+Create a dataframe with all data (including multiple distributions). Map the data to [Species Distribution](http://rs.gbif.org/extension/gbif/1.0/distribution.xml).
+
+Information for `eventDate` is contained in `date_first_observation` and `date_last_observation`, which we will express here in an ISO 8601 date format `yyyy/yyyy` (`start_date/end_date`).
+
+Not all cells for `date_first_observation` (DFO) and/or `date_last_observation` (DLO) are populated. So, we used the following rules for those records: 
+
+***case 1.*** If `DFO` is empty and `DLO` is empty, `eventDate` is `NA` 
+***case 2.***  If `DFO` is empty and `DLO` is not empty: eventDate = `/DLO`
+***case 3.*** If `DFO` is not empty and `DLO` is empty, eventDate is `DFO/`
 
 ```{r}
-distribution %>%
-  group_by(date_first_observation, date_last_observation, dwc_eventDate) %>%
-  count()
+distribution <-
+  input_data %>%
+  # pathway
+  pivot_longer(
+    names_to = "key",
+    values_to = "pathway",
+    starts_with("introduction_pathway"),
+    values_drop_na = FALSE) %>%
+  filter( # keep NA value for species with no pathway provided
+    !is.na(pathway) |
+      (is.na(pathway) & key == "introduction_pathway_1")
+    ) %>%
+  # other terms
+  mutate(
+    taxonID = taxon_id,
+    locationID = case_when(
+      location == "Belgium" ~ "ISO_3166-2:BE",
+      location == "Flanders" ~ "ISO_3166-2:BE-VLG",
+      location == "Wallonia" ~ "ISO_3166-2:BE-WAL",
+      location == "Brussels" ~ "ISO_3166-2:BE-BRU"
+    ),
+    locality = case_when(
+      location == "Belgium" ~ "Belgium",
+      location == "Flanders" ~ "Flemish Region",
+      location == "Wallonia" ~ "Walloon Region",
+      location == "Brussels" ~ "Brussels-Capital Region"
+    ),
+    countryCode = country_code,
+    occurrenceStatus = occurrence_status,
+    establishmentMeans = establishment_means,
+    degreeOfEstablishment = degree_of_establishment,
+    eventDate = case_when(
+      is.na(date_first_observation) & is.na(date_last_observation) ~ NA,
+      is.na(date_first_observation) ~ paste0("/", date_last_observation),
+      is.na(date_last_observation) ~ paste0(date_first_observation, "/"),
+      !is.na(date_first_observation) & !is.na(date_last_observation) ~ 
+        paste(date_first_observation, date_last_observation, sep = "/")
+    ),
+    source = source,
+    occurrenceRemarks = occurrence_remarks
+  ) %>%
+  select(
+    "taxonID", "locationID", "locality", "countryCode", "occurrenceStatus",
+    "establishmentMeans", "degreeOfEstablishment", "pathway", 
+    "eventDate", "source", "occurrenceRemarks"
+  ) %>%
+  arrange(taxonID)
 ```
 
-### source
+## Species profile extension
 
-Inspect values:
+In this extension we will express broad habitat characteristics of the species (e.g. `isTerrestrial`).
 
-```{r}
-distribution %>%
-  group_by(source) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_source = source) 
-```
-
-### occurrenceRemarks
-
-Inspect values:
-
-```{r}
-distribution %>%
-  group_by(remarks) %>%
-  count()
-```
-
-Map values:
-
-```{r}
-distribution %<>% mutate(dwc_occurrenceRemarks = remarks) 
-```
-
-# Species profile extension
-
-Create a dataframe with unique taxa only (ignoring multiple distribution rows):
-
-```{r}
-species_profile <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
+Create a dataframe with unique taxa only (ignoring multiple distribution rows).
+Only keep records for which `terrestrial`, `marine` and `freshwater` is not empty.
 
 Map the data to [Species Profile](http://rs.gbif.org/extension/gbif/1.0/speciesprofile.xml).
 
-### taxonID
-
 ```{r}
-species_profile %<>% mutate(dwc_taxonID = taxon_id)
+species_profile <-
+  input_data %>%
+  distinct(taxon_id, .keep_all = TRUE) %>% 
+  filter(
+    !is.na(terrestrial) |
+      !is.na(marine) |
+      !is.na(freshwater)
+  ) %>% 
+  mutate(
+    .keep = "none",
+    taxonID = taxon_id,
+    isMarine = marine,
+    isTerrestrial = terrestrial,
+    isFreshwater = freshwater
+  ) %>% 
+  arrange(taxonID)
 ```
 
-Inspect `realm`:
+## Description extension
 
-```{r}
-species_profile %>% 
-  group_by(realm) %>% 
-  count()
-```
-
-### isMarine
-
-```{r}
-species_profile %<>% mutate(dwc_isMarine = "FALSE")
-```
-
-### isTerrestrial
-
-```{r}
-species_profile %<>% mutate(dwc_isTerrestrial = case_when(
-  realm == "terrestrial" ~ "TRUE",
-  TRUE ~ "FALSE"
-))
-```
-
-### isFreshwater
-
-```{r}
-species_profile %<>% mutate(dwc_isFreshwater = case_when(
-  realm == "freshwater" ~ "TRUE",
-  TRUE ~ "FALSE"
-))
-```
-
-# Description extension
-
-Map the data to [Taxon Description](http://rs.gbif.org/extension/gbif/1.0/description.xml).
-
-Create `description`:
-
-```{r}
-description <- input_data
-```
-
-In the description extension we want to include the native range of the species.
-A single taxon can have multiple native ranges of the same type, expressed as multiple rows in the description extension. The mapping will be as following:
-
-- `type` = `native range`
-- `description` = the specific content of the field `native_range`
-- `language` = `en`
-
-## Term mapping
-
-### taxonID
-
-```{r}
-description %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### description
-
-Inspect values:
-
-```{r}
-description %>% 
-  group_by(native_range) %>% 
-  count()
-```
-
-Separate content using the pipe symbol as a separator:
-
-```{r}
-description %<>% separate(
-  native_range,
-  into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
-  sep = "\\s\\|\\s",
-  remove = FALSE
-)
-```
-
-Change from a wide to a long dataset and trim:
-
-```{r}
-description %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
-  mutate(value = str_trim(value))
-```
-
-Inspect unique values:
-
-```{r}
-description %>% 
-  group_by(value) %>% 
-  count()
-```
-
+In the description extension we want to include the native range of a species.
 Map to the [WGSRPD vocabulary](http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf):
 
 ```{r}
-description %<>% mutate(dwc_description = recode(value,
-  "Africa" = "Africa (WGSRPD:2)",
-  "Australia" = "Australia (WGSRPD:50)",
-  "Caribbean" = "Caribbean (WGSRPD:81)",
-  "Central America" = "Central America (WGSRPD:80)",
-  "China" = "China (WGSRPD:36)",
-  "East Asia" = "Eastern Asia (WGSRPD:38)",
-  "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
-  "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
-  "Europe" = "Europe (WGSRPD:1)",
-  "Galapagos" = "Galapagos (WGSRPD:GAL)",
-  "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
-  "India" = "Indian Subcontinent (WGSRPD:40)",
-  "Indonesia" = "Indonesia (WGSRPD:ID)",
-  "Japan" = "Japan (WGSRPD:JAP)",
-  "Madagascar" = "Madagascar (WGSRPD:MDG)",
-  "New Zealand" = "New Zealand (WGSRPD:51)",
-  "North America" = "Northern America (WGSRPD:7)",
-  "Northern America" = "Northern America (WGSRPD:7)",
-  "Panama" = "Panama (WGSRPD:PAN)",
-  "Philippines" = "Philippines (WGSRPD:PHI)",
-  "Portugal" = "Portugal (WGSRPD:POR)",
-  "South America" = "Southern America (WGSRPD:8)",
-  "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
-  "Southern Africa" = "Southern Africa (WGSRPD:27)",
-  "Spain" = "Spain (WGSRPD:SPA)",
-  "Tanzania" = "Tanzania (WGSRPD:TAN)",
-  "Western Asia" = "Western Asia (WGSRPD:34)"
-))
-```
-
-Inspect mapped values:
-
-```{r}
-description %>% 
-  group_by(value, dwc_description) %>% 
-  count()
-```
-
-### type
-
-```{r}
-description %<>% mutate(dwc_type = "native range")
-```
-
-### language
-
-```{r}
-description %<>% mutate(dwc_language = "en")
-```
-
-# Post-processsing
-
-Only keep the Darwin Core columns:
-
-```{r}
-taxon %<>% select(starts_with("dwc_"))
-distribution %<>% select(starts_with("dwc_"))
-species_profile %<>% select(starts_with("dwc_"))
-description %<>% select(starts_with("dwc_"))
-```
-
-Drop the `dwc_` prefix:
-
-```{r}
-colnames(taxon) <- str_remove(colnames(taxon), "dwc_")
-colnames(distribution) <- str_remove(colnames(distribution), "dwc_")
-colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
-colnames(description) <- str_remove(colnames(description), "dwc_")
-```
-
-Sort on `taxonID` (to maintain some consistency between updates of the dataset):
-
-```{r}
-taxon %<>% arrange(taxonID)
-distribution %<>% arrange(taxonID)
-species_profile %<>% arrange(taxonID)
-description %<>% arrange(taxonID)
-```
-
-Preview taxon core:
-
-```{r}
-taxon %>% head()
-```
-
-Preview distribution extension:
-
-```{r}
-distribution %>% head()
-```
-
-Preview species profile extension:
-
-```{r}
-species_profile %>% head()
-```
-
-Preview description extension:
-
-```{r}
-description %>% head(10)
+description <-
+  input_data %>%
+  # unique taxa only (ignoring multiple distribution rows)
+  distinct(taxon_id, .keep_all = TRUE) %>%
+  # Separate values on `|`
+  mutate(native_range = strsplit(native_range, "\\|")) %>%
+  unnest(native_range) %>%
+  filter(!is.na(native_range)) %>%
+  mutate(
+    .keep = "none",
+    taxonID = taxon_id,
+    description = recode(str_trim(native_range),
+      "Africa" = "Africa (WGSRPD:2)",
+      "Australia" = "Australia (WGSRPD:50)",
+      "Caribbean" = "Caribbean (WGSRPD:81)",
+      "Central America" = "Central America (WGSRPD:80)",
+      "China" = "China (WGSRPD:36)",
+      "East Asia" = "Eastern Asia (WGSRPD:38)",
+      "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
+      "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
+      "Europe" = "Europe (WGSRPD:1)",
+      "Galapagos" = "Galapagos (WGSRPD:GAL)",
+      "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
+      "India" = "Indian Subcontinent (WGSRPD:40)",
+      "Indonesia" = "Indonesia (WGSRPD:ID)",
+      "Japan" = "Japan (WGSRPD:JAP)",
+      "Madagascar" = "Madagascar (WGSRPD:MDG)",
+      "New Zealand" = "New Zealand (WGSRPD:51)",
+      "North America" = "Northern America (WGSRPD:7)",
+      "Northern America" = "Northern America (WGSRPD:7)",
+      "Panama" = "Panama (WGSRPD:PAN)",
+      "Philippines" = "Philippines (WGSRPD:PHI)",
+      "Portugal" = "Portugal (WGSRPD:POR)",
+      "South America" = "Southern America (WGSRPD:8)",
+      "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
+      "Southern Africa" = "Southern Africa (WGSRPD:27)",
+      "Spain" = "Spain (WGSRPD:SPA)",
+      "Tanzania" = "Tanzania (WGSRPD:TAN)",
+      "Western Asia" = "Western Asia (WGSRPD:34)"
+    ),
+    type = "native range",
+    language = "en"
+  ) %>%
+  arrange(taxonID)
 ```
 
 Save to CSV:
