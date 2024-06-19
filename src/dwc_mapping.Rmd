@@ -111,124 +111,39 @@ input_data %>% head()
 
 ## Taxon core
 
-Create a dataframe with unique taxa only (ignoring multiple distribution rows):
+Create a dataframe with unique taxa only (ignoring multiple distribution rows). Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
 
 ```{r}
-taxon <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
-
-Map the data to [Darwin Core Taxon](http://rs.gbif.org/core/dwc_taxon_2015-04-24.xml).
-
-### language
-
-```{r}
-taxon %<>% mutate(dwc_language = "en")
-```
-
-### license
-
-```{r}
-taxon %<>% mutate(dwc_license = "http://creativecommons.org/publicdomain/zero/1.0/")
-```
-
-### rightsHolder
-
-```{r}
-taxon %<>% mutate(dwc_rightsHolder = "INBO")
-```
-
-### accessRights
-
-```{r}
-taxon %<>% mutate(dwc_accessRights = "https://www.inbo.be/en/norms-data-use") 
-```
-
-### datasetID
-
-```{r}
-taxon %<>% mutate(dwc_datasetID = "https://doi.org/10.15468/wr3gis")
-```
-
-### institutionCode
-
-```{r}
-taxon %<>% mutate(dwc_institutionCode = "INBO")
-```
-
-### datasetName
-
-```{r}
-taxon %<>% mutate(dwc_datasetName = "Checklist of alien birds of Belgium") 
-```
-
-### taxonID
-
-```{r}
-taxon %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### scientificName
-
-```{r}
-taxon %<>% mutate(dwc_scientificName = scientific_name)
-```
-
-### kingdom
-
-```{r}
-taxon %<>% mutate(dwc_kingdom = "Animalia")
-```
-
-### phylum
-
-```{r}
-taxon %<>% mutate(dwc_phylum = "Chordata")
-```
-
-### class
-
-```{r}
-taxon %<>% mutate(dwc_class = "Aves")
-```
-
-### order
-
-```{r}
-taxon %<>% mutate(dwc_order = order)
-```
-
-### family
-
-```{r}
-taxon %<>% mutate(dwc_family = family)
-```
-
-### genus
-
-```{r}
-taxon %<>% mutate(dwc_genus = genus)
-```
-
-### taxonRank
-
-Inspect values:
-
-```{r}
-taxon %>%
-  group_by(taxon_rank) %>%
-  count()
-```
-
-Values are conform [GBIF rank vocabulary](http://rs.gbif.org/vocabulary/gbif/rank_2015-04-24.xml), map as is:
-
-```{r}
-taxon %<>% mutate(dwc_taxonRank = taxon_rank)
-```
-
-### nomenclaturalCode
-
-```{r}
-taxon %<>% mutate(dwc_nomenclaturalCode = "ICZN")
+taxon <-
+  input_data %>%
+  distinct(taxon_id, .keep_all = TRUE) %>%
+  mutate(
+    language = "en",
+    license = "http://creativecommons.org/publicdomain/zero/1.0/",
+    rightsHolder = "INBO",
+    accessRights = "https://www.inbo.be/en/norms-data-use",
+    datasetID = "https://doi.org/10.15468/wr3gis",
+    institutionCode = "INBO",
+    datasetName = "Checklist of alien birds of Belgium",
+    taxonID = taxon_id,
+    scientificName = scientific_name,
+    kingdom = kingdom,
+    phylum = phylum,
+    class = class,
+    order = order,
+    family = family,
+    genus = genus,
+    taxonRank = taxon_rank,
+    nomenclaturalCode = nomenclatural_code,
+    .keep = "none"
+  ) %>% 
+  arrange(taxonID) %>% 
+  select(
+    "language", "license", "rightsHolder", "accessRights", "datasetID",
+    "institutionCode", "datasetName", "taxonID", "scientificName", "kingdom", 
+    "phylum", "class", "order", "family", "genus", "taxonRank",
+    "nomenclaturalCode"
+  )
 ```
 
 # Distribution extension
@@ -643,7 +558,6 @@ description %<>% mutate(dwc_language = "en")
 Only keep the Darwin Core columns:
 
 ```{r}
-taxon %<>% select(starts_with("dwc_"))
 distribution %<>% select(starts_with("dwc_"))
 species_profile %<>% select(starts_with("dwc_"))
 description %<>% select(starts_with("dwc_"))
@@ -652,7 +566,6 @@ description %<>% select(starts_with("dwc_"))
 Drop the `dwc_` prefix:
 
 ```{r}
-colnames(taxon) <- str_remove(colnames(taxon), "dwc_")
 colnames(distribution) <- str_remove(colnames(distribution), "dwc_")
 colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
 colnames(description) <- str_remove(colnames(description), "dwc_")
@@ -661,16 +574,9 @@ colnames(description) <- str_remove(colnames(description), "dwc_")
 Sort on `taxonID` (to maintain some consistency between updates of the dataset):
 
 ```{r}
-taxon %<>% arrange(taxonID)
 distribution %<>% arrange(taxonID)
 species_profile %<>% arrange(taxonID)
 description %<>% arrange(taxonID)
-```
-
-Preview taxon core:
-
-```{r}
-taxon %>% head()
 ```
 
 Preview distribution extension:
