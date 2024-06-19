@@ -29,8 +29,6 @@ library(tidyverse)      # To do data science
 library(magrittr)       # To use %<>% pipes
 library(here)           # To find files
 library(janitor)        # To clean input data
-library(digest)         # To generate hashes
-library(rgbif)          # To use GBIF services
 ```
 
 # Read source data
@@ -40,73 +38,34 @@ The data is maintained in [this Google Spreadsheet](https://docs.google.com/spre
 Read the relevant worksheet (published as csv):
 
 ```{r}
-input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=1556976278&single=true&output=csv", col_types = cols(.default = col_character()))
+raw_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=1556976278&single=true&output=csv", col_types = cols(.default = col_character()))
 ```
 
 Copy the source data to the repository to keep track of changes:
 
 ```{r}
-write_csv(input_data, here("data", "raw", "alien_bird_checklist_dump.csv"), na = "")
+write_csv(raw_data, here("data", "raw", "alien_bird_checklist_dump.csv"), na = "")
 ```
 
-Preview data: 
+# Preprocessing: tidy data and add taxon ID's
+
+To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. We have created one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom. Once this is created, it is added to the source data. 
 
 ```{r}
-input_data %>% head()
+input_data <-
+  raw_data %>%
+  remove_empty("rows") %>%
+  clean_names() %>%
+  mutate(
+    taxon_id = paste(
+      "alien-birds-checklist",
+      "taxon",
+      .data$taxon_id_hash,
+      sep = ":"
+    )
+  )
 ```
 
-# Preprocessing
-
-## Tidy data
-
-Clean names data somewhat:
-
-```{r}
-input_data %<>%
-  remove_empty("rows") %>%    # Remove empty rows
-  clean_names()               # Have sensible (lowercase) column names
-```
-
-## Scientific names
-
-Use the [GBIF nameparser](https://www.gbif.org/tools/name-parser) to retrieve nomenclatural information for the scientific names in the checklist:
-
-```{r}
-parsed_names <- input_data %>%
-  distinct(scientific_name) %>%
-  pull() %>% # Create vector from dataframe
-  parsenames() # An rgbif function
-```
-
-Show scientific names with nomenclatural issues, i.e. not of `type = SCIENTIFIC` or that could not be fully parsed (should be 0). Note: these are not necessarily incorrect.
-
-```{r}
-parsed_names %>%
-  select(scientificname, type, parsed, parsedpartially, rankmarker) %>%
-  filter(!(type == "SCIENTIFIC" & parsed == "TRUE" & parsedpartially == "FALSE"))
-```
-
-## Taxon IDs
-
-To link taxa with information in the extension(s), each taxon needs a unique and relatively stable `taxonID`. Here we create one in the form of `dataset_shortname:taxon:hash`, where `hash` is unique code based on scientific name and kingdom (that will remain the same as long as scientific name and kingdom remain the same):
-
-```{r}
-vdigest <- Vectorize(digest) # Vectorize digest function to work with vectors
-input_data %<>% mutate(taxon_id = paste(
-  "alien-birds-checklist", # e.g. "alien-fishes-checklist"
-  "taxon",
-  vdigest(scientific_name, algo = "md5"),
-  sep = ":"
-))
-```
-
-## Preview data
-
-Preview data:
-
-```{r}
-input_data %>% head()
-```
 # Darwin Core mapping
 
 ## Taxon core
