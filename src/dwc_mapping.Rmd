@@ -169,52 +169,32 @@ distribution <-
   arrange(taxonID)
 ```
 
-# Species profile extension
+## Species profile extension
 
-Create a dataframe with unique taxa only (ignoring multiple distribution rows):
+In this extension we will express broad habitat characteristics of the species (e.g. `isTerrestrial`).
 
-```{r}
-species_profile <- input_data %>% distinct(taxon_id, .keep_all = TRUE)
-```
+Create a dataframe with unique taxa only (ignoring multiple distribution rows).
+Only keep records for which `terrestrial`, `marine` and `freshwater` is not empty.
 
 Map the data to [Species Profile](http://rs.gbif.org/extension/gbif/1.0/speciesprofile.xml).
 
-### taxonID
-
 ```{r}
-species_profile %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-Inspect `realm`:
-
-```{r}
-species_profile %>% 
-  group_by(realm) %>% 
-  count()
-```
-
-### isMarine
-
-```{r}
-species_profile %<>% mutate(dwc_isMarine = "FALSE")
-```
-
-### isTerrestrial
-
-```{r}
-species_profile %<>% mutate(dwc_isTerrestrial = case_when(
-  realm == "terrestrial" ~ "TRUE",
-  TRUE ~ "FALSE"
-))
-```
-
-### isFreshwater
-
-```{r}
-species_profile %<>% mutate(dwc_isFreshwater = case_when(
-  realm == "freshwater" ~ "TRUE",
-  TRUE ~ "FALSE"
-))
+species_profile <-
+  input_data %>%
+  distinct(taxon_id, .keep_all = TRUE) %>% 
+  filter(
+    !is.na(terrestrial) |
+      !is.na(marine) |
+      !is.na(freshwater)
+  ) %>% 
+  mutate(
+    .keep = "none",
+    taxonID = taxon_id,
+    isMarine = marine,
+    isTerrestrial = terrestrial,
+    isFreshwater = freshwater
+  ) %>% 
+  arrange(taxonID)
 ```
 
 # Description extension
@@ -337,41 +317,22 @@ description %<>% mutate(dwc_language = "en")
 Only keep the Darwin Core columns:
 
 ```{r}
-species_profile %<>% select(starts_with("dwc_"))
 description %<>% select(starts_with("dwc_"))
 ```
 
 Drop the `dwc_` prefix:
 
 ```{r}
-colnames(species_profile) <- str_remove(colnames(species_profile), "dwc_")
 colnames(description) <- str_remove(colnames(description), "dwc_")
 ```
 
 Sort on `taxonID` (to maintain some consistency between updates of the dataset):
 
 ```{r}
-species_profile %<>% arrange(taxonID)
 description %<>% arrange(taxonID)
 ```
 
-Preview distribution extension:
 
-```{r}
-distribution %>% head()
-```
-
-Preview species profile extension:
-
-```{r}
-species_profile %>% head()
-```
-
-Preview description extension:
-
-```{r}
-description %>% head(10)
-```
 
 Save to CSV:
 
