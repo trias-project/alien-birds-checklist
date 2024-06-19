@@ -35,12 +35,12 @@ library(rgbif)          # To use GBIF services
 
 # Read source data
 
-The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1ugsmAq_tlUjFmZef2zyw-mT0Tq1jSdPlNO4KTfJyXVo/edit#gid=0).
+The data is maintained in [this Google Spreadsheet](https://docs.google.com/spreadsheets/d/1LeXXbry2ArK2rngsmFjz_xErwE1KwQ8ujtvHNmTVA6E/edit#gid=1556976278).
 
 Read the relevant worksheet (published as csv):
 
 ```{r}
-input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vSgGi_Un0-7cyg-SzaiE0-RYY5-WvuZNF9kG2GLgeonX6heR6U3xpechdMKWVMQ9raT6AuR86U_gQt9/pub?gid=0&single=true&output=csv", col_types = cols(.default = col_character()))
+input_data <- read_csv("https://docs.google.com/spreadsheets/d/e/2PACX-1vTl8IEk2fProQorMu5xKQPdMXl3OQp-c0f6eBXitv0BiVFZ3JSJCde0PtbFXuETgguf6vK8b43FDX1C/pub?gid=1556976278&single=true&output=csv", col_types = cols(.default = col_character()))
 ```
 
 Copy the source data to the repository to keep track of changes:
@@ -365,12 +365,12 @@ Inspect values:
 
 ```{r}
 distribution %>% 
-  group_by(introduction_pathway) %>% 
+  group_by(old_introduction_pathway_will_be_deleted) %>% 
   count()
 ```
 
 ```{r}
-distribution %<>% mutate(dwc_pathway = introduction_pathway)
+distribution %<>% mutate(dwc_pathway = old_introduction_pathway_will_be_deleted)
 ```
 
 ### eventDate
@@ -465,14 +465,14 @@ Inspect values:
 
 ```{r}
 distribution %>%
-  group_by(remarks) %>%
+  group_by(occurrence_remarks) %>%
   count()
 ```
 
 Map values:
 
 ```{r}
-distribution %<>% mutate(dwc_occurrenceRemarks = remarks) 
+distribution %<>% mutate(dwc_occurrenceRemarks = occurrence_remarks) 
 ```
 
 # Species profile extension
