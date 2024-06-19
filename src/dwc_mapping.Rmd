@@ -6,6 +6,7 @@ author:
 - Tim Adriaens
 - Peter Desmet
 - Lien Reyserhove
+- Sanne Govaert
 date: "`r Sys.Date()`"
 output:
   html_document:
