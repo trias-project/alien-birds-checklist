@@ -197,142 +197,57 @@ species_profile <-
   arrange(taxonID)
 ```
 
-# Description extension
+## Description extension
 
-Map the data to [Taxon Description](http://rs.gbif.org/extension/gbif/1.0/description.xml).
-
-Create `description`:
-
-```{r}
-description <- input_data
-```
-
-In the description extension we want to include the native range of the species.
-A single taxon can have multiple native ranges of the same type, expressed as multiple rows in the description extension. The mapping will be as following:
-
-- `type` = `native range`
-- `description` = the specific content of the field `native_range`
-- `language` = `en`
-
-## Term mapping
-
-### taxonID
-
-```{r}
-description %<>% mutate(dwc_taxonID = taxon_id)
-```
-
-### description
-
-Inspect values:
-
-```{r}
-description %>% 
-  group_by(native_range) %>% 
-  count()
-```
-
-Separate content using the pipe symbol as a separator:
-
-```{r}
-description %<>% separate(
-  native_range,
-  into = c("native_range_1", "native_range_2", "native_range_3", "native_range_4", "native_range_5"),
-  sep = "\\s\\|\\s",
-  remove = FALSE
-)
-```
-
-Change from a wide to a long dataset and trim:
-
-```{r}
-description %<>% gather(key, value, starts_with("native_range_"), na.rm = TRUE) %>%
-  mutate(value = str_trim(value))
-```
-
-Inspect unique values:
-
-```{r}
-description %>% 
-  group_by(value) %>% 
-  count()
-```
-
+In the description extension we want to include the native range of a species.
 Map to the [WGSRPD vocabulary](http://grassworld.myspecies.info/sites/grassworld.myspecies.info/files/tdwg_geo2.pdf):
 
 ```{r}
-description %<>% mutate(dwc_description = recode(value,
-  "Africa" = "Africa (WGSRPD:2)",
-  "Australia" = "Australia (WGSRPD:50)",
-  "Caribbean" = "Caribbean (WGSRPD:81)",
-  "Central America" = "Central America (WGSRPD:80)",
-  "China" = "China (WGSRPD:36)",
-  "East Asia" = "Eastern Asia (WGSRPD:38)",
-  "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
-  "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
-  "Europe" = "Europe (WGSRPD:1)",
-  "Galapagos" = "Galapagos (WGSRPD:GAL)",
-  "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
-  "India" = "Indian Subcontinent (WGSRPD:40)",
-  "Indonesia" = "Indonesia (WGSRPD:ID)",
-  "Japan" = "Japan (WGSRPD:JAP)",
-  "Madagascar" = "Madagascar (WGSRPD:MDG)",
-  "New Zealand" = "New Zealand (WGSRPD:51)",
-  "North America" = "Northern America (WGSRPD:7)",
-  "Northern America" = "Northern America (WGSRPD:7)",
-  "Panama" = "Panama (WGSRPD:PAN)",
-  "Philippines" = "Philippines (WGSRPD:PHI)",
-  "Portugal" = "Portugal (WGSRPD:POR)",
-  "South America" = "Southern America (WGSRPD:8)",
-  "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
-  "Southern Africa" = "Southern Africa (WGSRPD:27)",
-  "Spain" = "Spain (WGSRPD:SPA)",
-  "Tanzania" = "Tanzania (WGSRPD:TAN)",
-  "Western Asia" = "Western Asia (WGSRPD:34)"
-))
+description <-
+  input_data %>%
+  # unique taxa only (ignoring multiple distribution rows)
+  distinct(taxon_id, .keep_all = TRUE) %>%
+  # Separate values on `|`
+  mutate(native_range = strsplit(native_range, "\\|")) %>%
+  unnest(native_range) %>%
+  filter(!is.na(native_range)) %>%
+  mutate(
+    .keep = "none",
+    taxonID = taxon_id,
+    description = recode(str_trim(native_range),
+      "Africa" = "Africa (WGSRPD:2)",
+      "Australia" = "Australia (WGSRPD:50)",
+      "Caribbean" = "Caribbean (WGSRPD:81)",
+      "Central America" = "Central America (WGSRPD:80)",
+      "China" = "China (WGSRPD:36)",
+      "East Asia" = "Eastern Asia (WGSRPD:38)",
+      "Eastern Asia" = "Eastern Asia (WGSRPD:38)",
+      "Eastern Europe" = "Eastern Europe (WGSRPD:14)",
+      "Europe" = "Europe (WGSRPD:1)",
+      "Galapagos" = "Galapagos (WGSRPD:GAL)",
+      "Hawaiian Islands" = "Hawaiian Islands (WGSRPD:HI)",
+      "India" = "Indian Subcontinent (WGSRPD:40)",
+      "Indonesia" = "Indonesia (WGSRPD:ID)",
+      "Japan" = "Japan (WGSRPD:JAP)",
+      "Madagascar" = "Madagascar (WGSRPD:MDG)",
+      "New Zealand" = "New Zealand (WGSRPD:51)",
+      "North America" = "Northern America (WGSRPD:7)",
+      "Northern America" = "Northern America (WGSRPD:7)",
+      "Panama" = "Panama (WGSRPD:PAN)",
+      "Philippines" = "Philippines (WGSRPD:PHI)",
+      "Portugal" = "Portugal (WGSRPD:POR)",
+      "South America" = "Southern America (WGSRPD:8)",
+      "Southeast Europe" = "Southeastern Europe (WGSRPD:13)",
+      "Southern Africa" = "Southern Africa (WGSRPD:27)",
+      "Spain" = "Spain (WGSRPD:SPA)",
+      "Tanzania" = "Tanzania (WGSRPD:TAN)",
+      "Western Asia" = "Western Asia (WGSRPD:34)"
+    ),
+    type = "native range",
+    language = "en"
+  ) %>%
+  arrange(taxonID)
 ```
-
-Inspect mapped values:
-
-```{r}
-description %>% 
-  group_by(value, dwc_description) %>% 
-  count()
-```
-
-### type
-
-```{r}
-description %<>% mutate(dwc_type = "native range")
-```
-
-### language
-
-```{r}
-description %<>% mutate(dwc_language = "en")
-```
-
-# Post-processsing
-
-Only keep the Darwin Core columns:
-
-```{r}
-description %<>% select(starts_with("dwc_"))
-```
-
-Drop the `dwc_` prefix:
-
-```{r}
-colnames(description) <- str_remove(colnames(description), "dwc_")
-```
-
-Sort on `taxonID` (to maintain some consistency between updates of the dataset):
-
-```{r}
-description %<>% arrange(taxonID)
-```
-
-
 
 Save to CSV:
 
